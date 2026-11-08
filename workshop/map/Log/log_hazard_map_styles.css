@@ -471,3 +471,15 @@ body {
     .content { grid-template-columns: 0.9fr 1.1fr !important; grid-template-rows: 1fr !important; }
     .hazard-selection { grid-template-columns: 1fr !important; }
 }
+
+/* ===== 矢上小版（子ども向け） ===== */
+.hazard-option { padding: 10px 12px; min-height: 56px; }
+.hazard-option input[type="checkbox"] { width: 26px; height: 26px; margin-right: 10px; }
+.hazard-option label { font-size: 1.05rem; line-height: 1.9; font-weight: 700; }
+.map-instruction { font-size: 1.05rem !important; line-height: 1.9; }
+.location-label { font-size: 1.15rem !important; font-weight: 800; }
+.btn-confirm-location { font-size: 1.25rem !important; font-weight: 800; padding: 12px 32px !important; min-height: 56px; border-radius: 28px !important; }
+.btn-change-location { font-size: 1.1rem !important; font-weight: 700; padding: 10px 24px !important; min-height: 52px; border-radius: 26px !important; }
+.confirmed-badge { font-size: 1.2rem !important; line-height: 1.9; }
+.required-badge { font-size: .85rem !important; }
+.leaflet-touch .leaflet-bar a { width: 44px; height: 44px; line-height: 44px; font-size: 24px; }

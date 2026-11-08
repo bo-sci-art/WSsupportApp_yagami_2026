@@ -450,7 +450,7 @@ function setupDomControls() {
   const saveBtn = document.getElementById('ctrl-save');
   if (saveBtn) {
     saveBtn.addEventListener('click', () => {
-      captureScreenshot();
+      captureScreenshot().then(() => showSavedToast());
       document.dispatchEvent(new CustomEvent('export:click'));
     });
   }
@@ -594,7 +594,9 @@ async function captureScreenshot () {
   // コラージュ用に一時保存（従来の挙動を維持）
   await idbSet(KEY_LATEST_MARBLING, blob);
 
-  // ▼ 制作したマーブリング画像をデバイスに保存（ダウンロード）
+  // 矢上小版：iPad へのダウンロードはしない（完成作品を最後に1回だけ保存する）
+  window.__marblingDirty = false;
+  return;
   const now = new Date();
   const pad = (n) => String(n).padStart(2, '0');
   const filename = `marbling_${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}.png`;
@@ -1423,7 +1425,22 @@ async function restoreMarblingToDye() {
   if (!blob) return;
 
   // Blob -> ImageBitmap
-  const bitmap = await createImageBitmap(blob);
+  const bitmap0 = await createImageBitmap(blob);
+  // 矢上小版：保存画像は「白い背景の上に絵の具を重ねた色」なので、絵の具の量に戻す
+  //   表示は  画素 = 絵の具 + (1 - 絵の具の最大値)  なので、 絵の具 = 画素 - 画素の最小値  で戻せる
+  //   あわせて上下を正しい向きにする（WebGL のテクスチャは下から上）
+  const cv = document.createElement("canvas");
+  cv.width = bitmap0.width; cv.height = bitmap0.height;
+  const cx = cv.getContext("2d");
+  cx.translate(0, cv.height); cx.scale(1, -1);
+  cx.drawImage(bitmap0, 0, 0);
+  const im = cx.getImageData(0, 0, cv.width, cv.height), d = im.data;
+  for (let i = 0; i < d.length; i += 4) {
+    const mn = Math.min(d[i], d[i + 1], d[i + 2]);
+    d[i] -= mn; d[i + 1] -= mn; d[i + 2] -= mn; d[i + 3] = 255;
+  }
+  const bitmap = im;
+  bitmap0.close?.();
 
   // 1) 画像用の一時テクスチャを作る（RGBA8）
   const tex = gl.createTexture();
@@ -1432,6 +1449,7 @@ async function restoreMarblingToDye() {
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, bitmap);
 
   // 2) そのテクスチャを dye に “コピー描画” する
@@ -1446,38 +1464,6 @@ async function restoreMarblingToDye() {
 
   // 3) 後片付け
   gl.deleteTexture(tex);
-  bitmap.close?.();
-}
-// ===== 追加：保存済みPNG(Blob)を WebGL の dye に復元する =====
-async function restoreMarblingToDye() {
-  const blob = await idbGet(KEY_LATEST_MARBLING);
-  if (!blob) return;
-
-  // Blob -> ImageBitmap
-  const bitmap = await createImageBitmap(blob);
-
-  // 1) 画像用の一時テクスチャを作る（RGBA8）
-  const tex = gl.createTexture();
-  gl.bindTexture(gl.TEXTURE_2D, tex);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, bitmap);
-
-  // 2) そのテクスチャを dye に “コピー描画” する
-  //    copyShader はそのまま使える
-  copyProgram.bind();
-  gl.activeTexture(gl.TEXTURE0);
-  gl.bindTexture(gl.TEXTURE_2D, tex);
-  gl.uniform1i(copyProgram.uniforms.uTexture, 0);
-
-  blit(dye.write);
-  dye.swap();
-
-  // 3) 後片付け
-  gl.deleteTexture(tex);
-  bitmap.close?.();
 }
 
 
@@ -1856,6 +1842,7 @@ function pointFromMouseEvent(e) {
 
 
 canvas.addEventListener('mousedown', e => {
+    window.__marblingDirty = true;
     const { x: posX, y: posY } = pointFromMouseEvent(e);
     let pointer = pointers.find(p => p.id == -1);
     if (!pointer) pointer = new pointerPrototype();
@@ -1876,6 +1863,7 @@ window.addEventListener('mouseup', () => {
 
 canvas.addEventListener('touchstart', e => {
     e.preventDefault();
+    window.__marblingDirty = true;
     const touches = e.targetTouches;
     while (touches.length >= pointers.length) pointers.push(new pointerPrototype());
     for (let i = 0; i < touches.length; i++) {
@@ -2115,3 +2103,35 @@ if (saveBaseBtn && marbleCanvas) {
 //   await restoreMarblingToDye();   // ← 戻る復帰（bfcache含む）でも復元
 // });
 
+
+
+// =====================================================================
+// 矢上小版：保存と復元
+//  - 「つぎへ」「もどる」を押すと、かいた絵があれば自動で保存（nav.js から WS_saveMarbling を呼ぶ）
+//  - 何もかいていなければ上書きしない（前の絵を消さない）
+//  - コラージュから戻ってきたときは、前に保存した絵を表示し、そこからかき直せる
+// =====================================================================
+window.__marblingDirty = false;
+window.WS_saveMarbling = async function () {
+  if (!window.__marblingDirty) return;
+  try { await captureScreenshot(); } catch (e) { console.error("マーブリングの保存に失敗", e); }
+};
+
+function showSavedToast () {
+  let t = document.getElementById("saved-toast");
+  if (!t) {
+    t = document.createElement("div");
+    t.id = "saved-toast";
+    t.setAttribute("role", "status");
+    t.style.cssText = "position:fixed;left:50%;top:20px;transform:translateX(-50%);background:#16a34a;color:#fff;font-weight:800;font-size:20px;padding:12px 28px;border-radius:999px;box-shadow:0 6px 20px rgba(0,0,0,.25);z-index:9999;transition:opacity .3s";
+    document.body.appendChild(t);
+  }
+  t.innerHTML = "✓ <ruby>保存<rt>ほぞん</rt></ruby>したよ";
+  t.style.opacity = "1";
+  clearTimeout(showSavedToast._t);
+  showSavedToast._t = setTimeout(() => { t.style.opacity = "0"; }, 1600);
+}
+
+window.addEventListener("load", () => {
+  setTimeout(() => { restoreMarblingToDye().catch(e => console.warn("前の絵を復元できませんでした", e)); }, 300);
+});

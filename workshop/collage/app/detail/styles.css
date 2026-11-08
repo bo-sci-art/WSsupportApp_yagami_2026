@@ -440,3 +440,21 @@ main { overflow: hidden; }
 .swatches { display: flex; flex-wrap: wrap; gap: 8px; padding: 5px; }
 /* 透明度スライダーを他の部品と同じ幅・位置に */
 #alpha { display: block; width: 100%; margin: 0; }
+
+/* ===== 矢上小版（子ども向け）調整 ===== */
+body { font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", sans-serif; }
+ruby rt { font-size: 0.55em; }
+.kid-label { font-size: 17px !important; font-weight: 700; color: #1f2937 !important; margin-bottom: 10px !important; line-height: 1.9; }
+.thumbs { --cell: 72px; height: calc(3 * var(--cell) + 2 * var(--gap) + 16px); }
+.kid-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.kid-btn { min-height: 52px; font-size: 16px; font-weight: 700; border-radius: 12px; border: 2px solid #d1d5db; background: #fff; color: #1f2937; line-height: 1.5; padding: 6px 8px; }
+.kid-btn:active { transform: translateY(1px); }
+.kid-btn.danger { border-color: #f87171; color: #b91c1c; background: #fef2f2; }
+.kid-btn.warning { border-color: #fb923c; color: #9a3412; background: #fff7ed; }
+.kid-btn:disabled { opacity: .45; }
+.swatches { display: flex; flex-wrap: wrap; gap: 10px; }
+.swatches .swatch { width: 44px !important; height: 44px !important; border-radius: 50% !important; border: 2px solid #9ca3af; }
+.kid-note { font-size: 15px; color: #166534; background: #f0fdf4; border-radius: 10px; padding: 8px 10px; line-height: 1.9; margin: 4px 0 0; }
+@media (orientation: portrait) {
+  .thumbs { --cell: 64px; height: calc(2 * var(--cell) + 1 * var(--gap) + 16px); }
+}

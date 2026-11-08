@@ -1,0 +1,17 @@
+name = "yagami-submit"
+main = "src/index.js"
+compatibility_date = "2026-10-01"
+
+[vars]
+# CORS を許可するオリジン（カンマ区切り）。localhost / 127.0.0.1 は常に許可
+ALLOWED_ORIGINS = "https://bo-sci-art.github.io"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "yagami-artworks"
+# ↓ 手順書の「2. D1 を作る」で表示された database_id に書きかえる
+database_id = "REPLACE_WITH_D1_DATABASE_ID"
+
+[[r2_buckets]]
+binding = "IMAGES"
+bucket_name = "yagami-artworks"

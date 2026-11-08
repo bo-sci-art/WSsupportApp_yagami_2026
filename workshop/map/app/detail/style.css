@@ -81,3 +81,32 @@ body{display:flex;height:100%;overflow:hidden;background:var(--base-color);color
 .lg-shinsui img{flex:0 1 auto;min-width:0}
 .depth-guide{flex:none}
 .lg-guide-note{font-size:.66em;color:#888;margin-top:4px;line-height:1.5}
+
+/* ===== 矢上小版（子ども向け）：文字とボタンを大きく ===== */
+ruby rt{font-size:.55em}
+#sidebar{width:380px}
+.side-scroll{padding:14px 16px;font-size:17px;line-height:1.9}
+.kid-lead{font-size:1.05em;font-weight:bold;line-height:2.1;margin:0 0 10px;color:#374151}
+.filter-label{font-size:1em}
+.filter-chips{gap:8px}
+.chip{font-size:1em;padding:8px 16px;min-height:44px}
+.hg-head{font-size:1em}
+.fopt{font-size:1em;padding:8px 2px;line-height:2}
+.fopt input[type=checkbox]{width:26px;height:26px;flex:none}
+.fopt-head{font-size:.95em;line-height:2}
+.info-btn{width:32px;height:32px;font-size:.9em}
+.ext-link{font-size:.95em;line-height:1.9}
+.ext-link small{font-size:.85em}
+.legend-item .lg-name{font-size:1em}
+.legend-item .lg-desc{font-size:.95em;line-height:2;color:#444}
+.lg-css-row{font-size:.9em;line-height:1.9}
+.lg-safety-note{font-size:.9em;line-height:1.9}
+.legend-empty{font-size:.9em;color:#888}
+.res-toggle{font-size:1em;line-height:2;min-height:40px}
+.res-toggle input{width:24px;height:24px}
+.res-text{font-size:.92em;line-height:1.9}
+.res-source{font-size:.75em}
+#basemap-toggle button{font-size:1em;padding:10px 18px;line-height:1.6}
+.leaflet-popup-content{font-size:16px;line-height:1.9}
+.leaflet-touch .leaflet-bar a{width:44px;height:44px;line-height:44px;font-size:24px}
+@media (max-width:900px){ #sidebar{width:320px} .side-scroll{font-size:16px} }

@@ -9,12 +9,12 @@
 
 const CONFIG = {
     // Default map center (Tsunashima Station, Yokohama)
-    defaultCenter: [35.5314, 139.6321],
-    defaultZoom: 15,
+    defaultCenter: [35.5523, 139.6569],   // 矢上小学校の周辺
+    defaultZoom: 16,
     
     // Navigation URLs
     backUrl: '../app/index.html',
-    nextUrl: '../../marbling/Mission/marbling_intro.html', // Placeholder for next page
+    nextUrl: '../../marbling/app/index.html', // Placeholder for next page
     
     // localStorage key
     storageKey: 'hazardMapLog',
@@ -29,7 +29,19 @@ const CONFIG = {
         '液状化危険度',
         '地震の揺れ（震度）',
         '地震火災（焼失棟数）'
-    ]
+    ],
+
+    // 矢上小版：画面に出す言葉（保存する値は上の正式名のまま＝防災行動マップの絞り込みが動く）
+    hazardLabels: {
+        '洪水（外水氾濫）': '川{かわ}の水{みず}が あふれる（洪水{こうずい}）',
+        '内水氾濫': '下水{げすい}や 水路{すいろ}から 水{みず}が あふれる',
+        '高潮': '台風{たいふう}で 海{うみ}の水{みず}が あふれる（高潮{たかしお}）',
+        '津波': '津波{つなみ}',
+        '土砂災害（急傾斜地の崩壊）': 'がけくずれ',
+        '液状化危険度': '地震{じしん}で 地面{じめん}が やわらかくなる（液状化{えきじょうか}）',
+        '地震の揺れ（震度）': '地震{じしん}の ゆれ',
+        '地震火災（焼失棟数）': '地震{じしん}の 火事{かじ}'
+    }
 };
 
 // ============================================
@@ -116,16 +128,17 @@ function renderHazardOptions() {
         
         const label = document.createElement('label');
         label.htmlFor = `hazard-${index}`;
-        label.textContent = hazard;
+        label.textContent = CONFIG.hazardLabels[hazard] || hazard;
         
         optionDiv.appendChild(checkbox);
         optionDiv.appendChild(label);
         
         // Click event on entire div
         optionDiv.addEventListener('click', (e) => {
-            if (e.target !== checkbox) {
-                checkbox.checked = !checkbox.checked;
-            }
+            // 矢上小版：チェックボックスや文字（label）をタッチしたときはブラウザが切りかえ、
+            // change イベントで反映する（ここでも切りかえると二重になって元にもどってしまうため）
+            if (e.target === checkbox || e.target.closest('label')) return;
+            checkbox.checked = !checkbox.checked;
             handleHazardToggle(hazard, checkbox.checked, optionDiv);
         });
         
@@ -165,9 +178,9 @@ function initMap() {
     state.map = L.map('map').setView(CONFIG.defaultCenter, CONFIG.defaultZoom);
     
     // Add OpenStreetMap tile layer
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors',
-        maxZoom: 19
+    L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png', {
+        attribution: '地理院タイル',
+        maxZoom: 18
     }).addTo(state.map);
     
     // Map click event
@@ -203,7 +216,7 @@ function handleMapClick(e) {
     }).addTo(state.map);
     
     // Update instruction
-    elements.mapInstruction.textContent = '📍 ピンが配置されました。下のボタンで確定してください';
+    elements.mapInstruction.textContent = '📍 下{した}の「ここに する」を おしてね';
     
     // Show confirmation UI
     elements.locationConfirmation.style.display = 'flex';
@@ -246,7 +259,7 @@ function confirmLocation() {
     }).addTo(state.map);
     
     // Update UI
-    elements.mapInstruction.textContent = '✓ 地点／区域が確定されました';
+    elements.mapInstruction.textContent = '✓ 場所{ばしょ}が きまったよ';
     elements.locationConfirmation.style.display = 'none';
     elements.locationConfirmed.style.display = 'block';
     elements.confirmedCoords.textContent = `緯度: ${state.confirmedLocation.lat.toFixed(6)}, 経度: ${state.confirmedLocation.lon.toFixed(6)}`;
@@ -272,7 +285,7 @@ function changeLocation() {
     
     // Update UI
     elements.locationConfirmed.style.display = 'none';
-    elements.mapInstruction.textContent = '📍 地図をクリックして対象地点を選択してください';
+    elements.mapInstruction.textContent = '📍 地図{ちず}を タッチしてね';
     
     updateNextButtonState();
 }
@@ -360,7 +373,7 @@ function loadSavedData() {
                         state.map.setView([state.confirmedLocation.lat, state.confirmedLocation.lon], CONFIG.defaultZoom);
                         
                         // Update UI
-                        elements.mapInstruction.textContent = '✓ 地点／区域が確定されました';
+                        elements.mapInstruction.textContent = '✓ 場所{ばしょ}が きまったよ';
                         elements.locationConfirmed.style.display = 'block';
                         elements.confirmedCoords.textContent = `緯度: ${state.confirmedLocation.lat.toFixed(6)}, 経度: ${state.confirmedLocation.lon.toFixed(6)}`;
                     }

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
-  <title>作品詳細 - 防災行動マップ</title>
+  <title>矢上小 防災行動マップ</title>
   
   <link rel="stylesheet" href="./leaflet.css">
   <link rel="stylesheet" href="detail_style.css">
@@ -23,7 +23,7 @@
       </div>
 
       <div class="tutorial-footer">
-        <button type="button" id="dt-skip-btn" class="tutorial-nav-btn secondary">スキップ</button>
+        <button type="button" id="dt-skip-btn" class="tutorial-nav-btn secondary">とじる</button>
         
         <div class="tutorial-dots">
           <span class="dt-dot active"></span>
@@ -32,7 +32,7 @@
           <span class="dt-dot"></span>
         </div>
 
-        <button type="button" id="dt-next-btn" class="tutorial-nav-btn primary">次へ ＞</button>
+        <button type="button" id="dt-next-btn" class="tutorial-nav-btn primary">つぎへ ＞</button>
       </div>
 
     </div>
@@ -42,19 +42,19 @@
     <div class="header-left">
       <div class="header-logo-icon">🗺️</div>
       <div class="header-titles">
-        <h1 class="header-main-title">防災行動マップ</h1>
+        <h1 class="header-main-title">矢上小{やがみしょう} 防災{ぼうさい}行動{こうどう}マップ</h1>
       </div>
     </div>
 
     <div class="header-right">
-      <div class="status-item">鑑賞済み <span id="view-count"></span></div>
+      <div class="status-item">見{み}た 作品{さくひん} <span id="view-count"></span></div>
       <div class="status-item">💖 <span id="header-heart-count">0</span></div>
       <div class="status-item">✨ <span id="header-action-count">0</span></div>
       
       <button type="button" id="detail-help-btn">？</button>
 
       <button type="button" id="back-to-map-btn" onclick="window.location.href='index.html'">
-        ＜ マップに戻る
+        ＜ マップに もどる
       </button>
     </div>
   </header>
@@ -76,10 +76,10 @@
 
           <div class="appreciation-guide">
             <div class="guide-header">
-              <span class="guide-icon">✨</span> 鑑賞ガイド
+              <span class="guide-icon">✨</span> 作品{さくひん}の 見方{みかた}
             </div>
             <p class="guide-text">
-              順番に鑑賞を進めて、作品に込められた<strong>作者の想い</strong>を受け取りましょう。
+              じゅんばんに 見{み}て、作品{さくひん}に こめられた<strong>作者{さくしゃ}の 思{おも}い</strong>を 受{う}け取{と}ろう。
             </p>
           </div>
 
@@ -88,10 +88,10 @@
             <div class="quest-card-layout">
               <div class="quest-number-circle">1</div>
               <div class="quest-text-content">
-                <div class="quest-header">災害リスク</div>
+                <div class="quest-header">危{あぶ}なさ</div>
               </div>
             </div>
-            <button type="button" class="quest-button" onclick="startQuest(1)">マーブリングを鑑賞する ＞</button>
+            <button type="button" class="quest-button" onclick="startQuest(1)">マーブリングを 見{み}る ＞</button>
           </div>
 
           <div class="quest-item step-sage locked" id="quest-item-2">
@@ -99,10 +99,10 @@
             <div class="quest-card-layout">
               <div class="quest-number-circle">2</div>
               <div class="quest-text-content">
-                <div class="quest-header">防災行動</div>
+                <div class="quest-header">命{いのち}を 守{まも}る 行動{こうどう}</div>
               </div>
             </div>
-            <button type="button" class="quest-button" id="btn-step2" onclick="startQuest(2)" disabled>マーブリング鑑賞後に進めます</button>
+            <button type="button" class="quest-button" id="btn-step2" onclick="startQuest(2)" disabled>マーブリングを 見{み}たら すすめるよ</button>
           </div>
 
           <div class="quest-item step-dandelion locked" id="quest-item-3">
@@ -111,19 +111,19 @@
             <div class="quest-card-layout">
               <div class="quest-number-circle">3</div>
               <div class="quest-text-content">
-                <div class="quest-header">作者の想い</div>
+                <div class="quest-header">作者{さくしゃ}の 思{おも}い</div>
               </div>
             </div>
-            <button type="button" class="quest-button" id="btn-step3" onclick="startQuest(3)" disabled>コラージュ鑑賞後に進めます</button>
+            <button type="button" class="quest-button" id="btn-step3" onclick="startQuest(3)" disabled>コラージュを 見{み}たら すすめるよ</button>
           </div>
 
           <div id="post-quest-area" class="post-quest-area" style="display: none;">
             <div class="completion-message-area">
-              <p>この作品の鑑賞が完了しました！</p>
+              <p>この 作品{さくひん}を 見{み}おわったよ！</p>
             </div>
 
             <button type="button" id="find-nearby-btn" class="nav-button btn-primary btn-full-width" style="font-size: 1.1em;">
-              🗺️ 次に鑑賞する作品を探す
+              🗺️ つぎに 見{み}る 作品{さくひん}を さがす
             </button>
           </div>
 
@@ -135,23 +135,23 @@
             <div class="info-box-container">
               <div id="step1-info" style="display: none;">
                 <div class="box-header">
-                  <span class="icon">🕵️</span> 作者が見つけた災害リスク
+                  <span class="icon">🕵️</span> 作者{さくしゃ}が 見{み}つけた 危{あぶ}なさ
                 </div>
-                <div id="mabling-text" class="box-content-text">読み込み中...</div>
+                <div id="mabling-text" class="box-content-text">読{よ}みこみ中{ちゅう}…</div>
               </div>
               
               <div id="step2-info" style="display: none;">
                 <div class="box-header action-theme">
-                  <span class="icon">🏃</span> 作者が考えた防災行動
+                  <span class="icon">🏃</span> 作者{さくしゃ}が 考{かんが}えた 命{いのち}を 守{まも}る 行動{こうどう}
                 </div>
-                <div id="collage-text" class="box-content-text">読み込み中...</div>
+                <div id="collage-text" class="box-content-text">読{よ}みこみ中{ちゅう}…</div>
               </div>
             </div>
 
             <div class="verification-box-container">
               
               <div class="verify-header-area">
-                <span class="verify-title">▼ ハザードマップを重ねてピン周辺の災害リスクを確認しよう</span>
+                <span class="verify-title">▼ ハザードマップを 重{かさ}ねて、ピンの まわりの 危{あぶ}なさを 見{み}てみよう</span>
                 
                 <div id="step1-controls" style="display: none;">
                   <div id="step1-hazard-check-area" class="dynamic-check-area-row"></div>
@@ -169,13 +169,13 @@
               <div class="verify-footer-area">
                 <div id="step1-btn-area" style="display: none;">
                   <button type="button" class="nav-button btn-primary btn-full-width" onclick="finishQuest(1)">
-                    ✅ 完了(STEP1 クリア)
+                    ✅ できた！
                   </button>
                 </div>
 
                 <div id="step2-btn-area" style="display: none;">
                   <button type="button" class="nav-button btn-primary btn-full-width" onclick="finishQuest(2)">
-                    ✅ 完了(STEP2 クリア)
+                    ✅ できた！
                   </button>
                 </div>
               </div>
@@ -190,31 +190,31 @@
                 <div class="letter-header">Message</div>
                 <div class="letter-body">
                   <div id="message-addressee" class="message-addressee"></div>
-                  <p id="author-message-text">読み込み中...</p>
+                  <p id="author-message-text">読{よ}みこみ中{ちゅう}…</p>
                 </div>
                 <div class="letter-footer">
-                    <span id="author-name-signature" class="signature">作者より</span>
+                    <span id="author-name-signature" class="signature">作者{さくしゃ}より</span>
                 </div>
               </div>
 
               <div class="reaction-container">
                 
                 <div class="letter-reaction-section">
-                  <p class="reaction-msg">作者の想いは届きましたか？<br>あなたの気持ちを記録しましょう。</p>
+                  <p class="reaction-msg">作者{さくしゃ}の 思{おも}いは とどいたかな？<br>あなたの 気持{きも}ちを えらんでね。</p>
                   
                   <div class="reaction-buttons-row">
                     <button type="button" id="btn-heart" class="reaction-btn-large">
-                      <span class="emoji">🤍</span> 想いに共感した
+                      <span class="emoji">🤍</span> いいなと 思{おも}った
                     </button>
                     <button type="button" id="btn-action" class="reaction-btn-large">
-                      <span class="emoji">⭐</span> 防災行動を実践したい
+                      <span class="emoji">⭐</span> やってみたい
                     </button>
                   </div>
                 </div>
 
                 <div class="step3-finish-area">
                   <button type="button" class="receive-button" onclick="finishQuest(3)">
-                    <span class="icon">💌</span> 想いを受け取って完了
+                    <span class="icon">💌</span> 受{う}け取{と}った！
                   </button>
                 </div>
 
@@ -226,25 +226,25 @@
         </div> </div> <div id="nearby-overlay" class="nearby-overlay" style="display: none;">
       <div class="nearby-mini-header">
         <button type="button" class="text-link-button back-link" onclick="closeNearbyOverlay()">
-          ＜ 作品画面に戻る
+          ＜ 作品{さくひん}に もどる
         </button>
       </div>
       <div class="nearby-body">
         <div class="nearby-left-container">
-          <h2 class="section-label">次に鑑賞する作品を探す</h2>
+          <h2 class="section-label">つぎに 見{み}る 作品{さくひん}を さがす</h2>
           <div class="nearby-left-panel">
             <div class="recommend-section">
-              <h3 class="rec-title"><span class="icon">🌊</span> 同じ災害リスクを扱った作品</h3>
+              <h3 class="rec-title"><span class="icon">🌊</span> 同{おな}じ 危{あぶ}なさの 作品{さくひん}</h3>
               <div id="grid-risk" class="compact-grid"></div>
             </div>
             <div class="recommend-section">
-              <h3 class="rec-title"><span class="icon">⏰</span> 同じタイミングの防災行動を扱った作品</h3>
+              <h3 class="rec-title"><span class="icon">⏰</span> 同{おな}じ ときの 行動{こうどう}の 作品{さくひん}</h3>
               <div id="grid-time" class="compact-grid"></div>
             </div>
           </div>
           <div class="left-action-area">
             <button type="button" class="nav-button btn-secondary btn-full" onclick="window.location.href='index.html'">
-              🔍 全ての作品から探す
+              🔍 ぜんぶの 作品{さくひん}から さがす
             </button>
           </div>
         </div>
@@ -254,7 +254,7 @@
           </div>
           <div class="right-action-area">
              <button type="button" class="nav-button btn-primary btn-short" onclick="showFinalCTA()">
-              鑑賞を終了する ＞
+              見{み}おわる ＞
             </button>
           </div>
         </div>
@@ -265,24 +265,26 @@
       <div id="final-background" class="final-bg-container"></div>
       <div class="final-content" style="z-index: 2;"> <div class="final-header">
           <span class="icon-lamp">🤝</span>
-          <h2>現在 <span id="total-art-count" style="color:#EE8972; font-size:1.3em;">--</span> 作品の<br>共助の想いが集まっています。</h2>
+          <h2>いま <span id="total-art-count" style="color:#EE8972; font-size:1.3em;">--</span> 作品{さくひん}の<br>思{おも}いが 集{あつ}まっています。</h2>
         </div>
         <p class="final-message" style="font-size: 1.1em; margin-bottom: 40px; text-shadow: 0 2px 5px rgba(255,255,255,0.8);">
-          誰かを守りたいという温かい気持ちが<br>この地域の防災力を高めます。<br><br>
+          だれかを 守{まも}りたいという あたたかい 気持{きも}ちが<br>このまちを 災害{さいがい}に 強{つよ}くします。<br><br>
         </p>
         <div class="final-exit">
           <button type="button" class="nav-button btn-secondary" onclick="window.location.href='index.html'">
-            マップに戻る
+            マップに もどる
           </button>
           <button type="button" class="nav-button btn-primary" onclick="window.location.href='../../index.html'">
-            トップ画面へ
+            さいしょの 画面{がめん}へ
           </button>
         </div>
       </div>
     </div>
 
   </div> <script src="./leaflet.js"></script>
-  <script src="./detail_script.js?v=20261013"></script>
+  <script src="../common/config.js?v=yagami1"></script>
+  <script src="../common/ruby.js?v=yagami1"></script>
+  <script src="./detail_script.js?v=yagami1"></script>
 
 </body>
 </html>

@@ -15,32 +15,33 @@ const HZ = "https://disaportaldata.gsi.go.jp/raster/";
 const hazards = {
   flood_l2: {
     layer: L.tileLayer(HZ+"01_flood_l2_shinsuishin_data/{z}/{x}/{y}.png", {maxZoom:17, opacity:.7, attribution:"重ねるハザードマップ（国土地理院）"}),
-    name: "洪水（外水氾濫）",
-    desc: "・想定最大規模の大雨により、川の水が堤防を越えてまちへ流れ込む浸水です。<br>・発生しえるもっとも深い場合を示しています。<br>・下水があふれる「内水氾濫」とは発生原因が異なります。",
+    name: "川{かわ}の水{みず}があふれる（洪水{こうずい}）",
+    desc: "とても 大{おお}きな 雨{あめ}で 川{かわ}の 水{みず}が あふれると、色{いろ}の ついた 場所{ばしょ}が 水{みず}に つかるかもしれません。色{いろ}が こいほど 深{ふか}くなります。",
     legend: "shinsui"
   },
   tsunami: {
     layer: L.tileLayer(HZ+"04_tsunami_newlegend_data/{z}/{x}/{y}.png", {maxZoom:17, opacity:.7, attribution:"重ねるハザードマップ（国土地理院）"}),
-    name: "津波",
-    desc: "・地震などの地殻変動で発生した海面の変化が大波となって押し寄せる浸水です。<br>・台風などが原因で海面が上昇する「高潮」とは発生原因が異なります。",
+    name: "津波{つなみ}",
+    desc: "地震{じしん}の あと、海{うみ}から 大{おお}きな 波{なみ}が おしよせると、色{いろ}の ついた 場所{ばしょ}が 水{みず}に つかるかもしれません。",
     legend: "shinsui"
   },
   hightide: {
     layer: L.tileLayer(HZ+"03_hightide_l2_shinsuishin_data/{z}/{x}/{y}.png", {maxZoom:17, opacity:.7, attribution:"重ねるハザードマップ（国土地理院）"}),
-    name: "高潮",
-    desc: "・台風などによる気圧低下と強風で海面が上昇し、海水が陸へ流れ込む浸水です。<br>・地震などの地殻変動が原因で発生する「津波」とは発生原因が異なります。",
+    name: "台風{たいふう}で 海{うみ}の水{みず}があふれる（高潮{たかしお}）",
+    desc: "台風{たいふう}などで 海{うみ}の 水{みず}が もり上{あ}がると、色{いろ}の ついた 場所{ばしょ}が 水{みず}に つかるかもしれません。",
     legend: "shinsui"
   },
   kyukei: {
     layer: L.tileLayer(HZ+"05_kyukeishakeikaikuiki/{z}/{x}/{y}.png", {maxZoom:17, opacity:.7, attribution:"重ねるハザードマップ（国土地理院）"}),
-    name: "土砂災害（急傾斜地の崩壊）",
-    desc: "大雨や地震でがけ（傾斜30度以上・高さ5m以上の急斜面）が崩れ落ち、生命や身体に危害が生じるおそれがある区域です。",
+    name: "がけくずれ（土砂{どしゃ}災害{さいがい}）",
+    desc: "大雨{おおあめ}や 地震{じしん}で がけが くずれるかもしれない 場所{ばしょ}です。",
     legend: "dosha"
   }
 };
 
-/* ===== 地図：港北区・綱島周辺 ===== */
-const map = L.map("viewDiv", {center:[35.5385, 139.6335], zoom:14, zoomControl:true, layers:[bases.white]});
+/* ===== 地図：矢上小学校の周辺（矢上小版） ===== */
+const YAGAMI_CENTER = [35.5523, 139.6569];
+const map = L.map("viewDiv", {center:YAGAMI_CENTER, zoom:16, zoomControl:true, layers:[bases.white]});
 L.control.scale({imperial:false}).addTo(map);
 let curBase = bases.white;
 
@@ -94,8 +95,8 @@ function depthGuideSVG(){
     s += '<text x="19" y="'+(y(t[0])+3)+'" font-size="8" text-anchor="end" fill="#666">'+t[1]+'</text>';
   });
   s += '<text x="19" y="'+(ground+3)+'" font-size="8" text-anchor="end" fill="#666">0m</text>';
-  s += '<text x="'+((22+W)/2)+'" y="10" font-size="8" text-anchor="middle" fill="#666">▲10m以上は</text>';
-  s += '<text x="'+((22+W)/2)+'" y="19" font-size="8" text-anchor="middle" fill="#666">屋根より上</text>';
+  s += '<text x="'+((22+W)/2)+'" y="10" font-size="8" text-anchor="middle" fill="#666">▲10mより うえは</text>';
+  s += '<text x="'+((22+W)/2)+'" y="19" font-size="8" text-anchor="middle" fill="#666">やねより うえ</text>';
   // 人（大人・子ども）
   const person = (cx, hM) => {
     const h = hM * ppm, r = h * .11, hy = ground - h + r, bt = hy + r + 1, w = h * .30, legTop = ground - h * .45;
@@ -120,15 +121,15 @@ function depthGuideSVG(){
 
 /* ===== 凡例・説明 ===== */
 const LEGEND_GRAPHIC = {
-  shinsui: '<div style="display:grid;grid-template-columns:minmax(0,1fr) 116px;gap:6px;align-items:start"><img style="width:100%;height:auto;max-width:none;display:block" src="https://disaportal.gsi.go.jp/hazardmap/copyright/img/shinsui_legend3.png" alt="浸水深凡例" onerror="this.replaceWith(document.createTextNode(\'（公式凡例画像を読み込めませんでした）\'))">' + depthGuideSVG() + '</div>'
-         + '<div class="lg-guide-note">右の図は高さの目安です（大人' + DEPTH_GUIDE.adultM + 'm・子ども' + DEPTH_GUIDE.childM + 'm・2階建ての家 約' + DEPTH_GUIDE.houseM + 'm）</div>',
-  dosha: '<div class="lg-css-row"><span class="lg-swatch" style="background:#fae600"></span>土砂災害警戒区域（イエローゾーン）：危害が生じるおそれあり。</div><div class="lg-css-row"><span class="lg-swatch" style="background:#fa2800"></span>土砂災害特別警戒区域（レッドゾーン）：著しい危害が生じるおそれあり。</div>'
+  shinsui: '<div style="display:grid;grid-template-columns:minmax(0,1fr) 116px;gap:6px;align-items:start"><img style="width:100%;height:auto;max-width:none;display:block" src="https://disaportal.gsi.go.jp/hazardmap/copyright/img/shinsui_legend3.png" alt="水につかる深さの色" onerror="this.replaceWith(document.createTextNode(\'（色の見方の画像を読みこめませんでした）\'))">' + depthGuideSVG() + '</div>'
+         + '<div class="lg-guide-note">右{みぎ}の 図{ず}は 高{たか}さの めやすだよ（大人{おとな} ' + DEPTH_GUIDE.adultM + 'm・子{こ}ども ' + DEPTH_GUIDE.childM + 'm・2かいだての 家{いえ} やく' + DEPTH_GUIDE.houseM + 'm）</div>',
+  dosha: '<div class="lg-css-row"><span class="lg-swatch" style="background:#fae600"></span>黄色{きいろ}：がけくずれで けがを するかもしれない 場所{ばしょ}</div><div class="lg-css-row"><span class="lg-swatch" style="background:#fa2800"></span>赤{あか}：がけくずれで とても あぶない 場所{ばしょ}</div>'
 };
 function refreshLegend(){
   const box = document.getElementById("legend-box");
   const active = Object.keys(hazards).filter(k => map.hasLayer(hazards[k].layer));
-  if (!active.length){ box.innerHTML = '<div class="legend-empty">災害を選ぶと、説明と凡例が表示されます</div>'; return; }
-  box.innerHTML = '<div class="lg-safety-note">※色がついていない場所も安全とは限りません。想定を超える災害が起きることもあります。</div>' + active.map(k => {
+  if (!active.length){ box.innerHTML = '<div class="legend-empty">災害{さいがい}を えらぶと、色{いろ}の 見方{みかた}が 出{で}るよ</div>'; return; }
+  box.innerHTML = '<div class="lg-safety-note">※色{いろ}が ついていない 場所{ばしょ}も、ぜったいに 安全{あんぜん}とは かぎりません。</div>' + active.map(k => {
     const h = hazards[k];
     return '<div class="legend-item" id="lg-' + k + '">' +
              '<div class="lg-name">' + h.name + '</div>' +
@@ -151,11 +152,11 @@ document.querySelectorAll(".chip").forEach(c => {
 });
 
 /* ===== 周辺の防災資源（避難場所・拠点・給水所）※既定は非表示・トグルで表示 ===== */
-const RES_DATA_BASE = "https://raw.githubusercontent.com/bo-sci-art/WSspportApp_2026/main/data";
+const RES_DATA_BASE = "../../../../data";   // 矢上小版：このリポジトリの data/ を読む
 const RES_DEFS = {
-  shelters: { file:"bousai_shelters.geojson", color:"#2e9e5b", label:"指定緊急避難場所" },
-  bases:    { file:"bousai_bases.geojson",    color:"#2f6fb0", label:"地域防災拠点" },
-  water:    { file:"bousai_water.geojson",    color:"#0f9bb5", label:"災害時給水所" }
+  shelters: { file:"bousai_shelters.geojson", color:"#2e9e5b", label:"ひなん 場所{ばしょ}" },
+  bases:    { file:"bousai_bases.geojson",    color:"#2f6fb0", label:"ひなん 生活{せいかつ}を する 学校{がっこう}など" },
+  water:    { file:"bousai_water.geojson",    color:"#0f9bb5", label:"水{みず}を もらえる 場所{ばしょ}" }
 };
 const resLayers = { shelters:null, bases:null, water:null };
 
@@ -174,7 +175,7 @@ const resLayers = { shelters:null, bases:null, water:null };
         const c = f.geometry && f.geometry.coordinates;
         if (!c) return;
         const p = f.properties || {};
-        const extra = (res.k === "water" && p.kind) ? "<br>種別: " + p.kind : "";
+        const extra = (res.k === "water" && p.kind) ? "<br>" + p.kind : "";
         L.circleMarker([c[1], c[0]], { radius:5, color:"#fff", weight:1.5, fillColor:def.color, fillOpacity:.9 })
           .bindPopup("<b>" + def.label + "</b><br>" + (p.name||"") + extra + (p.address ? "<br>" + p.address : ""))
           .addTo(grp);
@@ -186,7 +187,7 @@ const resLayers = { shelters:null, bases:null, water:null };
   }).catch(function(err){
     console.error("防災資源の読込に失敗", err);
     const el = document.getElementById("resource-toggles");
-    if (el) el.innerHTML = '<div style="font-size:.78em;color:#999">防災資源データを読み込めませんでした（データ公開後に表示されます）。</div>';
+    if (el) el.innerHTML = '<div style="font-size:.78em;color:#999">にげる 場所{ばしょ}の データを 読{よ}みこめませんでした。</div>';
   });
 })();
 
@@ -197,7 +198,7 @@ function renderResourceToggles(counts){
     const def = RES_DEFS[k];
     return '<label class="res-toggle"><input type="checkbox" data-res="'+k+'">'
       + '<span class="res-dot" style="background:'+def.color+'"></span>'
-      + def.label + '（' + (counts[k]||0) + '）</label>';
+      + def.label + '</label>';
   }).join("");
   el.querySelectorAll('input[data-res]').forEach(function(cb){
     cb.addEventListener('change', function(e){

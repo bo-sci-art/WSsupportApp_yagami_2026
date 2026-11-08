@@ -147,7 +147,7 @@ if (clearAllBtn) {
     if (!stamps.length) return;
 
     // 誤操作防止（簡易確認ダイアログ）
-    const ok = confirm('本当に全部のスタンプを消しますか？');
+    const ok = confirm('スタンプをぜんぶけしますか？');
     if (!ok) return;
 
     stamps.length = 0;           // すべて削除（写真は残す）
@@ -160,7 +160,7 @@ if (clearAllBtn) {
 // ===== 作品画像を投稿ページ用にlocalStorageへ保存（自動投稿の下準備） =====
 function persistArtworkImage(quality, maxDim) {
   quality = quality || 0.85;
-  maxDim = maxDim || 1400;
+  maxDim = maxDim || 1000;   // 矢上小版：送信画像は長辺1000px
   try {
     const prevSel = selectedIndex;
     selectedIndex = -1;
@@ -430,6 +430,7 @@ function render(){
 // 既存のすぐ上/下どこでもOK
 const ALPHA_MIN = 0.2;
 const ALPHA_MAX = 1.0;
+const KID_STAMP_ALPHA = 0.68; // 矢上小版：大人版スライダーの初期値と同じ不透明度で固定
 
 
 // UI（あれば反映、無ければ安全にスキップ）
@@ -442,13 +443,14 @@ const colorPreview = document.getElementById('colorPreview');
 
 // --- パレット（マーブリングと同じ） ---
 const PALETTES = {
-  Basic: ['#FF3B30','#FF9500','#FFCC00','#34C759','#007AFF','#5856D6','#FF2D55'],
+  Basic: ['#FFFFFF','#000000','#FF3B30','#FF9500','#FFCC00','#34C759','#007AFF','#5856D6','#FF2D55'],
   Pastel: ['#FFD1DC','#B5EAD7','#C7CEEA','#FFDAC1','#E2F0CB','#B5B9FF','#FFB7B2','#FF9CEE','#B28DFF'],
   Warm:   ['#FF3B30','#FF9500','#FFCC00','#FFB7B2','#FFD1DC','#FF9CEE','#FFDAC1','#FF2D55','#FF5E3A'],
   Cool:   ['#007AFF','#34C759','#5856D6','#B5EAD7','#B5B9FF','#C7CEEA','#E2F0CB','#A0CED9','#5AC8FA']
 };
 
 const COLOR_NAMES = {
+  '#FFFFFF':'白',
   '#000000':'黒','#ffffff':'白','#FF3B30':'赤','#FF9500':'オレンジ','#FFCC00':'黄','#34C759':'緑','#007AFF':'青','#5856D6':'紫','#FF2D55':'ピンク',
   '#FFD1DC':'パステルピンク','#B5EAD7':'パステルグリーン','#C7CEEA':'パステルブルー','#FFDAC1':'パステルオレンジ','#E2F0CB':'パステルイエロー','#B5B9FF':'パステルパープル','#FFB7B2':'パステルレッド','#FF9CEE':'パステルライトピンク','#B28DFF':'パステルバイオレット',
   '#FF5E3A':'ライトオレンジ','#A0CED9':'ライトブルー','#5AC8FA':'ライトシアン'
@@ -458,7 +460,7 @@ const paletteSelect = document.getElementById('palette-select');
 const swatchesEl = document.getElementById('swatches');
 
 // marblingと同じキー名で保存（ページ間で色を揃えたいならこれが楽）
-let paletteName  = localStorage.getItem('paletteName')  || 'Basic';
+let paletteName  = 'Basic'; // 矢上小版：パレット切替なし
 let lastColorHex = localStorage.getItem('lastColorHex') || null;
 
 if (paletteSelect) paletteSelect.value = paletteName;
@@ -744,7 +746,7 @@ function createStampAt(x, y) {
   const scale = baseScale * multiplier;
   // 透明度スライダー値 s を alpha に反転
   const sVal = alphaEl ? Number(alphaEl.value) : ALPHA_MAX; // 右端=1→透明度100%
-  const alpha = (ALPHA_MIN + ALPHA_MAX) - sVal;
+  const alpha = alphaEl ? (ALPHA_MIN + ALPHA_MAX) - sVal : KID_STAMP_ALPHA; // 矢上小版：透明度は固定
   const stamp = {
     id: `${currentStampId || 'stamp'}-${Date.now()}`,
     tex: currentStampTex,
@@ -1184,7 +1186,110 @@ async function loadMarblingBaseIfExists() {
   return true;
 }
 
-// 起動時に呼ぶ（DOMができてから）
-window.addEventListener("DOMContentLoaded", () => {
-  loadMarblingBaseIfExists().catch(console.error);
+// 起動時の読み込みはファイル末尾（矢上小版：自動保存と復元）で行う
+
+// =====================================================================
+// 矢上小版：自動保存と復元
+//  - スタンプ配置は IndexedDB（ws_art_db / images / collage_stamps）に保存
+//    座標はマーブリング画像の表示範囲（fit）に対する比率で持つので、
+//    画面の向きが変わっても、マーブリングを作り直しても位置が保たれる
+//  - 作品画像（長辺1000px JPEG）は localStorage.artworkImage と
+//    IndexedDB（artwork_image）の両方に保存し、最終確認画面で必ず見つかるようにする
+// =====================================================================
+const KEY_COLLAGE_STAMPS = "collage_stamps";
+const KEY_ARTWORK_IMAGE  = "artwork_image";
+let __restoring = true;      // 復元が終わるまで保存しない
+let __saveTimer = null;
+let __persisting = false;
+
+function stampNameOf(s) {
+  const id = String(s.id || "");
+  const i = id.lastIndexOf("-");
+  return i > 0 ? id.slice(0, i) : id;
+}
+
+function serializeStamps() {
+  const f = fit;
+  return stamps.map(s => ({
+    name: stampNameOf(s),
+    nx: (s.x - f.x) / f.w,
+    ny: (s.y - f.y) / f.h,
+    nw: (s.w * s.scale) / f.w,
+    alpha: s.alpha, color: s.color, angleDeg: s.angleDeg || 0,
+    flipX: !!s.flipX, flipY: !!s.flipY
+  }));
+}
+
+function loadTex(name) {
+  return new Promise(resolve => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => resolve(null);
+    img.src = STAMP_BASE + name + ".png";
+  });
+}
+
+async function restoreStamps() {
+  let saved = null;
+  try { saved = await idbGet(KEY_COLLAGE_STAMPS); } catch (e) { console.warn(e); }
+  if (!saved || !Array.isArray(saved.stamps)) return;
+  const f = fit;
+  for (const d of saved.stamps) {
+    const tex = await loadTex(d.name);
+    if (!tex) continue;
+    const iw = tex.naturalWidth || 200, ih = tex.naturalHeight || 200;
+    const scale = (d.nw * f.w) / iw;
+    stamps.push({
+      id: d.name + "-" + Date.now() + "-" + stamps.length,
+      tex, x: f.x + d.nx * f.w, y: f.y + d.ny * f.h,
+      w: iw, h: ih, baseScale: scale, scale, multiplier: 1,
+      alpha: d.alpha, color: d.color, angleDeg: d.angleDeg,
+      selected: false, flipX: d.flipX, flipY: d.flipY
+    });
+  }
+}
+
+async function saveNow() {
+  if (__restoring) return;
+  clearTimeout(__saveTimer); __saveTimer = null;
+  try { await idbSet(KEY_COLLAGE_STAMPS, { savedAt: Date.now(), stamps: serializeStamps() }); }
+  catch (e) { console.error("スタンプ配置の保存に失敗", e); }
+  if (!baseImg && stamps.length === 0) return;
+  __persisting = true;
+  try {
+    persistArtworkImage(0.85, 1000);
+    const dataURL = localStorage.getItem("artworkImage");
+    if (dataURL) {
+      const blob = await (await fetch(dataURL)).blob();
+      await idbSet(KEY_ARTWORK_IMAGE, blob);
+    }
+  } catch (e) { console.error("作品画像の保存に失敗", e); }
+  finally { __persisting = false; }
+}
+
+function scheduleSave() {
+  if (__restoring || __persisting) return;
+  clearTimeout(__saveTimer);
+  __saveTimer = setTimeout(saveNow, 400);
+}
+
+// render のたびに保存を予約（ドラッグ中は 0.4 秒止まったら保存）
+const __render = render;
+render = function () { __render(); scheduleSave(); };
+
+// 親ページ（nav.js の「つぎへ」）から呼ぶ
+window.WS_flushSave = saveNow;
+window.addEventListener("pagehide", () => { saveNow(); });
+document.addEventListener("visibilitychange", () => { if (document.hidden) saveNow(); });
+
+// 起動：マーブリング画像 → スタンプ配置 の順に復元
+window.addEventListener("load", async () => {
+  try { await loadMarblingBaseIfExists(); } catch (e) { console.error(e); }
+  try { await restoreStamps(); } catch (e) { console.error(e); }
+  selectedIndex = -1;
+  history.stack.length = 0; history.index = -1;
+  pushHistory();            // ここを起点に「ひとつもどす」ができる
+  __restoring = false;
+  render();
+  saveNow();                // マーブリングだけの状態でも作品画像を用意しておく
 });

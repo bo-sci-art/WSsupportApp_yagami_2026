@@ -298,3 +298,29 @@ html.body-lock, body.body-lock { overflow: hidden; }
 
 .ws-panel__body .chip { white-space: nowrap; }
 .ws-panel__body p, .ws-panel__body li { overflow-wrap: anywhere; }
+
+/* ============== 矢上小版（子ども向け）調整 ============== */
+ruby rt { font-size: 0.55em; }
+html, body { height: 100%; overflow: hidden; }
+body { display: flex; flex-direction: column; }
+.ws-header { flex: 0 0 auto; padding: 8px 12px; gap: 10px; }
+.ws-header .left { font-size: 1.15rem; font-weight: 800; line-height: 1.9; white-space: nowrap; padding-right: 4px; }
+.ws-header .right .btn { min-height: 52px; padding: 8px 18px; font-size: 1.05rem; font-weight: 700; border-radius: 26px; }
+.ws-header .right .btn.accent { padding: 8px 24px; font-size: 1.15rem; }
+.ws-header .right .btn:disabled { opacity: .6; }
+.ws-stepper__label { font-size: .85rem; }
+main.stage { flex: 1 1 auto; min-height: 0; padding: 0; overflow: hidden; }
+.frame-wrap { width: 100%; height: 100%; overflow: hidden; background: #fff; }
+.frame-wrap iframe { width: 100%; height: 100%; border: 0; display: block; }
+.panel { width: min(88vw, 900px); background: #fff; border-left: 2px solid #d1d5db; box-shadow: -8px 0 24px rgba(0,0,0,.15); }
+.panel header { font-weight: 800; font-size: 1.1rem; border-bottom: 1px solid #e5e7eb; }
+.panel header .btn { min-height: 48px; padding: 6px 16px; font-size: 1rem; font-weight: 700; border-radius: 24px; border: 1px solid #ccc; background: #fff; }
+/* 縦向き（幅が狭い）ではステップのラベルを現在のものだけにし、タイトルを小さく */
+@media (max-width: 900px) {
+  .ws-header .left { font-size: 1rem; }
+  .ws-stepper { gap: 8px; }
+  .ws-stepper__label { display: none; }
+  .ws-stepper__item.current .ws-stepper__label { display: block; }
+  .ws-header .right .btn { padding: 8px 12px; font-size: 1rem; }
+  .ws-header .right .btn.accent { padding: 8px 16px; }
+}

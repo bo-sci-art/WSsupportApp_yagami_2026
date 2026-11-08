@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
-  <title>防災行動マップ</title>
+  <title>矢上小 防災行動マップ</title>
 
   <!-- ▼ Leaflet（同梱・外部依存なし） -->
   <link rel="stylesheet" href="./leaflet.css">
@@ -15,18 +15,18 @@
     <div class="header-left">
       <div class="header-logo-icon">🗺️</div>
       <div class="header-titles">
-        <h1 class="header-main-title">防災行動マップ</h1>
+        <h1 class="header-main-title">矢上小{やがみしょう} 防災{ぼうさい}行動{こうどう}マップ</h1>
       </div>
     </div>
 
     <div class="header-right">
-      <div class="status-item">鑑賞済み <span id="view-count"></span></div>
+      <div class="status-item">見{み}た 作品{さくひん} <span id="view-count"></span></div>
       <div class="status-item">💖 <span id="header-heart-count">0</span></div>
       <div class="status-item">✨ <span id="header-action-count">0</span></div>
 
       <button type="button" id="header-help-btn">？</button>
       <button type="button" id="back-to-top-btn" class="header-back-btn">
-    ＜ トップに戻る
+    ＜ さいしょに もどる
   </button>
     </div>
   </header>
@@ -38,40 +38,40 @@
       <div id="sidebar-filter">
 
         <div class="filter-main-header">
-          <span>🔍 絞り込み</span>
+          <span>🔍 しぼりこみ</span>
           <span class="toggle-icon">﹀</span>
         </div>
 
         <div class="filter-content">
           <div class="filter-group">
-            <div class="filter-label">災害の種類</div>
+            <div class="filter-label">災害{さいがい}の しゅるい</div>
             <div class="filter-chips">
-              <button type="button" class="chip active" data-cat="all">すべて</button>
-              <button type="button" class="chip" data-cat="mizu">水害</button>
-              <button type="button" class="chip" data-cat="jiban">地盤</button>
-              <button type="button" class="chip" data-cat="jishin">地震</button>
+              <button type="button" class="chip active" data-cat="all">ぜんぶ</button>
+              <button type="button" class="chip" data-cat="mizu">水{みず}</button>
+              <button type="button" class="chip" data-cat="jiban">がけ</button>
+              <button type="button" class="chip" data-cat="jishin">地震{じしん}</button>
             </div>
 
             <button type="button" id="open-hazard-btn" class="hazard-overlay-btn">
-               🗺️ ハザードマップを重ねる
+               🗺️ ハザードマップを 重{かさ}ねる
             </button>
           </div>
 
           <div class="filter-group">
-            <div class="filter-label">防災行動のタイミング</div>
+            <div class="filter-label">いつの 行動{こうどう}？</div>
             <div class="filter-chips phase-chips">
-              <button type="button" class="chip phase-chip active" data-phase="all">すべて</button>
-              <button type="button" class="chip phase-chip" data-phase="prior">事前</button>
-              <button type="button" class="chip phase-chip" data-phase="during">災害時</button>
-              <button type="button" class="chip phase-chip" data-phase="recovery">復旧時</button>
+              <button type="button" class="chip phase-chip active" data-phase="all">ぜんぶ</button>
+              <button type="button" class="chip phase-chip" data-phase="prior">事前{じぜん}</button>
+              <button type="button" class="chip phase-chip" data-phase="during">災害時{さいがいじ}</button>
+              <button type="button" class="chip phase-chip" data-phase="recovery">復旧時{ふっきゅうじ}</button>
             </div>
           </div>
 
           <div class="filter-group">
-            <div class="filter-label">お気に入り（作品鑑賞時に登録できます）</div>
+            <div class="filter-label">お気{き}に入{い}り（作品{さくひん}を 見{み}たときに えらべるよ）</div>
             <div class="fav-buttons-row">
-              <button type="button" id="filter-heart-btn" class="fav-filter-btn">♡ 共感した</button>
-              <button type="button" id="filter-action-btn" class="fav-filter-btn">✨ 実践したい</button>
+              <button type="button" id="filter-heart-btn" class="fav-filter-btn">♡ いいなと 思{おも}った</button>
+              <button type="button" id="filter-action-btn" class="fav-filter-btn">✨ やってみたい</button>
             </div>
           </div>
         </div>
@@ -84,18 +84,18 @@
       <div id="viewDiv"></div>
 
       <button type="button" id="search-area-btn" class="search-area-btn" style="display:none;">
-        このエリアで再検索
+        この あたりで さがす
       </button>
 
       <button type="button" id="menu-btn">
-        <span style="font-size:1.2em;">≡</span> 防災情報
+        <span style="font-size:1.2em;">≡</span> ハザードマップ
       </button>
 
       <div id="bottom-left-controls">
         <div class="control-group">
           <div class="basemap-buttons-container">
-            <button type="button" id="white-map-btn" class="basemap-btn active">白地図</button>
-            <button type="button" id="satellite-btn" class="basemap-btn">衛星</button>
+            <button type="button" id="white-map-btn" class="basemap-btn active">地図{ちず}</button>
+            <button type="button" id="satellite-btn" class="basemap-btn">空{そら}の 写真{しゃしん}</button>
           </div>
         </div>
       </div>
@@ -113,44 +113,44 @@
     <div id="hazard-content" class="tab-content">
 
       <div id="group-mizu" class="hazard-group">
-        <div class="hazard-group-header">水害</div>
+        <div class="hazard-group-header">水{みず}</div>
         <div class="hazard-group-content">
           <div class="filter-option">
-            <span><input type="checkbox" id="haz-flood_l2"><label for="haz-flood_l2">洪水（外水氾濫）</label></span>
+            <span><input type="checkbox" id="haz-flood_l2"><label for="haz-flood_l2">川{かわ}の水{みず}が あふれる（洪水{こうずい}）</label></span>
             <button type="button" class="haz-info" data-k="flood_l2">?</button>
           </div>
           <div class="filter-option">
-            <span><input type="checkbox" id="haz-hightide"><label for="haz-hightide">高潮</label></span>
+            <span><input type="checkbox" id="haz-hightide"><label for="haz-hightide">台風{たいふう}で 海{うみ}の水{みず}が あふれる（高潮{たかしお}）</label></span>
             <button type="button" class="haz-info" data-k="hightide">?</button>
           </div>
-          <div class="fopt-head">内水氾濫</div>
+          <div class="fopt-head">下水{げすい}や 水路{すいろ}から 水{みず}が あふれる（内水氾濫{ないすいはんらん}）</div>
           <a class="ext-link" href="https://wwwm.city.yokohama.lg.jp/yokohama/Map?mid=65&amp;mpx=139.62630111702703&amp;mpy=35.536158445033394&amp;mps=10000&amp;mtp=dm&amp;gprj=3" target="_blank" rel="noopener">
-            🔗 横浜市の「わいわい防災マップ」を見る
-            <small>下水道や水路からあふれる内水氾濫の浸水想定を確認できます（外部サイト）</small>
+            🔗 横浜市{よこはまし}の「わいわい防災{ぼうさい}マップ」を 見{み}る
+            <small>ほかのサイトが ひらきます</small>
           </a>
         </div>
       </div>
 
       <div id="group-jiban" class="hazard-group">
-        <div class="hazard-group-header">地盤</div>
+        <div class="hazard-group-header">がけ</div>
         <div class="hazard-group-content">
           <div class="filter-option">
-            <span><input type="checkbox" id="haz-kyukei"><label for="haz-kyukei">土砂災害（急傾斜地の崩壊）</label></span>
+            <span><input type="checkbox" id="haz-kyukei"><label for="haz-kyukei">がけくずれ（土砂{どしゃ}災害{さいがい}）</label></span>
             <button type="button" class="haz-info" data-k="kyukei">?</button>
           </div>
         </div>
       </div>
 
       <div id="group-jishin" class="hazard-group">
-        <div class="hazard-group-header">地震</div>
+        <div class="hazard-group-header">地震{じしん}</div>
         <div class="hazard-group-content">
           <div class="filter-option">
-            <span><input type="checkbox" id="haz-tsunami"><label for="haz-tsunami">津波</label></span>
+            <span><input type="checkbox" id="haz-tsunami"><label for="haz-tsunami">津波{つなみ}</label></span>
             <button type="button" class="haz-info" data-k="tsunami">?</button>
           </div>
           <a class="ext-link" href="https://wwwm.city.yokohama.lg.jp/yokohama/Map?mid=6&amp;mpx=139.62630111702703&amp;mpy=35.536158445033394&amp;mps=10000&amp;mtp=dm&amp;gprj=3" target="_blank" rel="noopener">
-            🔗 横浜市の「わいわい防災マップ」を見る
-            <small>震度・液状化危険度・地震火災（焼失棟数）・津波を確認できます（外部サイト）</small>
+            🔗 横浜市{よこはまし}の「わいわい防災{ぼうさい}マップ」を 見{み}る
+            <small>ゆれの 大{おお}きさ・地面{じめん}が やわらかくなる 場所{ばしょ}・火事{かじ}が 見{み}られるよ（ほかのサイトが ひらきます）</small>
           </a>
         </div>
       </div>
@@ -163,7 +163,9 @@
 
   <!-- ▼ Leaflet 本体（同梱） -->
   <script src="./leaflet.js"></script>
-  <script src="./script.js?v=20261013"></script>
+  <script src="../common/config.js?v=yagami1"></script>
+  <script src="../common/ruby.js?v=yagami1"></script>
+  <script src="./script.js?v=yagami1"></script>
 
   <div id="tutorial-overlay" class="tutorial-overlay" style="display: none;">
     <div class="tutorial-card">
@@ -178,7 +180,7 @@
       </div>
 
       <div class="tutorial-footer">
-        <button type="button" id="skip-btn" class="tutorial-nav-btn secondary">スキップ</button>
+        <button type="button" id="skip-btn" class="tutorial-nav-btn secondary">とじる</button>
         <div class="tutorial-dots">
           <span class="dot active"></span>
           <span class="dot"></span>
@@ -186,7 +188,7 @@
           <span class="dot"></span>
           <span class="dot"></span>
         </div>
-        <button type="button" id="next-btn" class="tutorial-nav-btn primary">次へ ＞</button>
+        <button type="button" id="next-btn" class="tutorial-nav-btn primary">つぎへ ＞</button>
       </div>
 
     </div>

@@ -917,3 +917,27 @@ body {
 /* 注意カード内のボタン（「コラージュのページへ」など）は文章にそろえて左寄せ・余白を詰める */
 .alert-content .action-section{justify-content:flex-start;margin:.75rem 0 0 !important}
 .alert-content .action-section .btn{padding:.55rem 1.2rem;font-size:.88rem}
+
+/* ===== 矢上小版（子ども向け） ===== */
+.main-title { font-size: 2rem !important; line-height: 1.8 !important; }
+.subtitle { font-size: 1.1rem !important; line-height: 2 !important; }
+.step-title { font-size: 1.35rem !important; line-height: 1.9 !important; }
+.summary-label { font-size: 1.1rem !important; line-height: 1.9 !important; }
+.summary-value { font-size: 1.1rem !important; line-height: 1.9 !important; white-space: pre-wrap; }
+.summary-title-big { font-size: 1.5rem !important; font-weight: 800; color: #14532d; }
+.edit-btn { font-size: 1rem !important; min-height: 44px; padding: 6px 14px !important; border-radius: 22px !important; }
+.btn-large { min-height: 60px; font-size: 1.3rem !important; font-weight: 800; padding: 12px 32px !important; border-radius: 30px !important; }
+.action-section, .next-action { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; }
+.kid-send-note, .kid-download-note { font-size: 1.15rem; line-height: 2.1; text-align: center; margin: 8px 0 14px; }
+.kid-download-note { color: #166534; font-weight: 700; }
+.submit-status { font-size: 1.1rem !important; line-height: 2 !important; }
+.success-title { font-size: 1.8rem !important; line-height: 1.8 !important; }
+.success-message { font-size: 1.2rem !important; line-height: 2 !important; }
+.artwork-preview-frame img { max-height: 46vh; }
+.editor-hint, .summary-editor label { font-size: 1.05rem !important; line-height: 1.9 !important; }
+.summary-editor textarea, .summary-editor input[type=text] { font-size: 1.15rem !important; }
+.summary-editor input[type=checkbox] { width: 24px; height: 24px; }
+.tag { font-size: 1rem !important; line-height: 1.9 !important; }
+
+.btn { gap: 0 !important; }
+.btn > .emoji, .btn > svg { margin-right: .4rem; }

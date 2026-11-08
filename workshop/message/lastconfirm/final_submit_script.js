@@ -1,8 +1,8 @@
 /**
- * Final Submit Page Script - Version 3.0 (Serverless / GitHub直接登録)
+ * Final Submit Page Script - 矢上小版（Cloudflare Worker yagami-submit：D1＋R2 に登録）
  *
- * Purpose: 入力内容と作品画像を Cloudflare Worker 経由で GitHub の
- *          artworks.geojson に直接登録する（Survey123は使わない）
+ * Purpose: 入力内容と作品画像を Cloudflare Worker（POST /submit）に送り、
+ *          D1（文章・地点）と R2（画像）に登録する。GitHub には保存しない
  *
  * Field Mappings (Worker側 properties):
  * - Used hazard maps → field_24
@@ -20,19 +20,20 @@
 // =====================================
 const CONFIG = {
     // Cloudflare Worker のURL（作品投稿の受付窓口）
-    WORKER_URL: 'https://wsapp-submit.kazuki131214.workers.dev',
+    WORKER_URL: 'https://yagami-submit.kazuki131214.workers.dev',   // 矢上小版の Worker（D1＋R2）。デプロイ後に URL が違っていたらここを直す
     // Workerの環境変数 SUBMIT_SECRET と同じ値にしてください
-    SUBMIT_SECRET: 'ws2026',
+    // ※ページのソースを見ればだれでも分かる合言葉（いたずら投稿は防げない）。ADMIN_KEY はここに書かない
+    SUBMIT_SECRET: 'yagami-ws-20261118',
 
     // Page URLs - 実際のプロジェクト構成に合わせて修正してください
     PAGES: {
         hazard: '../../map/Log/log_hazard_map.html',        // ← 対象地点/ハザードマップ選択ページ
         marbling: '../../marbling/Log/log_marbling.html',      // ← マーブリング体験ページ
-        collage: '../../collage/Log/log_collage.html',         // ← コラージュ体験ページ
+        collage: '../../collage/app/index.html',
         artwork: '../../message/artwork/artwork_submit.html',   // ← 作品情報入力ページ
         next: '../../present/index.html',     // ← 次の防災行動ページ（仮）
         map: '../../present/index.html',      // ← 作品集マップ
-        home: '../index.html'                        // ← トップページ
+        home: '../../start/index.html'
     }
 };
 
@@ -71,8 +72,10 @@ document.addEventListener('DOMContentLoaded', function() {
     loadAllData();
     displayDataSummary();
     checkMissingData();
-    checkArtworkImage();
-    displayArtworkPreview();
+    ensureArtworkImage().then(function () {
+        checkArtworkImage_sync();
+        displayArtworkPreview_sync();
+    });
     checkPendingSubmission();
     initInlineEditing();
 
@@ -115,7 +118,7 @@ function loadAllData() {
         }
     } catch (error) {
         console.error('Error loading data from localStorage:', error);
-        alert('データの読み込みに失敗しました。前のページに戻ってやり直してください。');
+        alert('データを よみこめませんでした。まえの がめんに もどってね。');
     }
 }
 
@@ -127,11 +130,11 @@ function displayDataSummary() {
     const loc = appData.hazardMap.location;
     const locationEl = document.getElementById('summary-location');
     if (loc?.lat && loc?.lon) {
-        locationEl.textContent = `緯度: ${loc.lat.toFixed(6)}, 経度: ${loc.lon.toFixed(6)}`;
+        locationEl.textContent = '📍 地図{ちず}の ピンの 場所{ばしょ}';
         locationEl.classList.remove('empty');
         renderSummaryMap(loc.lat, loc.lon);
     } else {
-        locationEl.textContent = '（未選択）';
+        locationEl.textContent = '（まだ えらんでいないよ）';
         locationEl.classList.add('empty');
     }
 
@@ -139,11 +142,11 @@ function displayDataSummary() {
     const hazardsEl = document.getElementById('summary-hazards');
     if (appData.hazardMap.hazards && appData.hazardMap.hazards.length > 0) {
         hazardsEl.innerHTML = appData.hazardMap.hazards
-            .map(h => `<span class="tag">${h}</span>`)
+            .map(h => `<span class="tag">${escapeHTML(HAZARD_LABELS[h] || h)}</span>`)
             .join(' ');
         hazardsEl.classList.remove('empty');
     } else {
-        hazardsEl.textContent = '（未選択）';
+        hazardsEl.textContent = '（まだ えらんでいないよ）';
         hazardsEl.classList.add('empty');
     }
 
@@ -153,7 +156,7 @@ function displayDataSummary() {
         marblingEl.textContent = appData.marbling.description;
         marblingEl.classList.remove('empty');
     } else {
-        marblingEl.textContent = '（未入力）';
+        marblingEl.textContent = '（まだ 書{か}いていないよ）';
         marblingEl.classList.add('empty');
     }
 
@@ -163,7 +166,7 @@ function displayDataSummary() {
         collageEl.textContent = appData.collage.description;
         collageEl.classList.remove('empty');
     } else {
-        collageEl.textContent = '（未入力）';
+        collageEl.textContent = '（まだ 書{か}いていないよ）';
         collageEl.classList.add('empty');
     }
 
@@ -172,10 +175,10 @@ function displayDataSummary() {
     if (phasesEl) {
         const ph = appData.collage.phases || [];
         if (ph.length > 0) {
-            phasesEl.innerHTML = ph.map(x => `<span class="tag">${escapeHTML(x)}</span>`).join(' ');
+            phasesEl.innerHTML = ph.map(x => `<span class="tag">${escapeHTML(PHASE_LABELS[x] || x)}</span>`).join(' ');
             phasesEl.classList.remove('empty');
         } else {
-            phasesEl.textContent = '（未選択）';
+            phasesEl.textContent = '（まだ えらんでいないよ）';
             phasesEl.classList.add('empty');
         }
     }
@@ -186,7 +189,7 @@ function displayDataSummary() {
         titleEl.textContent = appData.artwork.title;
         titleEl.classList.remove('empty');
     } else {
-        titleEl.textContent = '（未入力）';
+        titleEl.textContent = '（まだ 書{か}いていないよ）';
         titleEl.classList.add('empty');
     }
 
@@ -196,7 +199,7 @@ function displayDataSummary() {
         creatorEl.textContent = appData.artwork.creatorName;
         creatorEl.classList.remove('empty');
     } else {
-        creatorEl.textContent = '（未入力）';
+        creatorEl.textContent = '（まだ 書{か}いていないよ）';
         creatorEl.classList.add('empty');
     }
 }
@@ -214,34 +217,34 @@ function checkMissingData() {
     };
 
     if (!appData.hazardMap.hazards || appData.hazardMap.hazards.length === 0) {
-        missing.push('ハザードマップが選択されていません');
+        missing.push('見{み}た ハザードマップを えらんでね');
         badges.hazard = true;
     }
     if (!appData.hazardMap.location?.lat || !appData.hazardMap.location?.lon) {
-        missing.push('対象地点／区域が選択されていません');
+        missing.push('作品{さくひん}にする 場所{ばしょ}を えらんでね');
         badges.hazard = true;
     }
 
     if (!appData.marbling.description || appData.marbling.description.trim() === '') {
-        missing.push('マーブリング作品の説明が入力されていません');
+        missing.push('マーブリングの ことを 書{か}いてね');
         badges.marbling = true;
     }
 
     if (!appData.collage.description || appData.collage.description.trim() === '') {
-        missing.push('コラージュ作品の説明が入力されていません');
+        missing.push('コラージュの ことを 書{か}いてね');
         badges.collage = true;
     }
     if (!appData.collage.phases || appData.collage.phases.length === 0) {
-        missing.push('防災行動のタイミングが選択されていません');
+        missing.push('いつの 行動{こうどう}かを えらんでね');
         badges.collage = true;
     }
 
     if (!appData.artwork.title || appData.artwork.title.trim() === '') {
-        missing.push('作品タイトルが入力されていません');
+        missing.push('タイトルを 書{か}いてね');
         badges.artwork = true;
     }
     if (!appData.artwork.creatorName || appData.artwork.creatorName.trim() === '') {
-        missing.push('制作者名が入力されていません');
+        missing.push('ペンネームを 書{か}いてね');
         badges.artwork = true;
     }
 
@@ -266,7 +269,7 @@ function checkMissingData() {
 // =====================================
 // 作品画像（localStorage.artworkImage）の有無をチェック
 // =====================================
-function checkArtworkImage() {
+function checkArtworkImage_sync() {
     const alertEl = document.getElementById('image-missing-alert');
     const btn = document.getElementById('btn-submit-artwork');
     const hasImage = !!localStorage.getItem('artworkImage');
@@ -278,7 +281,7 @@ function checkArtworkImage() {
 // =====================================
 // 作品画像プレビューを表示
 // =====================================
-function displayArtworkPreview() {
+function displayArtworkPreview_sync() {
     const img = document.getElementById('artwork-preview-img');
     const empty = document.getElementById('artwork-preview-empty');
     const data = localStorage.getItem('artworkImage');
@@ -324,13 +327,13 @@ async function submitArtwork() {
 
     const loc = appData.hazardMap.location;
     if (!loc || !loc.lat || !loc.lon) {
-        alert('対象地点／区域が選択されていません。「対象地点／区域・ハザードマップ」のページからやり直してください。');
+        alert('さくひんに する ばしょが えらばれていません。「なおす」から えらんでね。');
         return;
     }
 
     const imageDataURL = localStorage.getItem('artworkImage');
     if (!imageDataURL) {
-        alert('作品画像が見つかりません。コラージュのページに戻り、作品を保存してください。');
+        alert('さくひんの えが みつかりません。コラージュの がめんに もどってね。');
         return;
     }
 
@@ -348,7 +351,7 @@ async function sendSubmitPayload(payload) {
     try {
         localStorage.setItem('pendingArtworkSubmitPayload', JSON.stringify(payload));
 
-        const res = await fetch(CONFIG.WORKER_URL, {
+        const res = await fetch(workerBase() + '/submit', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
@@ -359,8 +362,6 @@ async function sendSubmitPayload(payload) {
 
         if (res.ok && json && json.ok) {
             localStorage.removeItem('pendingArtworkSubmitPayload');
-            localStorage.removeItem('artworkImage');
-            localStorage.removeItem('artworkImageExt');
             if (json.id) localStorage.setItem('lastSubmittedArtworkId', json.id);
 
             const banner = document.getElementById('pending-submit-banner');
@@ -369,12 +370,12 @@ async function sendSubmitPayload(payload) {
             setSubmitUIState('success');
             showCompletion();
         } else {
-            const msg = (json && json.error) ? json.error : `送信に失敗しました（status: ${res.status}）`;
+            const msg = '送{おく}れませんでした。先生{せんせい}を よんでね（' + ((json && json.error) ? json.error : 'status ' + res.status) + '）';
             setSubmitUIState('error', msg);
         }
     } catch (err) {
         console.error('送信エラー:', err);
-        setSubmitUIState('error', '通信エラーが発生しました。ネットワーク接続を確認し、もう一度お試しください。');
+        setSubmitUIState('error', 'インターネットに つながりませんでした。もう一度{いちど} おしてね。だめなら 先生{せんせい}を よんでね。');
     } finally {
         isSubmitting = false;
     }
@@ -390,17 +391,17 @@ function setSubmitUIState(state, message) {
 
     if (state === 'sending') {
         btn.disabled = true;
-        btn.textContent = '送信中…';
+        btn.textContent = '送{おく}っています…';
         statusEl.style.display = 'block';
         statusEl.className = 'submit-status info';
-        statusEl.textContent = '登録しています。しばらくお待ちください…';
+        statusEl.textContent = '登録{とうろく}しています。まってね…';
     } else if (state === 'success') {
         btn.disabled = true;
-        btn.textContent = '✅ 登録完了';
+        btn.textContent = '✅ 登録{とうろく}できたよ';
         statusEl.style.display = 'none';
     } else if (state === 'error') {
         btn.disabled = false;
-        btn.textContent = '📤 もう一度送信する →';
+        btn.textContent = '📤 もう一度{いちど} 送{おく}る';
         statusEl.style.display = 'block';
         statusEl.className = 'submit-status error';
         statusEl.textContent = '⚠ ' + message;
@@ -439,11 +440,11 @@ function checkPendingSubmission() {
     banner.innerHTML = `
         <div class="alert-icon">⏳</div>
         <div class="alert-content">
-            <h3 class="alert-title">前回の登録が完了していない可能性があります</h3>
-            <p class="info-note">通信エラーなどで送信が完了していないデータが残っています。もう一度送信しますか？</p>
+            <h3 class="alert-title">まだ 送{おく}れていない 作品{さくひん}が あるよ</h3>
+            <p class="info-note">もう一度{いちど} 送{おく}るときは「もう一度{いちど} 送{おく}る」を おしてね。</p>
             <div class="action-section" style="margin-top:0.75rem;">
-                <button class="btn btn-primary" id="btn-retry-pending" type="button">再送信する</button>
-                <button class="btn btn-secondary" id="btn-discard-pending" type="button">破棄する</button>
+                <button class="btn btn-primary" id="btn-retry-pending" type="button">もう一度{いちど} 送{おく}る</button>
+                <button class="btn btn-secondary" id="btn-discard-pending" type="button">送{おく}らない</button>
             </div>
         </div>
     `;
@@ -481,7 +482,7 @@ function checkPendingSubmission() {
 // =====================================
 function navigateToPage(page) {
     if (CONFIG.PAGES[page]) {
-        if (confirm(`${getPageName(page)}ページに移動しますか？\n（入力した内容は保存されています）`)) {
+        if (confirm(`${getPageName(page)}の がめんに もどりますか？\n（かいた ないようは のこっています）`)) {
             window.location.href = CONFIG.PAGES[page];
         }
     }
@@ -489,10 +490,10 @@ function navigateToPage(page) {
 
 function getPageName(page) {
     const names = {
-        hazard: '対象地点／区域・ハザードマップ',
+        hazard: 'ばしょ',
         marbling: 'マーブリング',
         collage: 'コラージュ',
-        artwork: '作品情報'
+        artwork: 'タイトル'
     };
     return names[page] || '';
 }
@@ -510,7 +511,7 @@ function viewMap() {
 }
 
 function goHome() {
-    if (confirm('トップページに戻りますか？')) {
+    if (confirm('さいしょの がめんに もどりますか？')) {
         window.location.href = CONFIG.PAGES.home;
     }
 }
@@ -523,7 +524,7 @@ function renderSummaryMap(lat, lon) {
     if (!mapEl) return;
 
     if (!lat || !lon) {
-        mapEl.innerHTML = '<div style="padding:12px;color:#999;text-align:center;">地図を表示できません</div>';
+        mapEl.innerHTML = '<div style="padding:12px;color:#999;text-align:center;">地図{ちず}を 出{だ}せません</div>';
         return;
     }
 
@@ -534,12 +535,12 @@ function renderSummaryMap(lat, lon) {
             dragging: true,
             touchZoom: true
         });
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap contributors'
+        L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png', {
+            attribution: '地理院タイル', maxZoom: 18
         }).addTo(previewMap);
     }
 
-    previewMap.setView([lat, lon], 15);
+    previewMap.setView([lat, lon], 16);
 
     if (previewMarker) previewMarker.remove();
     previewMarker = L.marker([lat, lon]).addTo(previewMap);
@@ -583,7 +584,7 @@ const EDIT_CONFIG = {
         '地震火災（焼失棟数）'
     ],
     PHASE_OPTIONS: ['事前', '災害時', '復旧時'],   // ※ collage/Log/log_collage.html の選択肢と同じにしてください
-    DEFAULT_CENTER: [35.5314, 139.6321]   // 綱島駅周辺（ハザードマップページと同じ）
+    DEFAULT_CENTER: [35.5523, 139.6569]   // 矢上小学校の周辺（ハザードマップページと同じ）
 };
 
 let editingKey = null;
@@ -627,20 +628,20 @@ function openEditor(key) {
         const selected = appData.hazardMap.hazards || [];
         const options = EDIT_CONFIG.HAZARD_OPTIONS.slice();
         selected.forEach(h => { if (!options.includes(h)) options.push(h); });
-        body = '<p class="editor-hint">参考にしたハザードマップをすべて選んでください（1つ以上）</p>'
+        body = '<p class="editor-hint">見{み}た ハザードマップを ぜんぶ えらんでね</p>'
              + '<div class="editor-hazards">'
-             + options.map((h, i) => '<label><input type="checkbox" value="' + escapeHTML(h) + '"' + (selected.includes(h) ? ' checked' : '') + '>' + escapeHTML(h) + '</label>').join('')
+             + options.map((h, i) => '<label><input type="checkbox" value="' + escapeHTML(h) + '"' + (selected.includes(h) ? ' checked' : '') + '>' + escapeHTML(HAZARD_LABELS[h] || h) + '</label>').join('')
              + '</div>';
     } else if (key === 'location') {
-        body = '<p class="editor-hint">下の地図をタップすると、その場所に地点／区域を選び直せます</p>';
+        body = '<p class="editor-hint">下{した}の 地図{ちず}を タッチすると、場所{ばしょ}を えらびなおせるよ</p>';
     } else if (key === 'marbling' || key === 'collage') {
         const v = key === 'marbling' ? appData.marbling.description : appData.collage.description;
         body = '<textarea>' + escapeHTML(v) + '</textarea>';
     } else if (key === 'phases') {
         const selected = appData.collage.phases || [];
-        body = '<p class="editor-hint">当てはまるものをすべて選んでください（1つ以上）</p>'
+        body = '<p class="editor-hint">あてはまるものを ぜんぶ えらんでね</p>'
              + '<div class="editor-hazards">'
-             + EDIT_CONFIG.PHASE_OPTIONS.map(h => '<label><input type="checkbox" value="' + h + '"' + (selected.includes(h) ? ' checked' : '') + '>' + h + '</label>').join('')
+             + EDIT_CONFIG.PHASE_OPTIONS.map(h => '<label><input type="checkbox" value="' + h + '"' + (selected.includes(h) ? ' checked' : '') + '>' + (PHASE_LABELS[h] || h) + '</label>').join('')
              + '</div>';
     } else if (key === 'title' || key === 'creator') {
         const v = key === 'title' ? appData.artwork.title : appData.artwork.creatorName;
@@ -649,8 +650,8 @@ function openEditor(key) {
     box.innerHTML = body
         + '<div class="editor-error"></div>'
         + '<div class="editor-actions">'
-        + '<button type="button" class="btn btn-secondary" data-act="cancel">キャンセル</button>'
-        + '<button type="button" class="btn btn-primary" data-act="save">保存する</button>'
+        + '<button type="button" class="btn btn-secondary" data-act="cancel">やめる</button>'
+        + '<button type="button" class="btn btn-primary" data-act="save">これで いい</button>'
         + '</div>';
     box.style.display = 'block';
     box.querySelector('[data-act="cancel"]').addEventListener('click', () => closeEditor(key, false));
@@ -682,7 +683,7 @@ function closeEditor(key, saved) {
     if (saved && valueEl) {
         const note = document.createElement('div');
         note.className = 'summary-saved';
-        note.textContent = '✓ 保存しました';
+        note.textContent = '✓ なおしたよ';
         valueEl.insertAdjacentElement('afterend', note);
         setTimeout(() => note.remove(), 2500);
     }
@@ -698,16 +699,16 @@ function saveEditor(key) {
 
     if (key === 'hazards') {
         const values = Array.from(box.querySelectorAll('input[type=checkbox]:checked')).map(c => c.value);
-        if (values.length === 0) return showEditorError(key, 'ハザードマップを1つ以上選んでください');
+        if (values.length === 0) return showEditorError(key, '1つ いじょう えらんでね');
         appData.hazardMap.hazards = values;
         saveHazardMapLog();
     } else if (key === 'location') {
-        if (!editTempLatLng) return showEditorError(key, '地図をタップして地点／区域を選んでください');
+        if (!editTempLatLng) return showEditorError(key, '地図{ちず}を タッチして 場所{ばしょ}を えらんでね');
         appData.hazardMap.location = Object.assign({}, appData.hazardMap.location || {}, { lat: editTempLatLng.lat, lon: editTempLatLng.lng });
         saveHazardMapLog();
     } else if (key === 'marbling' || key === 'collage') {
         const v = box.querySelector('textarea').value.trim();
-        if (!v) return showEditorError(key, '作品の説明を入力してください');
+        if (!v) return showEditorError(key, '書{か}いてね');
         appData[key].description = v;
         const storageKey = key === 'marbling' ? 'marblingLog' : 'collageLog';
         const raw = readJSON(storageKey);
@@ -772,3 +773,130 @@ function stopLocationEdit() {
     const loc = appData.hazardMap.location || {};
     if (!(loc.lat && loc.lon) && previewMarker) { previewMarker.remove(); previewMarker = null; }
 }
+
+
+// =====================================================================
+// 矢上小版：追加の処理
+// =====================================================================
+function workerBase() { return ((window.YAGAMI_CONFIG && window.YAGAMI_CONFIG.WORKER_URL) || CONFIG.WORKER_URL).replace(/\/+$/, ''); }
+
+// 画面に出す言葉（保存する値は大人版と同じ正式名のまま）
+const HAZARD_LABELS = {
+    '洪水（外水氾濫）': '川{かわ}の水{みず}が あふれる（洪水{こうずい}）',
+    '内水氾濫': '下水{げすい}や 水路{すいろ}から 水{みず}が あふれる',
+    '高潮': '台風{たいふう}で 海{うみ}の水{みず}が あふれる（高潮{たかしお}）',
+    '津波': '津波{つなみ}',
+    '土砂災害（急傾斜地の崩壊）': 'がけくずれ',
+    '液状化危険度': '地震{じしん}で 地面{じめん}が やわらかくなる（液状化{えきじょうか}）',
+    '地震の揺れ（震度）': '地震{じしん}の ゆれ',
+    '地震火災（焼失棟数）': '地震{じしん}の 火事{かじ}'
+};
+const PHASE_LABELS = { '事前': '事前{じぜん}（おきる 前{まえ}）', '災害時': '災害時{さいがいじ}（おきている とき）', '復旧時': '復旧時{ふっきゅうじ}（おきた あと）' };
+
+// --- IndexedDB（コラージュと同じ ws_art_db / images） ---
+function wsIdbGet(key) {
+    return new Promise(function (resolve) {
+        try {
+            const req = indexedDB.open('ws_art_db', 1);
+            req.onupgradeneeded = function () {
+                if (!req.result.objectStoreNames.contains('images')) req.result.createObjectStore('images');
+            };
+            req.onsuccess = function () {
+                try {
+                    const g = req.result.transaction('images', 'readonly').objectStore('images').get(key);
+                    g.onsuccess = function () { resolve(g.result || null); };
+                    g.onerror = function () { resolve(null); };
+                } catch (e) { resolve(null); }
+            };
+            req.onerror = function () { resolve(null); };
+        } catch (e) { resolve(null); }
+    });
+}
+function blobToDataURL(blob) {
+    return new Promise(function (resolve, reject) {
+        const r = new FileReader();
+        r.onload = function () { resolve(r.result); };
+        r.onerror = reject;
+        r.readAsDataURL(blob);
+    });
+}
+function loadImg(src) {
+    return new Promise(function (resolve, reject) {
+        const img = new Image();
+        img.onload = function () { resolve(img); };
+        img.onerror = reject;
+        img.src = src;
+    });
+}
+
+// マーブリング画像＋スタンプ配置から作品画像を作り直す（コラージュの描き方と同じ考え方）
+async function rebuildArtworkFromParts() {
+    const base = await wsIdbGet('latest_marbling_base');
+    if (!base) return null;
+    const baseImg = await loadImg(URL.createObjectURL(base));
+    const scale = Math.min(1, 1000 / Math.max(baseImg.naturalWidth, baseImg.naturalHeight));
+    const W = Math.round(baseImg.naturalWidth * scale), H = Math.round(baseImg.naturalHeight * scale);
+    const c = document.createElement('canvas'); c.width = W; c.height = H;
+    const ctx = c.getContext('2d');
+    ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, H);
+    ctx.drawImage(baseImg, 0, 0, W, H);
+    const saved = await wsIdbGet('collage_stamps');
+    const list = (saved && saved.stamps) || [];
+    for (const d of list) {
+        let tex;
+        try { tex = await loadImg('../../collage/app/detail/asset/stamps/' + d.name + '.png'); } catch (e) { continue; }
+        const w = d.nw * W, h = w * (tex.naturalHeight / tex.naturalWidth);
+        let src = tex;
+        if (d.color && d.color.toLowerCase() !== '#ffffff') {
+            const t = document.createElement('canvas'); t.width = tex.naturalWidth; t.height = tex.naturalHeight;
+            const tc = t.getContext('2d');
+            tc.drawImage(tex, 0, 0); tc.globalCompositeOperation = 'source-in';
+            tc.fillStyle = d.color; tc.fillRect(0, 0, t.width, t.height);
+            src = t;
+        }
+        ctx.save();
+        ctx.globalAlpha = d.alpha == null ? 0.68 : d.alpha;
+        ctx.translate(d.nx * W, d.ny * H);
+        ctx.rotate((d.angleDeg || 0) * Math.PI / 180);
+        ctx.scale(d.flipX ? -1 : 1, d.flipY ? -1 : 1);
+        ctx.drawImage(src, -w / 2, -h / 2, w, h);
+        ctx.restore();
+    }
+    return c.toDataURL('image/jpeg', 0.85);
+}
+
+// 作品画像を必ず用意する：localStorage → IndexedDB（コラージュの自動保存）→ 部品から作り直し
+async function ensureArtworkImage() {
+    const empty = document.getElementById('artwork-preview-empty');
+    if (empty) empty.style.display = 'block';
+    if (localStorage.getItem('artworkImage')) return;
+    try {
+        const blob = await wsIdbGet('artwork_image');
+        let dataURL = blob ? await blobToDataURL(blob) : null;
+        if (!dataURL) dataURL = await rebuildArtworkFromParts();
+        if (dataURL) {
+            localStorage.setItem('artworkImage', dataURL);
+            localStorage.setItem('artworkImageExt', 'jpg');
+        }
+    } catch (e) { console.error('作品画像の用意に失敗', e); }
+}
+
+// 完成した作品を iPad に保存（今と同じダウンロード方式：「ファイル」アプリに入る）
+async function downloadArtwork() {
+    const dataURL = localStorage.getItem('artworkImage');
+    if (!dataURL) { alert('さくひんの えが みつかりません。'); return; }
+    const blob = await (await fetch(dataURL)).blob();
+    const url = URL.createObjectURL(blob);
+    const name = (appData.artwork.creatorName || 'sakuhin').replace(/[\\/:*?"<>|\s]/g, '_').slice(0, 20);
+    const id = localStorage.getItem('lastSubmittedArtworkId') || '';
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'yagami_' + (id ? id + '_' : '') + name + '.jpg';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 10000);
+    const note = document.getElementById('download-note');
+    if (note) note.style.display = 'block';
+}
+window.downloadArtwork = downloadArtwork;

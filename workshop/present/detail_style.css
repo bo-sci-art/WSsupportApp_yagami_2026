@@ -1779,3 +1779,5 @@ html, body {
   .info-box-container { max-height: 28vh; overflow-y: auto; }
   .map-wrapper { height: 320px !important; min-height: 320px; }
 }
+
+ruby rt { font-size: .55em; }

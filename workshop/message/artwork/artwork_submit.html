@@ -2,90 +2,72 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>作品をまとめる | ワークショップ</title>
-    <link rel="stylesheet" href="./artwork_submit_styles.css">
-    <link rel="stylesheet" href="../../common/log-fit.css?v=20261013">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>タイトルとペンネーム</title>
+    <link rel="stylesheet" href="./artwork_submit_styles.css?v=yagami1">
+    <link rel="stylesheet" href="../../common/log-fit.css?v=yagami1">
+    <link rel="stylesheet" href="../../common/kids.css?v=yagami1">
 </head>
 <body>
-    <!-- Main Container -->
     <div class="container">
-        
-        <!-- Header -->
         <header class="page-header">
-            <div class="step-indicator">STEP 4 / 4</div>
-            <h1 class="page-title">作品をまとめる</h1>
-            <p class="page-subtitle">ここまでの体験で生まれた作品を、誰かに届けるためにまとめてみましょう。</p>
+            <div class="step-indicator">4 メッセージ</div>
+            <h1 class="page-title">作品{さくひん}の タイトルを つけよう</h1>
         </header>
 
-        <!-- Main Content -->
         <main class="content">
-
-            <!-- Guide Section -->
             <section class="guide-section">
                 <div class="guide-text">
-                    <p>・この作品は、誰に見てほしいですか？</p>
-                    <p>・その人に、どんな思いや気づきを伝えたいですか？</p>
-                    <p>・色や形、コラージュは、その思いをどう表していますか？</p>
+                    <p>・この 作品{さくひん}で、家族{かぞく}に どんなことを 伝{つた}えたいかな？</p>
+                    <p>・こわがらせるのではなく、命{いのち}を 守{まも}る メッセージに しよう</p>
                 </div>
             </section>
 
-            <!-- Input Section 1: Title -->
             <section class="input-section">
                 <h2 class="section-title">
-                    作品タイトル（メッセージ）
-                    <span class="required-badge">必須</span>
+                    作品{さくひん}の タイトル（メッセージ）
+                    <span class="required-badge">かならず</span>
                 </h2>
-                
-                <input 
-                    type="text" 
-                    id="artworkTitle" 
+                <p class="voice-hint">🎤 キーボードの マイクを おすと、話{はな}して 書{か}くこともできるよ</p>
+                <input
+                    type="text"
+                    id="artworkTitle"
                     class="title-input"
-                    placeholder="例：高台に向かって走れ！"
-                    aria-label="作品タイトル"
+                    placeholder="れい）大雨のときは早めに高いところへ！"
+                    aria-label="作品のタイトル"
                     required
                 />
-
                 <div class="validation-message" id="titleValidation" style="display: none;">
-                    ⚠️ 作品タイトルを入力してください
+                    ⚠️ タイトルを 書{か}いてね
                 </div>
             </section>
 
-            <!-- Input Section 3: Creator Name -->
             <section class="input-section">
                 <h2 class="section-title">
                     ペンネーム
-                    <span class="required-badge">必須</span>
+                    <span class="required-badge">かならず</span>
                 </h2>
-                
-                <input 
-                    type="text" 
-                    id="creatorName" 
+                <p class="kid-warning">⚠️ 本名{ほんみょう}や 自宅{じたく}の 場所{ばしょ}は 書{か}かないでね</p>
+                <input
+                    type="text"
+                    id="creatorName"
                     class="name-input"
-                    placeholder="ペンネーム可（例：chiba / anonymous）"
-                    aria-label="制作者名"
+                    placeholder="れい）ぼうさいマン"
+                    aria-label="ペンネーム"
                     required
                 />
-
                 <div class="validation-message" id="nameValidation" style="display: none;">
-                    ⚠️ ペンネームを入力してください
+                    ⚠️ ペンネームを 書{か}いてね
                 </div>
             </section>
-
         </main>
 
-        <!-- Footer Navigation -->
         <footer class="page-footer">
-            <button type="button" class="btn-secondary" id="backBtn">
-                ← 戻る
-            </button>
-            <button type="button" class="btn-primary" id="nextBtn" disabled>
-                入力内容を確認へ →
-            </button>
+            <button type="button" class="btn-secondary" id="backBtn">◀ もどる</button>
+            <button type="button" class="btn-primary" id="nextBtn" disabled>たしかめる ▶</button>
         </footer>
-
     </div>
-
-    <script src="./artwork_submit_script.js"></script>
+    <script src="../../common/ruby.js?v=yagami1"></script>
+    <script src="./artwork_submit_script.js?v=yagami1"></script>
 </body>
 </html>

@@ -55,19 +55,19 @@
 
                 <!-- ボタン：モード切替 -->
                 <div class="mode-toggle">
-                    <button id="ctrl-mode-paint" class="mode-btn" data-tour="play-toggle">色を<ruby>塗<rt>ぬ</rt></ruby>る</button>
-                    <button id="ctrl-mode-fluid" class="mode-btn">色を動かす</button>
+                    <button id="ctrl-mode-paint" class="mode-btn" data-tour="play-toggle"><ruby>色<rt>いろ</rt></ruby>を<ruby>塗<rt>ぬ</rt></ruby>る</button>
+                    <button id="ctrl-mode-fluid" class="mode-btn"><ruby>色<rt>いろ</rt></ruby>を<ruby>動<rt>うご</rt></ruby>かす</button>
                 </div>
 
                 <!-- 動いている絵の具を止めるボタン -->
-                <button id="ctrl-mode-stop" type="button" class="mode-btn stop-btn">絵の具を<ruby>止<rt>と</rt></ruby>める</button>
+                <button id="ctrl-mode-stop" type="button" class="mode-btn stop-btn"><ruby>絵<rt>え</rt></ruby>の<ruby>具<rt>ぐ</rt></ruby>を<ruby>止<rt>と</rt></ruby>める</button>
 
-                <label for="ctrl-brush">ブラシの大きさ</label>
+                <label for="ctrl-brush">ブラシの<ruby>大<rt>おお</rt></ruby>きさ</label>
                 <input type="range" id="ctrl-brush" min="0.01" max="0.3" step="0.01" data-tour="brush-size">
 
-                <label for="ctrl-brush">消しゴム</label>
+                <label for="ctrl-brush"><ruby>消<rt>け</rt></ruby>しゴム</label>
                 <button id="ctrl-eraser" type="button" class="mode-btn">
-                    消しゴム
+                    <ruby>消<rt>け</rt></ruby>しゴム
                 </button>
 
                 <!-- 内部状態保持用（画面には表示しない） -->
@@ -83,7 +83,7 @@
                 <!--<h2>ユーティリティ</h2>-->
                 <!--<button id="ctrl-random-splat" data-tour="splat">ランダム配置</button>-->
                 <button id="ctrl-reset" type="button" class="reset-btn">やり<ruby>直<rt>なお</rt></ruby>し</button>
-                <button id="ctrl-save" data-tour="export">作品の保存</button>
+                <button id="ctrl-save" data-tour="export"><ruby>作品<rt>さくひん</rt></ruby>を<ruby>保存<rt>ほぞん</rt></ruby></button>
                 </section>
                 <!--<section>
                     <h2>フィルター</h2>
@@ -104,11 +104,11 @@
         <!-- やり直し確認ポップアップ -->
         <div id="reset-modal" class="modal-overlay" hidden>
             <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="reset-modal-title">
-                <p id="reset-modal-title" class="modal-title">本当にやり直しますか？</p>
-                <p class="modal-desc">キャンバスの絵はすべて消えます。</p>
+                <p id="reset-modal-title" class="modal-title"><ruby>本当<rt>ほんとう</rt></ruby>にやり<ruby>直<rt>なお</rt></ruby>しますか？</p>
+                <p class="modal-desc"><ruby>絵<rt>え</rt></ruby>はぜんぶ<ruby>消<rt>き</rt></ruby>えます。</p>
                 <div class="modal-actions">
                     <button id="reset-cancel" type="button" class="modal-btn modal-btn-cancel">キャンセル</button>
-                    <button id="reset-confirm" type="button" class="modal-btn modal-btn-danger">やり直す</button>
+                    <button id="reset-confirm" type="button" class="modal-btn modal-btn-danger">やり<ruby>直<rt>なお</rt></ruby>す</button>
                 </div>
             </div>
         </div>

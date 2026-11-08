@@ -1,0 +1,7 @@
+node_modules/
+worker/.wrangler/
+worker/.dev.vars
+tools/out/
+.DS_Store
+yagami_plan.md
+tools_wrangler.log

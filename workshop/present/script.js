@@ -4,6 +4,7 @@
    - UI・挙動は既存のまま。地図エンジンとハザード重ねのみ差し替え
    ========================================================= */
 document.addEventListener("DOMContentLoaded", () => {
+  const escHtml = (t) => String(t == null ? "" : t).replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
 
   // Leaflet未読込ガード（診断用）
   if (typeof L === "undefined") {
@@ -12,8 +13,10 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  // 統合時はここを "../../data" に変えるだけ（present から見た data/ の相対パス）
-  const DATA_BASE = "https://raw.githubusercontent.com/bo-sci-art/WSspportApp_2026/main/data";
+  // 矢上小版：作品は Worker（yagami-submit）の GET /artworks、画像は GET /images/:key から読む
+  //   images[0] は "images/<key>" なので、DATA_BASE + "/" + images[0] がそのまま画像の URL になる
+  const DATA_BASE = (window.YAGAMI_CONFIG && window.YAGAMI_CONFIG.WORKER_URL) || "https://yagami-submit.kazuki131214.workers.dev";
+  const YAGAMI_CENTER = [35.5523, 139.6569];   // 矢上小学校の周辺
   const HIDDEN_IDS = [];   // 非表示にしたい作品idを入れる（取り下げ用の安全弁）
 
   /* ---------- 1. 地図（国土地理院タイル） ---------- */
@@ -21,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
     white: L.tileLayer("https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png", {maxZoom:18, attribution:"地理院タイル（淡色地図）"}),
     sat:   L.tileLayer("https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/{z}/{x}/{y}.jpg", {maxZoom:18, attribution:"地理院タイル（写真）"})
   };
-  const map = L.map("viewDiv", { center:[35.5385,139.6335], zoom:14, layers:[bases.white], zoomControl:true });
+  const map = L.map("viewDiv", { center:YAGAMI_CENTER, zoom:16, layers:[bases.white], zoomControl:true });
   L.control.scale({imperial:false}).addTo(map);
   let curBase = bases.white;
   function setBase(k){
@@ -38,17 +41,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const HZ = "https://disaportaldata.gsi.go.jp/raster/";
   const hazards = {
     flood_l2: { layer:L.tileLayer(HZ+"01_flood_l2_shinsuishin_data/{z}/{x}/{y}.png",{maxZoom:17,opacity:.7,attribution:"重ねるハザードマップ（国土地理院）"}),
-      name:"洪水（外水氾濫）", legend:"shinsui",
-      desc:"・想定最大規模の大雨により、川の水が堤防を越えてまちへ流れ込む浸水です。<br>・発生しえるもっとも深い場合を示しています。<br>・下水があふれる「内水氾濫」とは発生原因が異なります。" },
+      name:"川{かわ}の水{みず}が あふれる（洪水{こうずい}）", legend:"shinsui",
+      desc:"とても 大{おお}きな 雨{あめ}で 川{かわ}の 水{みず}が あふれると、色{いろ}の ついた 場所{ばしょ}が 水{みず}に つかるかもしれません。色{いろ}が こいほど 深{ふか}くなります。" },
     tsunami: { layer:L.tileLayer(HZ+"04_tsunami_newlegend_data/{z}/{x}/{y}.png",{maxZoom:17,opacity:.7,attribution:"重ねるハザードマップ（国土地理院）"}),
-      name:"津波", legend:"shinsui",
-      desc:"・地震などの地殻変動で発生した海面の変化が大波となって押し寄せる浸水です。<br>・台風などが原因で海面が上昇する「高潮」とは発生原因が異なります。" },
+      name:"津波{つなみ}", legend:"shinsui",
+      desc:"地震{じしん}の あと、海{うみ}から 大{おお}きな 波{なみ}が おしよせると、色{いろ}の ついた 場所{ばしょ}が 水{みず}に つかるかもしれません。" },
     hightide: { layer:L.tileLayer(HZ+"03_hightide_l2_shinsuishin_data/{z}/{x}/{y}.png",{maxZoom:17,opacity:.7,attribution:"重ねるハザードマップ（国土地理院）"}),
-      name:"高潮", legend:"shinsui",
-      desc:"・台風などによる気圧低下と強風で海面が上昇し、海水が陸へ流れ込む浸水です。<br>・地震などの地殻変動が原因で発生する「津波」とは発生原因が異なります。" },
+      name:"台風{たいふう}で 海{うみ}の水{みず}が あふれる（高潮{たかしお}）", legend:"shinsui",
+      desc:"台風{たいふう}などで 海{うみ}の 水{みず}が もり上{あ}がると、色{いろ}の ついた 場所{ばしょ}が 水{みず}に つかるかもしれません。" },
     kyukei: { layer:L.tileLayer(HZ+"05_kyukeishakeikaikuiki/{z}/{x}/{y}.png",{maxZoom:17,opacity:.7,attribution:"重ねるハザードマップ（国土地理院）"}),
-      name:"土砂災害（急傾斜地の崩壊）", legend:"dosha",
-      desc:"大雨や地震でがけ（傾斜30度以上・高さ5m以上の急斜面）が崩れ落ち、生命や身体に危害が生じるおそれがある区域です。" }
+      name:"がけくずれ（土砂{どしゃ}災害{さいがい}）", legend:"dosha",
+      desc:"大雨{おおあめ}や 地震{じしん}で がけが くずれるかもしれない 場所{ばしょ}です。" }
   };
 /* ===== 浸水深の目安ピクトグラム（凡例の右に表示） =====
      数値はここで調整できます（単位 m） */
@@ -67,8 +70,8 @@ document.addEventListener("DOMContentLoaded", () => {
       s += '<text x="19" y="'+(y(t[0])+3)+'" font-size="8" text-anchor="end" fill="#666">'+t[1]+'</text>';
     });
     s += '<text x="19" y="'+(ground+3)+'" font-size="8" text-anchor="end" fill="#666">0m</text>';
-    s += '<text x="'+((22+W)/2)+'" y="10" font-size="8" text-anchor="middle" fill="#666">▲10m以上は</text>';
-    s += '<text x="'+((22+W)/2)+'" y="19" font-size="8" text-anchor="middle" fill="#666">屋根より上</text>';
+    s += '<text x="'+((22+W)/2)+'" y="10" font-size="8" text-anchor="middle" fill="#666">▲10mより うえは</text>';
+    s += '<text x="'+((22+W)/2)+'" y="19" font-size="8" text-anchor="middle" fill="#666">やねより うえ</text>';
     // 人（大人・子ども）
     const person = (cx, hM) => {
       const h = hM * ppm, r = h * .11, hy = ground - h + r, bt = hy + r + 1, w = h * .30, legTop = ground - h * .45;
@@ -92,8 +95,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   const LEGEND_GRAPHIC = {
     shinsui: '<div style="display:grid;grid-template-columns:minmax(0,1fr) 116px;gap:6px;align-items:start">' + '<img style="width:100%;height:auto;max-width:none;display:block" src="https://disaportal.gsi.go.jp/hazardmap/copyright/img/shinsui_legend3.png" alt="浸水深凡例" onerror="this.replaceWith(document.createTextNode(\'（凡例画像を読み込めませんでした）\'))">' + depthGuideSVG() + '</div>'
-      + '<div style="font-size:.75em;color:#888;margin-top:4px;line-height:1.5">右の図は高さの目安です（大人' + DEPTH_GUIDE.adultM + 'm・子ども' + DEPTH_GUIDE.childM + 'm・2階建ての家 約' + DEPTH_GUIDE.houseM + 'm）</div>',
-    dosha: '<div class="lg-css-row"><span class="lg-swatch" style="background:#fae600"></span>土砂災害警戒区域（イエローゾーン）：危害が生じるおそれあり。</div><div class="lg-css-row"><span class="lg-swatch" style="background:#fa2800"></span>土砂災害特別警戒区域（レッドゾーン）：著しい危害が生じるおそれあり。</div>'
+      + '<div style="font-size:.75em;color:#888;margin-top:4px;line-height:1.5">右{みぎ}の 図{ず}は 高{たか}さの めやすだよ（大人{おとな} ' + DEPTH_GUIDE.adultM + 'm・子{こ}ども ' + DEPTH_GUIDE.childM + 'm・2かいだての 家{いえ} やく' + DEPTH_GUIDE.houseM + 'm）</div>',
+    dosha: '<div class="lg-css-row"><span class="lg-swatch" style="background:#fae600"></span>黄色{きいろ}：がけくずれで けがを するかもしれない 場所{ばしょ}</div><div class="lg-css-row"><span class="lg-swatch" style="background:#fa2800"></span>赤{あか}：がけくずれで とても あぶない 場所{ばしょ}</div>'
   };
   Object.keys(hazards).forEach(k => {
     const el = document.getElementById("haz-" + k);
@@ -117,8 +120,8 @@ document.addEventListener("DOMContentLoaded", () => {
   function refreshLegend(){
     const box = document.getElementById("legend-container");
     const active = Object.keys(hazards).filter(k => map.hasLayer(hazards[k].layer));
-    if (!active.length){ box.innerHTML = '<div class="legend-empty">災害を選ぶと、説明と凡例が表示されます</div>'; return; }
-    box.innerHTML = '<div class="lg-safety-note">※色がついていない場所も安全とは限りません。想定を超える災害が起きることもあります。</div>' + active.map(k => {
+    if (!active.length){ box.innerHTML = '<div class="legend-empty">災害{さいがい}を えらぶと、色{いろ}の 見方{みかた}が 出{で}るよ</div>'; return; }
+    box.innerHTML = '<div class="lg-safety-note">※色{いろ}が ついていない 場所{ばしょ}も、ぜったいに 安全{あんぜん}とは かぎりません。</div>' + active.map(k => {
       const h = hazards[k];
       return '<div class="legend-item" id="lg-'+k+'"><div class="lg-name">'+h.name+'</div><div class="lg-desc">'+h.desc+'</div>'+LEGEND_GRAPHIC[h.legend]+'</div>';
     }).join("");
@@ -143,7 +146,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   function category(f24){ return categories(f24)[0]; }   // ピンの色は先頭の分類
   const CATCOLOR = { mizu:"#2F80C4", jiban:"#B5793A", jishin:"#E0574A", other:"#888888" };
-  const CATLABEL = { mizu:"水", jiban:"地盤", jishin:"地震" };
+  const CATLABEL = { mizu:"水{みず}", jiban:"がけ", jishin:"地震{じしん}" };
 
   // 作品ピン（ティアドロップ形）
   function makeIcon(color, big){
@@ -206,7 +209,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return m ? m[0] + "へ" : null;
   }
   function extractAddressee(p){
-    return findPersonText(p.Message) || findPersonText(p.collage) || findPersonText(p.Mabling) || (p.target || "地域のみんなへ");
+    return findPersonText(p.Message) || findPersonText(p.collage) || findPersonText(p.Mabling) || (p.target || "みんなへ");
   }
 
   /* ---------- 6. 地図ピン ---------- */
@@ -257,7 +260,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const items = ALL.filter(f => passFilter(f.properties) && inView(f));
     listContainer.innerHTML = "";
     if (items.length === 0){
-      listContainer.innerHTML = '<div style="text-align:center; padding:30px; color:#888;"><p>このエリアに条件に合う作品はありません</p><p style="font-size:0.8em;">地図を動かして<br>「このエリアで再検索」を押してください</p></div>';
+      listContainer.innerHTML = '<div style="text-align:center; padding:30px; color:#888;"><p>この あたりには 作品{さくひん}が ないよ</p><p style="font-size:0.9em;">地図{ちず}を 動{うご}かして<br>「この あたりで さがす」を おしてね</p></div>';
       return;
     }
     items.forEach(f => {
@@ -265,14 +268,14 @@ document.addEventListener("DOMContentLoaded", () => {
       let icons = "";
       if (hearts.includes(id))  icons += " <span style='color:#ff69b4;'>💖</span>";
       if (actions.includes(id)) icons += " <span style='color:#fbc02d;'>✨</span>";
-      const ribbon = viewed.includes(id) ? '<div class="ribbon-wrapper"><div class="ribbon-text">鑑賞済</div></div>' : "";
+      const ribbon = viewed.includes(id) ? '<div class="ribbon-wrapper"><div class="ribbon-text">見{み}たよ</div></div>' : "";
       const imgUrl = (p.images && p.images[0]) ? DATA_BASE + "/" + p.images[0] : "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
       const card = document.createElement("div");
       card.className = "art-card";
       card.id = "card-" + id;
       card.innerHTML = ribbon +
         '<img src="'+imgUrl+'" class="art-card-img" id="img-'+id+'" onerror="this.style.visibility=\'hidden\'">' +
-        '<div class="art-card-info"><div class="art-title">作者：'+(p.field_25||"作者不明")+
+        '<div class="art-card-info"><div class="art-title art-message">'+escHtml(p.Message||"")+'</div><div class="art-title">作者{さくしゃ}：'+escHtml(p.field_25||"ないしょ")+
         '<span style="float:right; font-size:0.8em;">'+icons+'</span></div></div>';
       card.addEventListener("click", () => {
         highlightCardInSidebar(id);
@@ -343,14 +346,14 @@ document.addEventListener("DOMContentLoaded", () => {
   if (heartBtn) heartBtn.onclick = () => {
     isHeartFilterOn = !isHeartFilterOn;
     heartBtn.classList.toggle("active", isHeartFilterOn);
-    heartBtn.innerHTML = isHeartFilterOn ? "💖 共感した" : "♡ 共感した";
+    heartBtn.innerHTML = isHeartFilterOn ? "💖 いいなと 思{おも}った" : "♡ いいなと 思{おも}った";
     applyFilters();
   };
   const actionBtn = document.getElementById("filter-action-btn");
   if (actionBtn) actionBtn.onclick = () => {
     isActionFilterOn = !isActionFilterOn;
     actionBtn.classList.toggle("active", isActionFilterOn);
-    actionBtn.innerHTML = isActionFilterOn ? "⭐ 実践したい" : "✨ 実践したい";
+    actionBtn.innerHTML = isActionFilterOn ? "⭐ やってみたい" : "✨ やってみたい";
     applyFilters();
   };
 
@@ -415,28 +418,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // トップに戻る
   const backBtn = document.getElementById("back-to-top-btn");
-  if (backBtn) backBtn.onclick = () => { window.location.href = "../../index.html"; };
+  if (backBtn) backBtn.onclick = () => { window.location.href = "../start/index.html"; };
 
   setupTutorial();
 
   /* ---------- 10. データ読み込み ---------- */
   const listContainer = document.getElementById("art-list-container");
-  listContainer.innerHTML = '<div style="text-align:center;padding:30px;color:#888;">作品を読み込み中…</div>';
-  fetch(DATA_BASE + "/artworks.geojson")
+  listContainer.innerHTML = '<div style="text-align:center;padding:30px;color:#888;">作品{さくひん}を 読{よ}みこみ中{ちゅう}…</div>';
+  fetch(DATA_BASE + "/artworks", { cache: "no-store" })
     .then(r => { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
     .then(gj => {
       ALL = gj.features.filter(f => f.properties && f.properties.id && !HIDDEN_IDS.includes(f.properties.id));
       addCategoryDots();
       applyFilters();
       try {
-        const b = L.latLngBounds(ALL.map(f => [f.geometry.coordinates[1], f.geometry.coordinates[0]]));
-        map.fitBounds(b.pad(0.15), { maxZoom:15 });
+        if (ALL.length) {
+          const b = L.latLngBounds(ALL.map(f => [f.geometry.coordinates[1], f.geometry.coordinates[0]]).concat([YAGAMI_CENTER]));
+          map.fitBounds(b.pad(0.15), { maxZoom:16 });
+        }
       } catch(e){}
+      if (!ALL.length) listContainer.innerHTML = '<div style="text-align:center;padding:30px;color:#888;">まだ 作品{さくひん}は ありません</div>';
       searchBtn.style.display = "none";
     })
     .catch(err => {
       console.error("作品データの読み込みに失敗", err);
-      listContainer.innerHTML = '<div style="text-align:center;padding:30px;color:#c0503a;">作品データを読み込めませんでした。<br><span style="font-size:.8em;color:#888;">ブラウザで開いているか、data/artworks.geojson の場所をご確認ください。</span></div>';
+      listContainer.innerHTML = '<div style="text-align:center;padding:30px;color:#c0503a;">作品{さくひん}を 読{よ}みこめませんでした。<br><span style="font-size:.9em;color:#888;">インターネットに つながっているか たしかめてね。</span></div>';
     });
 
   /* ---------- チュートリアル（既存のまま） ---------- */
@@ -451,25 +457,25 @@ document.addEventListener("DOMContentLoaded", () => {
     const dots = document.querySelectorAll(".tutorial-dots .dot");
     if (!overlay) return;
     const steps = [
-      { title:"防災行動マップについて", img:"tutorial_01.png",
-        desc:"このマップでは地域の人が制作した作品を鑑賞します。<br><strong>作品には、「大切な誰かを守りたい」という作者のメッセージが込められています。</strong>" },
-      { title:"自分宛ての作品を探す", img:"tutorial_05.png",
-        desc:"<strong>ピンにはメッセージの宛名が書かれています</strong>。<br>「近隣住民へ」など、自分に近い宛名を探してみてください。" },
-      { title:"作品を見つける", img:"tutorial_02.png",
-        desc:"「災害の種類」や「防災行動のタイミング」で<br>見たい作品を絞り込めます。" },
-      { title:"地図を重ねる", img:"tutorial_03.png",
-        desc:"右上の「防災情報」ボタンを押すと、<br>ハザードマップを地図に重ねて確認できます。" },
-      { title:"作品を鑑賞する", img:"tutorial_04.png",
-        desc:"<strong>作品をタップすると鑑賞画面へ進みます。</strong><br>作者が込めたメッセージを確認しましょう。" }
+      { title:"防災{ぼうさい}行動{こうどう}マップ", img:"tutorial_01.png",
+        desc:"矢上小{やがみしょう}の みんなが つくった 作品{さくひん}が のっているよ。<br><strong>「大切{たいせつ}な 人{ひと}を 守{まも}りたい」という メッセージが こめられています。</strong>" },
+      { title:"だれへの 作品{さくひん}かな", img:"tutorial_05.png",
+        desc:"<strong>ピンには、だれに あてた 作品{さくひん}かが 書{か}いてあるよ</strong>。" },
+      { title:"作品{さくひん}を さがす", img:"tutorial_02.png",
+        desc:"「災害{さいがい}の しゅるい」や「いつの 行動{こうどう}？」で<br>見{み}たい 作品{さくひん}を しぼりこめるよ。" },
+      { title:"地図{ちず}を 重{かさ}ねる", img:"tutorial_03.png",
+        desc:"右上{みぎうえ}の「ハザードマップ」ボタンを おすと、<br>ハザードマップを 地図{ちず}に 重{かさ}ねられるよ。" },
+      { title:"作品{さくひん}を 見{み}る", img:"tutorial_04.png",
+        desc:"<strong>作品{さくひん}を タッチすると、くわしく 見{み}られるよ。</strong><br>作者{さくしゃ}の メッセージを 受{う}け取{と}ろう。" }
     ];
     let page = 0;
     function update(){
       const s = steps[page];
-      titleEl.textContent = s.title; descEl.innerHTML = s.desc;
+      titleEl.innerHTML = s.title; descEl.innerHTML = s.desc;
       imgEl.src = s.img; imgEl.onerror = () => { imgEl.style.visibility = "hidden"; };
       imgEl.onload = () => { imgEl.style.visibility = "visible"; };
       dots.forEach((d,i) => d.classList.toggle("active", i === page));
-      if (nextBtn) nextBtn.textContent = (page === steps.length-1) ? "完了" : "次へ ＞";
+      if (nextBtn) nextBtn.textContent = (page === steps.length-1) ? "とじる" : "つぎへ ＞";
     }
     if (helpBtn) helpBtn.onclick = () => { page = 0; update(); overlay.style.display = "flex"; };
     if (skipBtn) skipBtn.onclick = () => { overlay.style.display = "none"; };

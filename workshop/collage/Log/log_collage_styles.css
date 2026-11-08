@@ -355,3 +355,9 @@ body {
     .phase-desc { font-size: 0.72rem; }
     .character-count { margin-top: 2px; }
 }
+
+/* ===== 矢上小版（子ども向け） ===== */
+.phase-option { padding: 10px 14px !important; min-height: 64px; }
+.phase-option input { width: 26px !important; height: 26px !important; }
+.phase-name { font-size: 1.2rem !important; line-height: 1.8; }
+.phase-desc { font-size: 1rem !important; line-height: 1.9 !important; color: #374151 !important; }
