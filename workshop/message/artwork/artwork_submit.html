@@ -4,60 +4,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>タイトルとペンネーム</title>
-    <link rel="stylesheet" href="./artwork_submit_styles.css?v=yagami1">
-    <link rel="stylesheet" href="../../common/log-fit.css?v=yagami1">
-    <link rel="stylesheet" href="../../common/kids.css?v=yagami1">
+    <link rel="stylesheet" href="./artwork_submit_styles.css?v=yagami2">
+    <link rel="stylesheet" href="../../common/log-fit.css?v=yagami2">
+    <link rel="stylesheet" href="../../common/kids.css?v=yagami2">
 </head>
 <body>
     <div class="container">
         <header class="page-header">
             <div class="step-indicator">4 メッセージ</div>
-            <h1 class="page-title">作品{さくひん}の タイトルを つけよう</h1>
+            <h1 class="page-title">作品{さくひん}のタイトルをつけよう</h1>
         </header>
 
         <main class="content">
-            <section class="guide-section">
-                <div class="guide-text">
-                    <p>・この 作品{さくひん}で、家族{かぞく}に どんなことを 伝{つた}えたいかな？</p>
-                    <p>・こわがらせるのではなく、命{いのち}を 守{まも}る メッセージに しよう</p>
-                </div>
-            </section>
-
             <section class="input-section">
                 <h2 class="section-title">
-                    作品{さくひん}の タイトル（メッセージ）
-                    <span class="required-badge">かならず</span>
+                    作品{さくひん}のタイトル（メッセージ）
+                    <span class="required-badge">必須{ひっす}</span>
                 </h2>
-                <p class="voice-hint">🎤 キーボードの マイクを おすと、話{はな}して 書{か}くこともできるよ</p>
                 <input
                     type="text"
                     id="artworkTitle"
                     class="title-input"
-                    placeholder="れい）大雨のときは早めに高いところへ！"
+                    placeholder="例）警報が出たら、早めに高い場所へ避難しよう"
                     aria-label="作品のタイトル"
                     required
                 />
                 <div class="validation-message" id="titleValidation" style="display: none;">
-                    ⚠️ タイトルを 書{か}いてね
+                    ⚠️ タイトルを入力{にゅうりょく}してください
                 </div>
             </section>
 
             <section class="input-section">
                 <h2 class="section-title">
                     ペンネーム
-                    <span class="required-badge">かならず</span>
+                    <span class="required-badge">必須{ひっす}</span>
                 </h2>
-                <p class="kid-warning">⚠️ 本名{ほんみょう}や 自宅{じたく}の 場所{ばしょ}は 書{か}かないでね</p>
                 <input
                     type="text"
                     id="creatorName"
                     class="name-input"
-                    placeholder="れい）ぼうさいマン"
+                    placeholder="例）ぼうさいマン"
                     aria-label="ペンネーム"
                     required
                 />
                 <div class="validation-message" id="nameValidation" style="display: none;">
-                    ⚠️ ペンネームを 書{か}いてね
+                    ⚠️ ペンネームを入力{にゅうりょく}してください
                 </div>
             </section>
         </main>
@@ -67,7 +58,7 @@
             <button type="button" class="btn-primary" id="nextBtn" disabled>たしかめる ▶</button>
         </footer>
     </div>
-    <script src="../../common/ruby.js?v=yagami1"></script>
-    <script src="./artwork_submit_script.js?v=yagami1"></script>
+    <script src="../../common/ruby.js?v=yagami2"></script>
+    <script src="./artwork_submit_script.js?v=yagami2"></script>
 </body>
 </html>

@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>たしかめて登録</title>
-    <link rel="stylesheet" href="./final_submit_styles.css?v=yagami1">
-    <link rel="stylesheet" href="../../common/kids.css?v=yagami1">
+    <title>確認して登録</title>
+    <link rel="stylesheet" href="./final_submit_styles.css?v=yagami2">
+    <link rel="stylesheet" href="../../common/kids.css?v=yagami2">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
@@ -13,60 +13,64 @@
     <div class="container">
         <header class="final-header">
             <div class="step-badge">4 メッセージ</div>
-            <h1 class="main-title">たしかめて、マップに 登録{とうろく}しよう</h1>
-            <p class="subtitle">直{なお}したいところは「✏️ なおす」を おしてね</p>
+            <h1 class="main-title">内容{ないよう}を確認{かくにん}して、マップに登録{とうろく}しよう</h1>
+            <p class="subtitle">直{なお}したいところは「✏️ 直{なお}す」を押{お}してください</p>
         </header>
 
         <!-- 1. 入力内容 -->
         <section class="step-section" id="step-summary">
             <div class="step-header">
                 <div class="step-icon">📋</div>
-                <h2 class="step-title">① 書{か}いたことを たしかめよう</h2>
+                <h2 class="step-title">① 入力{にゅうりょく}した内容{ないよう}を確認{かくにん}しよう</h2>
             </div>
 
             <div class="artwork-preview-card">
-                <h3 class="artwork-preview-label">🖼️ あなたの 作品{さくひん}</h3>
+                <h3 class="artwork-preview-label">🖼️ あなたの作品{さくひん}</h3>
                 <div class="artwork-preview-frame">
                     <img id="artwork-preview-img" alt="あなたの作品" style="display:none;">
                     <div id="artwork-preview-empty" class="artwork-preview-empty" style="display:none;">
-                        作品{さくひん}を 読{よ}みこんでいます…
+                        作品{さくひん}を読{よ}みこんでいます…
                     </div>
+                </div>
+                <div class="redo-actions">
+                    <button type="button" class="btn btn-secondary redo-btn" onclick="redoWork('marblingApp')">🎨 マーブリングを作{つく}り直{なお}す</button>
+                    <button type="button" class="btn btn-secondary redo-btn" onclick="redoWork('collageApp')">✂️ コラージュを作{つく}り直{なお}す</button>
                 </div>
             </div>
 
             <div class="summary-grid">
                 <div class="summary-card">
-                    <div class="summary-head"><h3 class="summary-label">💬 作品{さくひん}の タイトル</h3><button type="button" class="edit-btn" data-edit="title">✏️ なおす</button></div>
+                    <div class="summary-head"><h3 class="summary-label">💬 作品{さくひん}のタイトル</h3><button type="button" class="edit-btn" data-edit="title">✏️ 直{なお}す</button></div>
                     <div class="summary-editor" id="editor-title" style="display:none;"></div>
                     <div id="summary-title" class="summary-value summary-title-big">…</div>
                 </div>
                 <div class="summary-card">
-                    <div class="summary-head"><h3 class="summary-label">✍️ ペンネーム</h3><button type="button" class="edit-btn" data-edit="creator">✏️ なおす</button></div>
+                    <div class="summary-head"><h3 class="summary-label">✍️ ペンネーム</h3><button type="button" class="edit-btn" data-edit="creator">✏️ 直{なお}す</button></div>
                     <div class="summary-editor" id="editor-creator" style="display:none;"></div>
                     <div id="summary-creator" class="summary-value">…</div>
                 </div>
                 <div class="summary-card">
-                    <div class="summary-head"><h3 class="summary-label">🎨 マーブリングで 表{あらわ}した 危{あぶ}なさ</h3><button type="button" class="edit-btn" data-edit="marbling">✏️ なおす</button></div>
+                    <div class="summary-head"><h3 class="summary-label">🎨 マーブリングで表{あらわ}した災害{さいがい}リスク</h3><button type="button" class="edit-btn" data-edit="marbling">✏️ 直{なお}す</button></div>
                     <div class="summary-editor" id="editor-marbling" style="display:none;"></div>
                     <div id="summary-marbling" class="summary-value">…</div>
                 </div>
                 <div class="summary-card">
-                    <div class="summary-head"><h3 class="summary-label">✂️ コラージュで 表{あらわ}した 行動{こうどう}</h3><button type="button" class="edit-btn" data-edit="collage">✏️ なおす</button></div>
+                    <div class="summary-head"><h3 class="summary-label">✂️ コラージュで表{あらわ}した防災{ぼうさい}行動{こうどう}</h3><button type="button" class="edit-btn" data-edit="collage">✏️ 直{なお}す</button></div>
                     <div class="summary-editor" id="editor-collage" style="display:none;"></div>
                     <div id="summary-collage" class="summary-value">…</div>
                 </div>
                 <div class="summary-card">
-                    <div class="summary-head"><h3 class="summary-label">⏱️ いつの 行動{こうどう}？</h3><button type="button" class="edit-btn" data-edit="phases">✏️ なおす</button></div>
+                    <div class="summary-head"><h3 class="summary-label">⏱️ いつの行動{こうどう}か</h3><button type="button" class="edit-btn" data-edit="phases">✏️ 直{なお}す</button></div>
                     <div class="summary-editor" id="editor-phases" style="display:none;"></div>
                     <div id="summary-phases" class="summary-value">…</div>
                 </div>
                 <div class="summary-card">
-                    <div class="summary-head"><h3 class="summary-label">⚠️ 見{み}た ハザードマップ</h3><button type="button" class="edit-btn" data-edit="hazards">✏️ なおす</button></div>
+                    <div class="summary-head"><h3 class="summary-label">⚠️ 読{よ}み取{と}ったハザードマップ</h3><button type="button" class="edit-btn" data-edit="hazards">✏️ 直{なお}す</button></div>
                     <div class="summary-editor" id="editor-hazards" style="display:none;"></div>
                     <div id="summary-hazards" class="summary-value">…</div>
                 </div>
                 <div class="summary-card">
-                    <div class="summary-head"><h3 class="summary-label">🗺️ 作品{さくひん}にする 場所{ばしょ}</h3><button type="button" class="edit-btn" data-edit="location">✏️ なおす</button></div>
+                    <div class="summary-head"><h3 class="summary-label">🗺️ 作品{さくひん}にする場所{ばしょ}</h3><button type="button" class="edit-btn" data-edit="location">✏️ 直{なお}す</button></div>
                     <div class="summary-editor" id="editor-location" style="display:none;"></div>
                     <div id="summary-location" class="summary-value">…</div>
                     <div id="summary-map" class="summary-map"></div>
@@ -80,15 +84,15 @@
                 <div class="step-icon">📤</div>
                 <h2 class="step-title">② 登録{とうろく}しよう</h2>
             </div>
-            <p class="kid-send-note">「登録{とうろく}する」を おすと、作品{さくひん}が 矢上小{やがみしょう}の 作品{さくひん}マップに のるよ。<br>画面{がめん}が かわるまで まってね。</p>
+            <p class="kid-send-note">「登録{とうろく}する」を押{お}すと、作品{さくひん}が矢上小{やがみしょう}の防災{ぼうさい}行動{こうどう}マップに載{の}ります。<br>画面{がめん}が変{か}わるまで待{ま}ってください。</p>
 
             <div class="alert-card warning" id="image-missing-alert" style="display:none;">
                 <div class="alert-icon">⚠️</div>
                 <div class="alert-content">
-                    <h3 class="alert-title">作品{さくひん}の 絵{え}が 見{み}つかりません</h3>
-                    <p class="info-note">コラージュの 画面{がめん}に もどって、もう一度{いちど}「つぎへ」を おしてね。</p>
+                    <h3 class="alert-title">作品{さくひん}の絵{え}が見{み}つかりません</h3>
+                    <p class="info-note">コラージュの画面{がめん}に戻{もど}って、もう一度{いちど}「つぎへ」を押{お}してください。</p>
                     <div class="action-section" style="margin-top:0.75rem;">
-                        <button class="btn btn-secondary" onclick="navigateToPage('collage')" type="button">コラージュに もどる</button>
+                        <button class="btn btn-secondary" onclick="navigateToPage('collage')" type="button">コラージュにもどる</button>
                     </div>
                 </div>
             </div>
@@ -104,19 +108,19 @@
         <section class="step-section success-section" id="step-complete" style="display:none;">
             <div class="success-card">
                 <div class="success-icon">🎉</div>
-                <h2 class="success-title">作品{さくひん}マップに 登録{とうろく}できたよ！</h2>
-                <p class="success-message">作品{さくひん}を iPadに 保存{ほぞん}してから、マップを 見{み}てみよう。</p>
+                <h2 class="success-title">防災{ぼうさい}行動{こうどう}マップに登録{とうろく}できました！</h2>
+                <p class="success-message">作品{さくひん}をiPadに保存{ほぞん}してから、マップを見{み}てみよう。</p>
                 <div class="next-action">
-                    <button class="btn btn-large btn-secondary" onclick="downloadArtwork()" id="btn-download" type="button">💾 作品{さくひん}を iPadに 保存{ほぞん}</button>
-                    <button class="btn btn-large btn-success" onclick="goToNextAction()" type="button">🗺️ 作品{さくひん}マップを 見{み}る ▶</button>
+                    <button class="btn btn-large btn-secondary" onclick="downloadArtwork()" id="btn-download" type="button">💾 作品{さくひん}をiPadに保存{ほぞん}</button>
+                    <button class="btn btn-large btn-success" onclick="goToNextAction()" type="button">🗺️ 防災{ぼうさい}行動{こうどう}マップを見{み}る ▶</button>
                 </div>
-                <p class="kid-download-note" id="download-note" style="display:none;">✓ 保存{ほぞん}したよ（「ファイル」アプリの「ダウンロード」に 入{はい}っています）</p>
+                <p class="kid-download-note" id="download-note" style="display:none;">✓ 保存{ほぞん}しました（「ファイル」アプリの「ダウンロード」に入{はい}っています）</p>
             </div>
         </section>
     </div>
 
-    <script src="../../common/config.js?v=yagami1"></script>
-    <script src="../../common/ruby.js?v=yagami1"></script>
-    <script src="./final_submit_script.js?v=yagami1"></script>
+    <script src="../../common/config.js?v=yagami2"></script>
+    <script src="../../common/ruby.js?v=yagami2"></script>
+    <script src="./final_submit_script.js?v=yagami2"></script>
 </body>
 </html>

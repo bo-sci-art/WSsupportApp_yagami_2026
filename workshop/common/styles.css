@@ -300,7 +300,9 @@ html.body-lock, body.body-lock { overflow: hidden; }
 .ws-panel__body p, .ws-panel__body li { overflow-wrap: anywhere; }
 
 /* ============== 矢上小版（子ども向け）調整 ============== */
-ruby rt { font-size: 0.55em; }
+/* ふりがなが漢字より長くても、漢字の間をあけない（ふりがなを左右にはみ出させる） */
+ruby { display: inline-block; position: relative; text-indent: 0; }
+ruby rt { position: absolute; left: 50%; top: calc(50% - 2.05em); transform: translateX(-50%); font-size: .55em; line-height: 1; white-space: nowrap; letter-spacing: 0; text-align: center; pointer-events: none; }
 html, body { height: 100%; overflow: hidden; }
 body { display: flex; flex-direction: column; }
 .ws-header { flex: 0 0 auto; padding: 8px 12px; gap: 10px; }

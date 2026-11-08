@@ -4,38 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>マーブリングの記録</title>
-    <link rel="stylesheet" href="log_marbling_styles.css?v=yagami1">
-    <link rel="stylesheet" href="../../common/log-fit.css?v=yagami1">
-    <link rel="stylesheet" href="../../common/kids.css?v=yagami1">
+    <link rel="stylesheet" href="log_marbling_styles.css?v=yagami2">
+    <link rel="stylesheet" href="../../common/log-fit.css?v=yagami2">
+    <link rel="stylesheet" href="../../common/kids.css?v=yagami2">
 </head>
 <body>
     <div class="container">
         <header class="page-header">
             <div class="step-indicator">2 マーブリング</div>
-            <h1 class="page-title">マーブリングで 表{あらわ}した 危{あぶ}なさを 書{か}こう</h1>
+            <h1 class="page-title">マーブリングで表{あらわ}した災害{さいがい}リスクを書{か}こう</h1>
         </header>
 
         <main class="content">
             <section class="input-section">
                 <h2 class="section-title">
-                    どんな 危{あぶ}なさを 表{あらわ}したかな？
-                    <span class="required-badge">かならず</span>
+                    どのような災害{さいがい}リスクを表{あらわ}しましたか？
+                    <span class="required-badge">必須{ひっす}</span>
                 </h2>
                 <div class="hint-text">
-                    <p>・もようは、どんな ようすかな？</p>
-                    <p>・色{いろ}は、なにを 表{あらわ}しているかな？</p>
+                    <p>・模様{もよう}の形{かたち}や動{うご}きは、災害{さいがい}のどのような様子{ようす}を表{あらわ}していますか？</p>
+                    <p>・それぞれの色{いろ}は、何{なに}を表{あらわ}していますか？</p>
                 </div>
-                <p class="voice-hint">🎤 キーボードの マイクを おすと、話{はな}して 書{か}くこともできるよ</p>
                 <textarea
                     id="marblingDescription"
                     class="description-textarea"
                     rows="4"
-                    placeholder="れい）大雨のとき、川の水があふれて、まちに水がながれこむようすを、青と茶色のうずで表しました。"
-                    aria-label="マーブリングで表した危なさ"
+                    placeholder="例）大雨で川があふれ、学校のまわりの低い土地に水が流れこむ様子を表しました。にごった水を茶色、深く水につかる場所をこい青のうずで表現しています。"
+                    aria-label="マーブリングで表した災害リスク"
                     required
                 ></textarea>
                 <div class="validation-message" id="descriptionValidation" style="display: none;">
-                    ⚠️ 書{か}いてから つぎへ すすもう
+                    ⚠️ 入力{にゅうりょく}してから次{つぎ}へ進{すす}んでください
                 </div>
                 <div class="character-count" id="characterCount">
                     <span id="currentCount">0</span> 文字{もじ}
@@ -44,11 +43,11 @@
         </main>
 
         <footer class="page-footer">
-            <button type="button" class="btn-secondary" id="backBtn">◀ マーブリングに もどる</button>
+            <button type="button" class="btn-secondary" id="backBtn">◀ マーブリングにもどる</button>
             <button type="button" class="btn-primary" id="nextBtn" disabled>つぎへ ▶</button>
         </footer>
     </div>
-    <script src="../../common/ruby.js?v=yagami1"></script>
-    <script src="log_marbling_script.js?v=yagami1"></script>
+    <script src="../../common/ruby.js?v=yagami2"></script>
+    <script src="log_marbling_script.js?v=yagami2"></script>
 </body>
 </html>

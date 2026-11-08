@@ -33,14 +33,14 @@ const CONFIG = {
 
     // 矢上小版：画面に出す言葉（保存する値は上の正式名のまま＝防災行動マップの絞り込みが動く）
     hazardLabels: {
-        '洪水（外水氾濫）': '川{かわ}の水{みず}が あふれる（洪水{こうずい}）',
-        '内水氾濫': '下水{げすい}や 水路{すいろ}から 水{みず}が あふれる',
-        '高潮': '台風{たいふう}で 海{うみ}の水{みず}が あふれる（高潮{たかしお}）',
+        '洪水（外水氾濫）': '洪水{こうずい}（外水氾濫{がいすいはんらん}）',
+        '内水氾濫': '内水氾濫{ないすいはんらん}',
+        '高潮': '高潮{たかしお}',
         '津波': '津波{つなみ}',
-        '土砂災害（急傾斜地の崩壊）': 'がけくずれ',
-        '液状化危険度': '地震{じしん}で 地面{じめん}が やわらかくなる（液状化{えきじょうか}）',
-        '地震の揺れ（震度）': '地震{じしん}の ゆれ',
-        '地震火災（焼失棟数）': '地震{じしん}の 火事{かじ}'
+        '土砂災害（急傾斜地の崩壊）': '土砂{どしゃ}災害{さいがい}（急傾斜地{きゅうけいしゃち}の崩壊{ほうかい}）',
+        '液状化危険度': '液状化{えきじょうか}危険度{きけんど}',
+        '地震の揺れ（震度）': '地震{じしん}の揺{ゆ}れ（震度{しんど}）',
+        '地震火災（焼失棟数）': '地震{じしん}火災{かさい}（焼失{しょうしつ}棟数{とうすう}）'
     }
 };
 
@@ -178,9 +178,9 @@ function initMap() {
     state.map = L.map('map').setView(CONFIG.defaultCenter, CONFIG.defaultZoom);
     
     // Add OpenStreetMap tile layer
-    L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png', {
-        attribution: '地理院タイル',
-        maxZoom: 18
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors',
+        maxZoom: 19
     }).addTo(state.map);
     
     // Map click event
@@ -216,7 +216,7 @@ function handleMapClick(e) {
     }).addTo(state.map);
     
     // Update instruction
-    elements.mapInstruction.textContent = '📍 下{した}の「ここに する」を おしてね';
+    elements.mapInstruction.textContent = '📍 下{した}の「この場所{ばしょ}に決{き}める」を押{お}してください';
     
     // Show confirmation UI
     elements.locationConfirmation.style.display = 'flex';
@@ -259,7 +259,7 @@ function confirmLocation() {
     }).addTo(state.map);
     
     // Update UI
-    elements.mapInstruction.textContent = '✓ 場所{ばしょ}が きまったよ';
+    elements.mapInstruction.textContent = '✓ 場所{ばしょ}が決{き}まりました';
     elements.locationConfirmation.style.display = 'none';
     elements.locationConfirmed.style.display = 'block';
     elements.confirmedCoords.textContent = `緯度: ${state.confirmedLocation.lat.toFixed(6)}, 経度: ${state.confirmedLocation.lon.toFixed(6)}`;
@@ -285,7 +285,7 @@ function changeLocation() {
     
     // Update UI
     elements.locationConfirmed.style.display = 'none';
-    elements.mapInstruction.textContent = '📍 地図{ちず}を タッチしてね';
+    elements.mapInstruction.textContent = '📍 地図{ちず}をタップして場所{ばしょ}を選{えら}んでください';
     
     updateNextButtonState();
 }
@@ -373,7 +373,7 @@ function loadSavedData() {
                         state.map.setView([state.confirmedLocation.lat, state.confirmedLocation.lon], CONFIG.defaultZoom);
                         
                         // Update UI
-                        elements.mapInstruction.textContent = '✓ 場所{ばしょ}が きまったよ';
+                        elements.mapInstruction.textContent = '✓ 場所{ばしょ}が決{き}まりました';
                         elements.locationConfirmed.style.display = 'block';
                         elements.confirmedCoords.textContent = `緯度: ${state.confirmedLocation.lat.toFixed(6)}, 経度: ${state.confirmedLocation.lon.toFixed(6)}`;
                     }

@@ -13,7 +13,9 @@
     if (!text || !TEST.test(text)) return;
     var p = node.parentNode;
     if (!p || SKIP[p.nodeName]) return;
-    var frag = document.createDocumentFragment();
+    // ひとまとまりの span に入れる（親が flex / grid のとき、語ごとに間があかないように）
+    var frag = document.createElement('span');
+    frag.className = 'rb-run';
     var last = 0, m;
     RE.lastIndex = 0;
     while ((m = RE.exec(text))) {

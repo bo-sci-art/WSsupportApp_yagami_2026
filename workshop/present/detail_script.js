@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const urlParams = new URLSearchParams(window.location.search);
   const artId = urlParams.get("id");
-  if (!artId) { alert("さくひんが みつかりませんでした。マップに もどります。"); window.location.href = "index.html"; return; }
+  if (!artId) { alert("作品が見つかりませんでした。マップに戻ります。"); window.location.href = "index.html"; return; }
 
   // ---- 地図タイル（国土地理院） ----
   const GSI_PALE = "https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png";
@@ -32,10 +32,10 @@ document.addEventListener("DOMContentLoaded", function () {
   }
   // 作品の災害種(field_24キーワード)→国土地理院レイヤー
   const HAZARD_DEFS = {
-    "洪水":  { name:"川{かわ}の水{みず}が あふれる（洪水{こうずい}）", key:"flood_l2" },
-    "高潮":  { name:"台風{たいふう}で 海{うみ}の水{みず}が あふれる（高潮{たかしお}）", key:"hightide" },
+    "洪水":  { name:"洪水{こうずい}（外水氾濫{がいすいはんらん}）", key:"flood_l2" },
+    "高潮":  { name:"高潮{たかしお}", key:"hightide" },
     "津波":  { name:"津波{つなみ}", key:"tsunami" },
-    "土砂":  { name:"がけくずれ（土砂{どしゃ}災害{さいがい}）", key:"kyukei" }
+    "土砂":  { name:"土砂{どしゃ}災害{さいがい}（急傾斜地{きゅうけいしゃち}の崩壊{ほうかい}）", key:"kyukei" }
   };
 
   const phaseKeywords = {
@@ -96,19 +96,19 @@ document.addEventListener("DOMContentLoaded", function () {
     .then(gj => {
       ALL = gj.features.filter(f => f.properties && f.properties.id && !HIDDEN_IDS.includes(f.properties.id));
       feature = ALL.find(f => String(f.properties.id) === String(artId));
-      if (!feature) { alert("さくひんが みつかりませんでした。マップに もどります。"); window.location.href="index.html"; return; }
+      if (!feature) { alert("作品が見つかりませんでした。マップに戻ります。"); window.location.href="index.html"; return; }
       P = feature.properties;
       initArtwork();
       initSurMap();
       showQuestMenu();
     })
-    .catch(err => { console.error("作品データ読込失敗", err); alert("さくひんを よみこめませんでした。"); });
+    .catch(err => { console.error("作品データ読込失敗", err); alert("さくひんをよみこめませんでした。"); });
 
   function setText(id, text){ const el=document.getElementById(id); if(el) el.textContent = text || "（なし）"; }
 
   function initArtwork(){
     const info = document.getElementById("artwork-info");
-    if (info) info.innerHTML = '<div class="simple-author-label">作者{さくしゃ}: '+(P.field_25||"ないしょ").replace(/[&<>"']/g,"")+'</div>';
+    if (info) info.innerHTML = '<div class="simple-author-label">作者{さくしゃ}: '+(P.field_25||"作者{さくしゃ}不明{ふめい}").replace(/[&<>"']/g,"")+'</div>';
     const img = document.getElementById("art-image");
     if (img){ img.src = (P.images&&P.images[0]) ? DATA_BASE+"/"+P.images[0] : PLACEHOLDER; img.onerror=function(){ this.style.visibility="hidden"; }; }
     setText("mabling-text", P.Mabling);
@@ -153,7 +153,7 @@ document.addEventListener("DOMContentLoaded", function () {
       document.getElementById("step1-info").style.display="block";
       document.getElementById("step1-controls").style.display="block";
       const b=document.getElementById("step1-btn-area"); if(b) b.style.display="block";
-      if(verifyTitle) verifyTitle.textContent="▼ ハザードマップを 重{かさ}ねて、ピンの まわりの 危{あぶ}なさを 見{み}てみよう";
+      if(verifyTitle) verifyTitle.textContent="▼ ハザードマップを重{かさ}ねてピン周辺{しゅうへん}の災害{さいがい}リスクを確認{かくにん}しよう";
       if(infoBox) infoBox.classList.remove("action-mode");
       resetSurHazards();
       resetResources();
@@ -166,7 +166,7 @@ document.addEventListener("DOMContentLoaded", function () {
       document.getElementById("step2-info").style.display="block";
       document.getElementById("step2-controls").style.display="block";
       const b=document.getElementById("step2-btn-area"); if(b) b.style.display="block";
-      if(verifyTitle) verifyTitle.textContent="▼ 作者{さくしゃ}が 考{かんが}えた 行動{こうどう}を、地図{ちず}と 見{み}くらべてみよう";
+      if(verifyTitle) verifyTitle.textContent="▼ 作者{さくしゃ}が考{かんが}えた防災{ぼうさい}行動{こうどう}を、地図{ちず}と見比{みくら}べてみよう";
       if(infoBox) infoBox.classList.add("action-mode");
       resetSurHazards();
       setText("collage-text", P.collage);
@@ -208,11 +208,11 @@ document.addEventListener("DOMContentLoaded", function () {
     if (/震度|液状化|火災|内水/.test(riskText)){
       const note=document.createElement("div");
       note.style.cssText="font-size:.8em;margin-top:6px;line-height:1.5;";
-      note.innerHTML='ゆれの 大{おお}きさ・地面{じめん}が やわらかくなる 場所{ばしょ}・火事{かじ}・下水{げすい}から あふれる 水{みず}は <a href="https://wwwm.city.yokohama.lg.jp/yokohama/Portal" target="_blank" rel="noopener" style="color:#4f8b80;font-weight:bold">横浜市の「わいわい防災マップ」</a> で確認できます（外部サイト）。';
+      note.innerHTML='震度{しんど}・液状化{えきじょうか}・地震{じしん}火災{かさい}・内水氾濫{ないすいはんらん}は <a href="https://wwwm.city.yokohama.lg.jp/yokohama/Portal" target="_blank" rel="noopener" style="color:#4f8b80;font-weight:bold">横浜市{よこはまし}の「わいわい防災{ぼうさい}マップ」</a> で確認{かくにん}できます（外部{がいぶ}サイト）。';
       container.appendChild(note);
     }
     if (hit===0 && !/震度|液状化|火災|内水/.test(riskText)){
-      container.innerHTML = "<p style='font-size:0.8em; color:#999;'>※この 作品{さくひん}に 合{あ}う ハザードマップは ありません</p>";
+      container.innerHTML = "<p style='font-size:0.8em; color:#999;'>※特{とく}に関連{かんれん}するハザードマップ情報{じょうほう}はありません</p>";
     }
   }
 
@@ -221,18 +221,18 @@ document.addEventListener("DOMContentLoaded", function () {
   let RES = null; // {shelters:[],bases:[],water:[]}
   const resLayers = { shelters:null, bases:null, water:null };
   const RES_STYLE = {
-    shelters:{ color:"#2e9e5b", glyph:"", label:"ひなん 場所{ばしょ}" },
-    bases:   { color:"#2f6fb0", glyph:"", label:"ひなん 生活{せいかつ}を する 学校{がっこう}など" },
-    water:   { color:"#0f9bb5", glyph:"", label:"水{みず}を もらえる 場所{ばしょ}" }
+    shelters:{ color:"#2e9e5b", glyph:"", label:"指定{してい}緊急{きんきゅう}避難{ひなん}場所{ばしょ}" },
+    bases:   { color:"#2f6fb0", glyph:"", label:"地域{ちいき}防災{ぼうさい}拠点{きょてん}" },
+    water:   { color:"#0f9bb5", glyph:"", label:"災害時{さいがいじ}給水所{きゅうすいじょ}" }
   };
   const HAZKEY_DEFS = [
     { re:/洪水/,                     key:"flood",     label:"洪水{こうずい}" },
     { re:/高潮/,                     key:"hightide",  label:"高潮{たかしお}" },
     { re:/津波/,                     key:"tsunami",   label:"津波{つなみ}" },
-    { re:/土砂|崖|土石流|地滑り|急傾斜/, key:"landslide", label:"がけくずれ" },
+    { re:/土砂|崖|土石流|地滑り|急傾斜/, key:"landslide", label:"土砂{どしゃ}災害{さいがい}" },
     { re:/地震|震度|液状化/,          key:"quake",     label:"地震{じしん}" },
-    { re:/火災|火事|延焼/,            key:"fire",      label:"大{おお}きな 火事{かじ}" },
-    { re:/内水/,                     key:"inland",    label:"下水{げすい}から あふれる 水{みず}" }
+    { re:/火災|火事|延焼/,            key:"fire",      label:"大規模{だいきぼ}な火事{かじ}" },
+    { re:/内水/,                     key:"inland",    label:"内水氾濫{ないすいはんらん}" }
   ];
   function hazKeysFromField(f24){
     const s=f24||"", keys=[], labels=[];
@@ -275,8 +275,8 @@ document.addEventListener("DOMContentLoaded", function () {
     if(!container) return;
     container.style.display = "block"; // 親の中央寄せflexを解除して崩れ防止
     const hazNote = hz.labels.length
-      ? '「'+hz.labels.join('・')+'」の ときの ひなん 場所{ばしょ}を 出{だ}しています。'
-      : 'ひなん 場所{ばしょ}を 出{だ}しています。';
+      ? '「'+hz.labels.join('・')+'」に対応{たいおう}した避難{ひなん}場所{ばしょ}を表示{ひょうじ}しています。'
+      : '避難{ひなん}場所{ばしょ}を表示{ひょうじ}しています。';
     let toggles='';
     Object.keys(RES_STYLE).forEach(k=>{
       const st=RES_STYLE[k];
@@ -287,9 +287,9 @@ document.addEventListener("DOMContentLoaded", function () {
         +'</label>';
     });
     container.innerHTML =
-        '<div class="res-note">'+hazNote+'<br>ピンの まわりの にげる 場所{ばしょ}などを 出{だ}したり 消{け}したり できます。</div>'
+        '<div class="res-note">'+hazNote+'<br>ピン周辺{しゅうへん}の防災{ぼうさい}資源{しげん}の表示{ひょうじ}を切{き}り替{か}えられます。</div>'
       + '<div class="res-toggle-row">'+toggles+'</div>'
-      + '<div class="res-source">出典{しゅってん}：国土地理院{こくどちりいん}・横浜市{よこはまし}オープンデータ（CC BY 4.0）</div>';
+      + '<div class="res-source">出典：国土地理院・横浜市オープンデータ（CC BY 4.0）</div>';
     Object.keys(RES_STYLE).forEach(k=>{
       const cb=document.getElementById("chk-res-"+k);
       if(!cb) return;
@@ -301,7 +301,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
   function showResources(){
     const container = document.getElementById("step2-resource-check-area");
-    if (container) container.innerHTML='<div style="font-size:.8em;color:#888;">にげる 場所{ばしょ}などを 読{よ}みこみ中{ちゅう}…</div>';
+    if (container) container.innerHTML='<div style="font-size:.8em;color:#888;">防災{ぼうさい}資源{しげん}を読{よ}み込{こ}み中{ちゅう}…</div>';
     const center = feature.geometry.coordinates; // [lon,lat]
     const hz = hazKeysFromField(P.field_24);
     loadResources().then(R=>{
@@ -317,7 +317,7 @@ document.addEventListener("DOMContentLoaded", function () {
       renderResControls(container, pick, hz);
     }).catch(err=>{
       console.error("防災資源の読込に失敗", err);
-      if (container) container.innerHTML='<div style="background:#fbeec2;border-radius:8px;padding:10px 12px;font-size:.82em;color:#8a6d10;line-height:1.6;">防災資源データを読み込めませんでした（データ公開後に表示されます）。</div>';
+      if (container) container.innerHTML='<div style="background:#fbeec2;border-radius:8px;padding:10px 12px;font-size:.82em;color:#8a6d10;line-height:1.6;">防災{ぼうさい}資源{しげん}データを読{よ}み込{こ}めませんでした。</div>';
     });
   }
 
@@ -336,24 +336,24 @@ document.addEventListener("DOMContentLoaded", function () {
   window.finishQuest = function(stepNum){
     showQuestMenu();
     const addResult=(item,text)=>{ if(item && !item.querySelector(".quest-result-text")){ const d=document.createElement("div"); d.className="quest-result-text"; d.innerHTML=text; item.appendChild(d); } };
-    const enableReplay=(item,step)=>{ if(item){ item.onclick=function(){ startQuest(step); }; item.title="もう一度 見る"; } };
+    const enableReplay=(item,step)=>{ if(item){ item.onclick=function(){ startQuest(step); }; item.title="もう一度見る"; } };
 
     if (stepNum===1){
       const it=document.getElementById("quest-item-1"); const bt=it.querySelector("button");
       it.classList.add("completed"); it.classList.remove("active"); if(bt) bt.style.display="none";
-      addResult(it, P.Mabling||"危{あぶ}なさ"); enableReplay(it,1);
+      addResult(it, P.Mabling||"災害{さいがい}リスク"); enableReplay(it,1);
       const it2=document.getElementById("quest-item-2"), b2=document.getElementById("btn-step2");
-      if(it2&&b2){ it2.classList.remove("locked"); it2.classList.add("active"); b2.disabled=false; b2.innerText="コラージュを 見{み}る ＞"; }
+      if(it2&&b2){ it2.classList.remove("locked"); it2.classList.add("active"); b2.disabled=false; b2.innerText="コラージュを鑑賞{かんしょう}する ＞"; }
     } else if (stepNum===2){
       const it=document.getElementById("quest-item-2"); const bt=it.querySelector("button");
       it.classList.add("completed"); it.classList.remove("active"); if(bt) bt.style.display="none";
-      addResult(it, P.collage||"命{いのち}を 守{まも}る 行動{こうどう}"); enableReplay(it,2);
+      addResult(it, P.collage||"防災{ぼうさい}行動{こうどう}"); enableReplay(it,2);
       const it3=document.getElementById("quest-item-3"), b3=document.getElementById("btn-step3");
-      if(it3&&b3){ it3.classList.remove("locked"); it3.classList.add("active"); b3.disabled=false; b3.innerText="手紙{てがみ}を ひらく 💌"; }
+      if(it3&&b3){ it3.classList.remove("locked"); it3.classList.add("active"); b3.disabled=false; b3.innerText="手紙{てがみ}を開{ひら}く 💌"; }
     } else if (stepNum===3){
       const it=document.getElementById("quest-item-3"); const bt=document.getElementById("btn-step3");
       it.classList.add("completed"); it.classList.remove("active"); if(bt) bt.style.display="none";
-      addResult(it, P.Message||"作者{さくしゃ}からの メッセージ"); enableReplay(it,3);
+      addResult(it, P.Message||"作者{さくしゃ}からのメッセージ"); enableReplay(it,3);
       const viewed=lsGet("bousai_viewed");
       if(!viewed.includes(artId)){ viewed.push(artId); localStorage.setItem("bousai_viewed", JSON.stringify(viewed)); updateHeaderStats(); }
       const post=document.getElementById("post-quest-area"); if(post) post.style.display="block";
@@ -406,15 +406,15 @@ document.addEventListener("DOMContentLoaded", function () {
       item.onclick=()=>{ window.location.href="detail.html?id="+oid; };
       item.innerHTML='<div class="compact-thumb-box"><div class="number-badge-float '+badgeClass+'">'+num+'</div>'
         +'<img class="compact-thumb" src="'+img+'" onerror="this.style.visibility=\'hidden\'"></div>'
-        +'<div class="compact-info"><div class="compact-author">👤 '+String(p.field_25||"ないしょ").replace(/[&<>"']/g,"")+'</div></div>';
+        +'<div class="compact-info"><div class="compact-author">👤 '+String(p.field_25||"作者{さくしゃ}不明{ふめい}").replace(/[&<>"']/g,"")+'</div></div>';
       container.appendChild(item);
       const c=f.geometry&&f.geometry.coordinates;
       if(c){ L.marker([c[1],c[0]],{icon:numIcon(num,color)}).addTo(nearMarkers); bounds.push([c[1],c[0]]); }
     };
     if(riskF.length) riskF.forEach(f=>addCard(gridRisk,f,n++,"badge-risk","#EE8972"));
-    else gridRisk.innerHTML="<p style='font-size:0.9em; color:#999; padding:5px;'>ないよ</p>";
+    else gridRisk.innerHTML="<p style='font-size:0.9em; color:#999; padding:5px;'>該当{がいとう}する作品{さくひん}はありません</p>";
     if(timeF.length) timeF.forEach(f=>addCard(gridTime,f,n++,"badge-time","#6BAA9F"));
-    else gridTime.innerHTML="<p style='font-size:0.9em; color:#999; padding:5px;'>ないよ</p>";
+    else gridTime.innerHTML="<p style='font-size:0.9em; color:#999; padding:5px;'>該当{がいとう}する作品{さくひん}はありません</p>";
     if(nearMap && bounds.length) nearMap.fitBounds(L.latLngBounds(bounds).pad(0.3),{maxZoom:15});
   }
 
@@ -454,18 +454,18 @@ document.addEventListener("DOMContentLoaded", function () {
     const bh=document.getElementById("btn-heart"), ba=document.getElementById("btn-action");
     updateHeaderStats();
     if(!bh||!ba) return;
-    if(lsGet("bousai_hearts").includes(artId)){ bh.classList.add("active"); bh.innerHTML='<span class="emoji">💖</span> いいなと 思{おも}った'; }
-    if(lsGet("bousai_actions").includes(artId)){ ba.classList.add("active"); ba.innerHTML='<span class="emoji">⭐</span> やってみたい'; }
+    if(lsGet("bousai_hearts").includes(artId)){ bh.classList.add("active"); bh.innerHTML='<span class="emoji">💖</span> 想{おも}いに共感{きょうかん}した'; }
+    if(lsGet("bousai_actions").includes(artId)){ ba.classList.add("active"); ba.innerHTML='<span class="emoji">⭐</span> 防災{ぼうさい}行動{こうどう}を実践{じっせん}したい'; }
     bh.addEventListener("click", ()=>{
       let l=lsGet("bousai_hearts");
-      if(l.includes(artId)){ l=l.filter(x=>x!==artId); bh.classList.remove("active"); bh.innerHTML='<span class="emoji">🤍</span> いいなと 思{おも}った'; }
-      else { l.push(artId); bh.classList.add("active"); bh.innerHTML='<span class="emoji">💖</span> いいなと 思{おも}った'; }
+      if(l.includes(artId)){ l=l.filter(x=>x!==artId); bh.classList.remove("active"); bh.innerHTML='<span class="emoji">🤍</span> 想{おも}いに共感{きょうかん}した'; }
+      else { l.push(artId); bh.classList.add("active"); bh.innerHTML='<span class="emoji">💖</span> 想{おも}いに共感{きょうかん}した'; }
       localStorage.setItem("bousai_hearts", JSON.stringify(l)); updateHeaderStats();
     });
     ba.addEventListener("click", ()=>{
       let l=lsGet("bousai_actions");
-      if(l.includes(artId)){ l=l.filter(x=>x!==artId); ba.classList.remove("active"); ba.innerHTML='<span class="emoji">⭐</span> やってみたい'; }
-      else { l.push(artId); ba.classList.add("active"); ba.innerHTML='<span class="emoji">✨</span> やってみたい'; }
+      if(l.includes(artId)){ l=l.filter(x=>x!==artId); ba.classList.remove("active"); ba.innerHTML='<span class="emoji">⭐</span> 防災{ぼうさい}行動{こうどう}を実践{じっせん}したい'; }
+      else { l.push(artId); ba.classList.add("active"); ba.innerHTML='<span class="emoji">✨</span> 防災{ぼうさい}行動{こうどう}を実践{じっせん}したい'; }
       localStorage.setItem("bousai_actions", JSON.stringify(l)); updateHeaderStats();
     });
   }
@@ -481,10 +481,10 @@ document.addEventListener("DOMContentLoaded", function () {
     const dots=document.querySelectorAll(".dt-dot"), helpBtn=document.getElementById("detail-help-btn");
     if(!overlay) return;
     const steps=[
-      {title:"ようこそ", img:"tutorial_d_01.png", desc:"作品{さくひん}には、<br>作者{さくしゃ}が 見{み}つけた この 場所{ばしょ}の <strong>危{あぶ}なさ</strong>と<br><strong>命{いのち}を 守{まも}る 行動{こうどう}</strong>が かくれているよ。"},
-      {title:"危{あぶ}なさ", img:"tutorial_d_02.png", desc:"うしろの もようは <strong>マーブリング</strong>で、作者{さくしゃ}が 見{み}つけた 危{あぶ}なさを 表{あらわ}しているよ。"},
-      {title:"命{いのち}を 守{まも}る 行動{こうどう}", img:"tutorial_d_03.png", desc:"もようの 上{うえ}の スタンプは <strong>コラージュ</strong>で、作者{さくしゃ}が 伝{つた}えたい 行動{こうどう}を 表{あらわ}しているよ。"},
-      {title:"見{み}かた", img:"tutorial_d_04.png", desc:"上{うえ}から じゅんばんに 見{み}て、<strong>作者{さくしゃ}の メッセージ</strong>を 受{う}け取{と}ろう。"}
+      {title:"ようこそ", img:"tutorial_d_01.png", desc:"鑑賞{かんしょう}する作品{さくひん}には、<br>作者{さくしゃ}が見{み}つけたこの場所{ばしょ}の<strong>災害{さいがい}リスク</strong>と<br>それに対{たい}する<strong>防災{ぼうさい}行動{こうどう}</strong>が隠{かく}されています。"},
+      {title:"災害{さいがい}リスク", img:"tutorial_d_02.png", desc:"背景{はいけい}の模様{もよう}には<strong>『マーブリング』技法{ぎほう}</strong>が使{つか}われ、作者{さくしゃ}が見{み}つけた災害{さいがい}リスクが表現{ひょうげん}されています。"},
+      {title:"防災{ぼうさい}行動{こうどう}", img:"tutorial_d_03.png", desc:"背景{はいけい}の模様{もよう}に図形{ずけい}を貼{は}る<strong>『コラージュ』技法{ぎほう}</strong>が使{つか}われ、作者{さくしゃ}が伝{つた}えたい防災{ぼうさい}行動{こうどう}が表現{ひょうげん}されています。"},
+      {title:"鑑賞{かんしょう}のしかた", img:"tutorial_d_04.png", desc:"上{うえ}から順番{じゅんばん}に鑑賞{かんしょう}を進{すす}め、作品{さくひん}に込{こ}められた<strong>作者{さくしゃ}のメッセージ</strong>を受{う}け取{と}りましょう。"}
     ];
     let page=0;
     function update(){

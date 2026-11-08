@@ -78,7 +78,7 @@ function setupEventListeners() {
     
     // 防災行動のタイミング
     if (elements.phaseOptions) {
-        elements.phaseOptions.querySelectorAll('input[type=checkbox]').forEach(cb => {
+        elements.phaseOptions.querySelectorAll('input[name=phase]').forEach(cb => {
             cb.addEventListener('change', handlePhaseChange);
         });
         renderPhaseSelection();
@@ -113,7 +113,7 @@ function handleTextInput(event) {
 }
 
 function handlePhaseChange() {
-    state.phases = Array.from(elements.phaseOptions.querySelectorAll('input[type=checkbox]:checked')).map(cb => cb.value);
+    state.phases = Array.from(elements.phaseOptions.querySelectorAll('input[name=phase]:checked')).map(cb => cb.value);
     renderPhaseSelection();
     if (state.phases.length > 0) elements.phaseValidation.style.display = 'none';
     updateNextButtonState();

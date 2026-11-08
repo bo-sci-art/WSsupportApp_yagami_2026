@@ -38,8 +38,8 @@ const CHECK = () => {
     while (el) {
       const tag = el.tagName;
       if (tag === "RUBY" || tag === "SCRIPT" || tag === "STYLE" || tag === "TEXTAREA" || tag === "TITLE") { skip = true; break; }
-      // 見えていないもの・地図の出典・作品データ（児童の書いた文章・地名）は対象外
-      if (el.classList && (el.classList.contains("leaflet-control-attribution") || el.hasAttribute("data-user-text") || el.classList.contains("summary-value") || el.classList.contains("art-message") || el.classList.contains("art-title"))) { skip = true; break; }
+      // 見えていないもの・出典・凡例のマーク・図の中の文字・作品データ（児童の書いた文章・地名）は対象外
+      if (el.classList && (el.classList.contains("leaflet-control-attribution") || el.hasAttribute("data-user-text") || el.classList.contains("summary-value") || el.classList.contains("art-message") || el.classList.contains("art-title") || el.classList.contains("res-source") || el.classList.contains("attr") || el.classList.contains("res-badge") || tag === "svg" || tag === "text")) { skip = true; break; }
       el = el.parentElement;
     }
     if (skip) continue;

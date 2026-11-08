@@ -1780,4 +1780,6 @@ html, body {
   .map-wrapper { height: 320px !important; min-height: 320px; }
 }
 
-ruby rt { font-size: .55em; }
+/* ふりがなが漢字より長くても、漢字の間をあけない（ふりがなを左右にはみ出させる） */
+ruby { display: inline-block; position: relative; text-indent: 0; }
+ruby rt { position: absolute; left: 50%; top: calc(50% - 2.05em); transform: translateX(-50%); font-size: .55em; line-height: 1; white-space: nowrap; letter-spacing: 0; text-align: center; pointer-events: none; }

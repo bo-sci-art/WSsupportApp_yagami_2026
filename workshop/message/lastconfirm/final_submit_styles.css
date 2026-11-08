@@ -941,3 +941,7 @@ body {
 
 .btn { gap: 0 !important; }
 .btn > .emoji, .btn > svg { margin-right: .4rem; }
+
+/* 確認画面：作品の作り直しボタン */
+.redo-actions{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:14px}
+.redo-actions .redo-btn{font-size:1.05rem;padding:12px 20px;min-height:52px}

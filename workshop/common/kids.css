@@ -3,7 +3,9 @@
    各ページのCSS・log-fit.css のあとに読み込む
    ========================================================= */
 body { font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", sans-serif; }
-ruby rt { font-size: 0.55em; }
+/* ふりがなが漢字より長くても、漢字の間をあけない（ふりがなを左右にはみ出させる） */
+ruby { display: inline-block; position: relative; text-indent: 0; }
+ruby rt { position: absolute; left: 50%; top: calc(50% - 2.05em); transform: translateX(-50%); font-size: .55em; line-height: 1; white-space: nowrap; letter-spacing: 0; text-align: center; pointer-events: none; }
 .step-indicator { font-size: 1rem !important; font-weight: 800 !important; letter-spacing: .05em; }
 .page-title { font-size: clamp(1.5rem, 3.4vh, 2rem) !important; line-height: 1.7 !important; }
 .page-subtitle, .page-description { font-size: 1.1rem !important; line-height: 2 !important; }

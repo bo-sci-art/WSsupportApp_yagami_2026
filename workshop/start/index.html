@@ -14,7 +14,9 @@
     background: linear-gradient(135deg, #dcfce7, #fff 45%, #bbf7d0);
     display: grid; place-items: center; padding: 16px;
   }
-  ruby rt { font-size: .5em; }
+  /* ふりがなが漢字より長くても、漢字の間をあけない（ふりがなを左右にはみ出させる） */
+  ruby { display: inline-block; position: relative; text-indent: 0; }
+  ruby rt { position: absolute; left: 50%; top: calc(50% - 2.05em); transform: translateX(-50%); font-size: .55em; line-height: 1; white-space: nowrap; letter-spacing: 0; text-align: center; pointer-events: none; }
   .card {
     width: min(760px, 100%); background: #fff; border-radius: 28px;
     padding: 40px 32px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,.08);
@@ -32,16 +34,12 @@
 </head>
 <body>
   <main class="card">
-    <p class="school"><ruby>矢上<rt>やがみ</rt></ruby><ruby>小学校<rt>しょうがっこう</rt></ruby> 4<ruby>年<rt>ねん</rt></ruby>2<ruby>組<rt>くみ</rt></ruby></p>
     <h1><ruby>防災<rt>ぼうさい</rt></ruby>アートをつくろう</h1>
-    <p class="lead">
-      <ruby>先生<rt>せんせい</rt></ruby>のお<ruby>話<rt>はなし</rt></ruby>をきいてから、<br>
-      「はじめる」をおしてね。
-    </p>
+    <p class="lead">「はじめる」をおしてね。</p>
     <button class="start" id="startBtn" type="button">はじめる ▶</button>
   </main>
 
-<script src="../common/config.js?v=yagami1"></script>
+<script src="../common/config.js?v=yagami2"></script>
 <script>
   // 「はじめる」を押したときだけ、前の人の作品データを消す（共有のiPadでも真っさらから始められるように）
   // ※ページを開いただけでは消さない（まちがえて開いても作品が消えないように）

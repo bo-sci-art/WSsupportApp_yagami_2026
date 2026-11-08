@@ -4,59 +4,59 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>作品にする場所</title>
-    <link rel="stylesheet" href="./log_hazard_map_styles.css?v=yagami1">
-    <link rel="stylesheet" href="../../common/log-fit.css?v=yagami1">
-    <link rel="stylesheet" href="../../common/kids.css?v=yagami1">
+    <link rel="stylesheet" href="./log_hazard_map_styles.css?v=yagami2">
+    <link rel="stylesheet" href="../../common/log-fit.css?v=yagami2">
+    <link rel="stylesheet" href="../../common/kids.css?v=yagami2">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
     <div class="container">
         <header class="page-header">
             <div class="step-indicator">1 ハザードマップ</div>
-            <h1 class="page-title">作品{さくひん}にする 場所{ばしょ}と 災害{さいがい}を えらぼう</h1>
+            <h1 class="page-title">作品{さくひん}にする場所{ばしょ}と災害{さいがい}を選{えら}ぼう</h1>
         </header>
 
         <main class="content">
             <section class="input-section">
                 <h2 class="section-title">
-                    ① 見{み}た ハザードマップ
-                    <span class="required-badge">かならず</span>
+                    ① 読{よ}み取{と}ったハザードマップ
+                    <span class="required-badge">必須{ひっす}</span>
                 </h2>
-                <p class="section-description">あてはまるものを ぜんぶ えらんでね</p>
+                <p class="section-description">使{つか}ったハザードマップをすべて選{えら}んでください（いくつでも選{えら}べます）</p>
                 <div class="hazard-selection" id="hazardSelection"></div>
                 <div class="validation-message" id="hazardValidation" style="display: none;">
-                    ⚠️ 1つ いじょう えらんでね
+                    ⚠️ 1つ以上{いじょう}選{えら}んでください
                 </div>
             </section>
 
             <section class="input-section">
                 <h2 class="section-title">
-                    ② 作品{さくひん}にする 場所{ばしょ}
-                    <span class="required-badge">かならず</span>
+                    ② 作品{さくひん}にする場所{ばしょ}
+                    <span class="required-badge">必須{ひっす}</span>
                 </h2>
-                <p class="section-description">地図{ちず}を タッチして、「ここに する」を おしてね</p>
+                <p class="section-description">地図{ちず}をタップして場所{ばしょ}を選{えら}び、「この場所{ばしょ}に決{き}める」を押{お}してください</p>
                 <div class="map-container">
                     <div id="map" class="map"></div>
-                    <div class="map-instruction" id="mapInstruction">📍 地図{ちず}を タッチしてね</div>
+                    <div class="map-instruction" id="mapInstruction">📍 地図{ちず}をタップして場所{ばしょ}を選{えら}んでください</div>
                 </div>
 
                 <div class="location-confirmation" id="locationConfirmation" style="display: none;">
                     <div class="location-info">
-                        <p class="location-label">📍 ここで いいかな？</p>
+                        <p class="location-label">📍 選{えら}んだ場所{ばしょ}</p>
                         <p class="location-coords" id="locationCoords" hidden></p>
                         <p class="location-status" id="locationStatus" hidden></p>
                     </div>
-                    <button type="button" class="btn-confirm-location" id="confirmLocationBtn">ここに する</button>
+                    <button type="button" class="btn-confirm-location" id="confirmLocationBtn">この場所{ばしょ}に決{き}める</button>
                 </div>
 
                 <div class="location-confirmed" id="locationConfirmed" style="display: none;">
-                    <div class="confirmed-badge">✓ 場所{ばしょ}が きまったよ</div>
+                    <div class="confirmed-badge">✓ 場所{ばしょ}が決{き}まりました</div>
                     <p class="confirmed-coords" id="confirmedCoords" hidden></p>
-                    <button type="button" class="btn-change-location" id="changeLocationBtn">えらびなおす</button>
+                    <button type="button" class="btn-change-location" id="changeLocationBtn">場所{ばしょ}を変{か}える</button>
                 </div>
 
                 <div class="validation-message" id="locationValidation" style="display: none;">
-                    ⚠️ 場所{ばしょ}を きめてね
+                    ⚠️ 場所{ばしょ}を決{き}めてください
                 </div>
             </section>
         </main>
@@ -68,7 +68,7 @@
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="../../common/ruby.js?v=yagami1"></script>
-    <script src="./log_hazard_map_script.js?v=yagami1"></script>
+    <script src="../../common/ruby.js?v=yagami2"></script>
+    <script src="./log_hazard_map_script.js?v=yagami2"></script>
 </body>
 </html>

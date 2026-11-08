@@ -4,38 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>コラージュの記録</title>
-    <link rel="stylesheet" href="./log_collage_styles.css?v=yagami1">
-    <link rel="stylesheet" href="../../common/log-fit.css?v=yagami1">
-    <link rel="stylesheet" href="../../common/kids.css?v=yagami1">
+    <link rel="stylesheet" href="./log_collage_styles.css?v=yagami2">
+    <link rel="stylesheet" href="../../common/log-fit.css?v=yagami2">
+    <link rel="stylesheet" href="../../common/kids.css?v=yagami2">
 </head>
 <body>
     <div class="container">
         <header class="page-header">
             <div class="step-indicator">3 コラージュ</div>
-            <h1 class="page-title">コラージュで 表{あらわ}した 行動{こうどう}を 書{か}こう</h1>
+            <h1 class="page-title">コラージュで表{あらわ}した防災{ぼうさい}行動{こうどう}を書{か}こう</h1>
         </header>
 
         <main class="content">
             <section class="input-section">
                 <h2 class="section-title">
-                    どんな 命{いのち}を 守{まも}る 行動{こうどう}を 表{あらわ}したかな？
-                    <span class="required-badge">かならず</span>
+                    どのような防災{ぼうさい}行動{こうどう}を表{あらわ}しましたか？
+                    <span class="required-badge">必須{ひっす}</span>
                 </h2>
                 <div class="hint-text">
-                    <p>・いつ、どこへ にげるのかな？ どんな じゅんびを するのかな？</p>
-                    <p>・だれに してほしい 行動{こうどう}かな？（家族{かぞく}・友{とも}だち・まちの 人{ひと} など）</p>
+                    <p>・いつ、どこへ避難{ひなん}しますか？どのような準備{じゅんび}をしますか？</p>
+                    <p>・だれに取{と}ってほしい行動{こうどう}ですか？（家族{かぞく}・友{とも}だち・地域{ちいき}の人{ひと}など）</p>
                 </div>
-                <p class="voice-hint">🎤 キーボードの マイクを おすと、話{はな}して 書{か}くこともできるよ</p>
                 <textarea
                     id="collageDescription"
                     class="description-textarea"
                     rows="4"
-                    placeholder="れい）大雨のときは、早めに学校の3かいへにげる行動を、人のスタンプとかいだんで表しました。家族に見てほしいです。"
-                    aria-label="コラージュで表した行動"
+                    placeholder="例）大雨の警報が出たら、川からはなれた高い場所へ早めに避難する行動を、人と階段のスタンプで表しました。家族といっしょに避難する道を確かめておいてほしいです。"
+                    aria-label="コラージュで表した防災行動"
                     required
                 ></textarea>
                 <div class="validation-message" id="descriptionValidation" style="display: none;">
-                    ⚠️ 書{か}いてから つぎへ すすもう
+                    ⚠️ 入力{にゅうりょく}してから次{つぎ}へ進{すす}んでください
                 </div>
                 <div class="character-count" id="characterCount">
                     <span id="currentCount">0</span> 文字{もじ}
@@ -44,27 +43,27 @@
 
             <section class="input-section phase-section">
                 <h2 class="section-title">
-                    その 行動{こうどう}は いつの 行動{こうどう}かな？
-                    <span class="required-badge">かならず</span>
+                    その行動{こうどう}はいつの行動{こうどう}ですか？
+                    <span class="required-badge">必須{ひっす}</span>
                 </h2>
-                <p class="section-description">あてはまるものを ぜんぶ えらんでね</p>
+                <p class="section-description">いちばんあてはまるものを1つ選{えら}んでください</p>
                 <div class="phase-options" id="phaseOptions">
-                    <label class="phase-option"><input type="checkbox" value="事前"><span class="phase-name">事前{じぜん}</span><span class="phase-desc">災害{さいがい}が おきる 前{まえ}の じゅんび</span></label>
-                    <label class="phase-option"><input type="checkbox" value="災害時"><span class="phase-name">災害時{さいがいじ}</span><span class="phase-desc">災害{さいがい}が おきている ときの 行動{こうどう}・にげること</span></label>
-                    <label class="phase-option"><input type="checkbox" value="復旧時"><span class="phase-name">復旧時{ふっきゅうじ}</span><span class="phase-desc">災害{さいがい}の あと、くらしを とりもどす 行動{こうどう}</span></label>
+                    <label class="phase-option"><input type="radio" name="phase" value="事前"><span class="phase-name">事前{じぜん}</span><span class="phase-desc">災害{さいがい}が起{お}きる前{まえ}の準備{じゅんび}</span></label>
+                    <label class="phase-option"><input type="radio" name="phase" value="災害時"><span class="phase-name">災害時{さいがいじ}</span><span class="phase-desc">災害{さいがい}が起{お}きているときの行動{こうどう}・避難{ひなん}</span></label>
+                    <label class="phase-option"><input type="radio" name="phase" value="復旧時"><span class="phase-name">復旧時{ふっきゅうじ}</span><span class="phase-desc">災害{さいがい}の後{あと}、くらしを取{と}り戻{もど}す行動{こうどう}</span></label>
                 </div>
                 <div class="validation-message" id="phaseValidation" style="display: none;">
-                    ⚠️ 1つ いじょう えらんでね
+                    ⚠️ 1つ選{えら}んでください
                 </div>
             </section>
         </main>
 
         <footer class="page-footer">
-            <button type="button" class="btn-secondary" id="backBtn">◀ コラージュに もどる</button>
+            <button type="button" class="btn-secondary" id="backBtn">◀ コラージュにもどる</button>
             <button type="button" class="btn-primary" id="nextBtn" disabled>つぎへ ▶</button>
         </footer>
     </div>
-    <script src="../../common/ruby.js?v=yagami1"></script>
-    <script src="./log_collage_script.js?v=yagami1"></script>
+    <script src="../../common/ruby.js?v=yagami2"></script>
+    <script src="./log_collage_script.js?v=yagami2"></script>
 </body>
 </html>
