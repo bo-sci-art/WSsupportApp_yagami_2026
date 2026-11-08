@@ -268,7 +268,7 @@ document.addEventListener("DOMContentLoaded", () => {
       let icons = "";
       if (hearts.includes(id))  icons += " <span style='color:#ff69b4;'>💖</span>";
       if (actions.includes(id)) icons += " <span style='color:#fbc02d;'>✨</span>";
-      const ribbon = viewed.includes(id) ? '<div class="ribbon-wrapper"><div class="ribbon-text">鑑賞{かんしょう}済{ず}み</div></div>' : "";
+      const ribbon = viewed.includes(id) ? '<div class="ribbon-wrapper"><div class="ribbon-text">鑑賞済{かんしょうず}み</div></div>' : "";
       const imgUrl = (p.images && p.images[0]) ? DATA_BASE + "/" + p.images[0] : "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
       const card = document.createElement("div");
       card.className = "art-card";

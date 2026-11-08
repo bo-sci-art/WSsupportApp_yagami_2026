@@ -1202,10 +1202,10 @@ let __restoring = true;      // 復元が終わるまで保存しない
 let __saveTimer = null;
 let __persisting = false;
 
+// スタンプの画像名（id の後ろの「-数字」をすべて取りのぞく。復元したスタンプは「名前-時刻-番号」になるため）
+function cleanStampName(name) { return String(name || "").replace(/(-[0-9]+)+$/, ""); }
 function stampNameOf(s) {
-  const id = String(s.id || "");
-  const i = id.lastIndexOf("-");
-  return i > 0 ? id.slice(0, i) : id;
+  return cleanStampName(s.stampName || s.id);
 }
 
 function serializeStamps() {
@@ -1235,12 +1235,13 @@ async function restoreStamps() {
   if (!saved || !Array.isArray(saved.stamps)) return;
   const f = fit;
   for (const d of saved.stamps) {
+    d.name = cleanStampName(d.name);   // 前に名前が長くなって保存されたものも直す
     const tex = await loadTex(d.name);
     if (!tex) continue;
     const iw = tex.naturalWidth || 200, ih = tex.naturalHeight || 200;
     const scale = (d.nw * f.w) / iw;
     stamps.push({
-      id: d.name + "-" + Date.now() + "-" + stamps.length,
+      id: d.name + "-" + Date.now() + "-" + stamps.length, stampName: d.name,
       tex, x: f.x + d.nx * f.w, y: f.y + d.ny * f.h,
       w: iw, h: ih, baseScale: scale, scale, multiplier: 1,
       alpha: d.alpha, color: d.color, angleDeg: d.angleDeg,
@@ -1291,5 +1292,6 @@ window.addEventListener("load", async () => {
   pushHistory();            // ここを起点に「ひとつもどす」ができる
   __restoring = false;
   render();
-  saveNow();                // マーブリングだけの状態でも作品画像を用意しておく
+  await saveNow();          // マーブリングだけの状態でも作品画像を用意しておく
+  window.WS_isReady = true; // 親ページ（作り直し後の仕上げ）に準備完了を知らせる
 });

@@ -326,3 +326,7 @@ main.stage { flex: 1 1 auto; min-height: 0; padding: 0; overflow: hidden; }
   .ws-header .right .btn { padding: 8px 12px; font-size: 1rem; }
   .ws-header .right .btn.accent { padding: 8px 16px; }
 }
+
+/* 確認画面から開いた「修正中」の表示 */
+.ws-edit-badge{display:inline-block;background:#fde68a;color:#92400e;border-radius:999px;padding:2px 12px;margin-right:10px;font-size:.85em;font-weight:800;vertical-align:middle}
+.ws-compose-overlay{position:fixed;inset:0;z-index:9999;background:rgba(255,255,255,.96);display:flex;align-items:center;justify-content:center;font-size:1.4rem;font-weight:800;color:#166534;line-height:2.2;text-align:center}

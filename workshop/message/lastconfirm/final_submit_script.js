@@ -30,8 +30,8 @@ const CONFIG = {
         hazard: '../../map/Log/log_hazard_map.html',        // ← 対象地点/ハザードマップ選択ページ
         marbling: '../../marbling/Log/log_marbling.html',      // ← マーブリング体験ページ
         collage: '../../collage/app/index.html',
-        marblingApp: '../../marbling/app/index.html',   // 作り直し：マーブリングの画面
-        collageApp: '../../collage/app/index.html',     // 作り直し：コラージュの画面
+        marblingApp: '../../marbling/app/index.html?edit=1',   // 作り直し：マーブリング（修正完了で確認画面にもどる）
+        collageApp: '../../collage/app/index.html?edit=1',     // 作り直し：コラージュ（修正完了で確認画面にもどる）
         artwork: '../../message/artwork/artwork_submit.html',   // ← 作品情報入力ページ
         next: '../../present/index.html',     // ← 次の防災行動ページ（仮）
         map: '../../present/index.html',      // ← 作品集マップ
@@ -493,8 +493,8 @@ function navigateToPage(page) {
 // 確認画面から作品を作り直す（書いた文章・コラージュのスタンプは残る）
 function redoWork(page) {
     const msg = page === 'marblingApp'
-        ? 'マーブリングの画面{がめん}に戻{もど}って作{つく}り直{なお}します。\n書{か}いた文章{ぶんしょう}とコラージュのスタンプは残{のこ}ります。'
-        : 'コラージュの画面{がめん}に戻{もど}って作{つく}り直{なお}します。\n書{か}いた文章{ぶんしょう}は残{のこ}ります。';
+        ? 'マーブリングを作{つく}り直{なお}す画面{がめん}を開{ひら}きます。\n「修正{しゅうせい}完了{かんりょう}」を押{お}すと、この画面{がめん}に戻{もど}ります。\n（コラージュのスタンプと入力{にゅうりょく}した内容{ないよう}は残{のこ}ります）'
+        : 'コラージュを作{つく}り直{なお}す画面{がめん}を開{ひら}きます。\n「修正{しゅうせい}完了{かんりょう}」を押{お}すと、この画面{がめん}に戻{もど}ります。\n（入力{にゅうりょく}した内容{ないよう}は残{のこ}ります）';
     if (confirm(window.plainRuby ? window.plainRuby(msg) : msg)) {
         window.location.href = CONFIG.PAGES[page];
     }

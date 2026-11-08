@@ -11,17 +11,39 @@
     prev: '../../marbling/Log/log_marbling.html',
     next: '../Log/log_collage.html',
     mapUrl: '../../map/app/detail/index.html',
-    frameSave: 'WS_flushSave'
+    frameSave: 'WS_flushSave',
+    editNext: '../../message/lastconfirm/final_submit.html'
   };
 </script>
-<link rel="stylesheet" href="../../common/styles.css?v=yagami2" />
+<link rel="stylesheet" href="../../common/styles.css?v=yagami3" />
 </head>
 <body>
 <main class="stage">
   <div class="frame-wrap">
-    <iframe data-ws-work src="./detail/index.html?v=yagami2" allow="fullscreen" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    <iframe data-ws-work src="./detail/index.html?v=yagami3" allow="fullscreen" referrerpolicy="no-referrer-when-downgrade"></iframe>
   </div>
 </main>
-<script src="../../common/nav.js?v=yagami2"></script>
+<script src="../../common/nav.js?v=yagami3"></script>
+<script>
+  // マーブリングを作り直したあと（?compose=1）：新しいマーブリングにスタンプをのせて作品画像を作り直し、確認画面へもどる
+  (function () {
+    if (!/[?&]compose=1(&|$)/.test(location.search)) return;
+    var RETURN = '../../message/lastconfirm/final_submit.html';
+    var ov = document.createElement('div');
+    ov.className = 'ws-compose-overlay';
+    ov.innerHTML = '<ruby>作品<rt>さくひん</rt></ruby>を<ruby>仕上<rt>しあ</rt></ruby>げています…<br><ruby>少<rt>すこ</rt></ruby>し<ruby>待<rt>ま</rt></ruby>ってください';
+    document.body.appendChild(ov);
+    var fr = document.querySelector('iframe[data-ws-work]');
+    var t0 = Date.now();
+    (function wait() {
+      var w = fr && fr.contentWindow, ready = false;
+      try { ready = !!(w && w.WS_isReady); } catch (e) {}
+      if (!ready && Date.now() - t0 < 10000) return setTimeout(wait, 150);
+      var p = Promise.resolve();
+      try { if (w && typeof w.WS_flushSave === 'function') p = Promise.resolve(w.WS_flushSave()); } catch (e) {}
+      Promise.race([p, new Promise(function (r) { setTimeout(r, 4000); })]).then(function () { location.replace(RETURN); });
+    })();
+  })();
+</script>
 </body>
 </html>

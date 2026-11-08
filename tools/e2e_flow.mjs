@@ -39,7 +39,7 @@ const CHECK = () => {
       const tag = el.tagName;
       if (tag === "RUBY" || tag === "SCRIPT" || tag === "STYLE" || tag === "TEXTAREA" || tag === "TITLE") { skip = true; break; }
       // 見えていないもの・出典・凡例のマーク・図の中の文字・作品データ（児童の書いた文章・地名）は対象外
-      if (el.classList && (el.classList.contains("leaflet-control-attribution") || el.hasAttribute("data-user-text") || el.classList.contains("summary-value") || el.classList.contains("art-message") || el.classList.contains("art-title") || el.classList.contains("res-source") || el.classList.contains("attr") || el.classList.contains("res-badge") || tag === "svg" || tag === "text")) { skip = true; break; }
+      if (el.classList && (el.classList.contains("leaflet-control-attribution") || el.hasAttribute("data-user-text") || el.classList.contains("summary-value") || el.classList.contains("art-message") || el.classList.contains("art-title") || el.classList.contains("res-source") || el.classList.contains("attr") || el.classList.contains("res-badge") || el.classList.contains("rb-seen") || tag === "svg" || tag === "text")) { skip = true; break; }
       el = el.parentElement;
     }
     if (skip) continue;
@@ -199,6 +199,42 @@ async function flow(label, viewport) {
   run.artworkImage = imgInfo;
   await shot(page, run, "S8_confirm");
   step(`S8 最終確認：作品画像 ${imgInfo.w}×${imgInfo.h}（約${imgInfo.kb}KB）`);
+
+  // 確認画面から作り直す（修正用の画面 → 「修正完了」で確認画面にもどる）
+  const artNow = () => page.evaluate(() => localStorage.getItem("artworkImage") || "");
+  const stampCount = () => page.evaluate(() => new Promise(res => {
+    const r = indexedDB.open("ws_art_db", 1);
+    r.onsuccess = () => { const g = r.result.transaction("images").objectStore("images").get("collage_stamps"); g.onsuccess = () => res(((g.result || {}).stamps || []).length); };
+  }));
+  const art0 = await artNow();
+  await page.click(`[onclick="redoWork('marblingApp')"]`);
+  await page.waitForURL(/marbling\/app\/index\.html\?edit=1/);
+  await page.waitForTimeout(2000);
+  const editUI = await page.evaluate(() => ({ next: (document.getElementById("nextBtn") || {}).textContent || "", back: !!document.getElementById("backBtn"), badge: !!document.querySelector(".ws-edit-badge") }));
+  await shot(page, run, "S8c_redo_marbling");
+  await paint(1);
+  await page.click("#nextBtn");
+  await page.waitForURL(/lastconfirm/, { timeout: 20000 });
+  await page.waitForSelector("#artwork-preview-img", { state: "visible", timeout: 10000 });
+  const art1 = await artNow();
+  const stamps1 = await stampCount();
+  step(`作り直し（マーブリング）：ボタン「${editUI.next.replace(/\s+/g, "")}」・もどるボタン${editUI.back ? "あり" : "なし"}・確認画面にもどった・作品画像 ${art1 !== art0 ? "更新" : "そのまま"}・スタンプ ${stamps1} 個`);
+  await page.click(`[onclick="redoWork('collageApp')"]`);
+  await page.waitForURL(/collage\/app\/index\.html\?edit=1/);
+  await page.waitForTimeout(2000);
+  const st2 = await page.frameLocator("iframe[data-ws-work]").locator("#stage").boundingBox();
+  await page.frameLocator("iframe[data-ws-work]").locator(".thumb").nth(0).click();
+  await page.mouse.click(st2.x + st2.width * 0.5, st2.y + st2.height * 0.7);
+  await page.waitForTimeout(800);
+  await shot(page, run, "S8d_redo_collage");
+  await page.click("#nextBtn");
+  await page.waitForURL(/lastconfirm/, { timeout: 20000 });
+  await page.waitForSelector("#artwork-preview-img", { state: "visible", timeout: 10000 });
+  const art2 = await artNow();
+  const stamps2 = await stampCount();
+  run.redo = { editUI, marblingUpdated: art1 !== art0, stampsAfterMarblingRedo: stamps1, collageUpdated: art2 !== art1, stampsAfterCollageRedo: stamps2 };
+  step(`作り直し（コラージュ）：確認画面にもどった・作品画像 ${art2 !== art1 ? "更新" : "そのまま"}・スタンプ ${stamps2} 個`);
+
   await page.click("#btn-submit-artwork");
   await page.waitForSelector("#step-complete", { state: "visible", timeout: 20000 });
   const id = await page.evaluate(() => localStorage.getItem("lastSubmittedArtworkId"));
@@ -252,6 +288,12 @@ for (const r of report.runs) {
   if (r.errors.length) problems.push(`[${r.label}] JSエラー: ${r.errors.join(" / ")}`);
   if (!r.deleted) problems.push(`[${r.label}] 削除できていない`);
   if (r.restore.stampsAfter !== r.restore.stampsBefore) problems.push(`[${r.label}] スタンプが復元されない`);
+  if (r.redo) {
+    if (r.redo.editUI.back || !/修正/.test(r.redo.editUI.next) || !r.redo.editUI.badge) problems.push(`[${r.label}] 修正用の画面のボタンがおかしい ${JSON.stringify(r.redo.editUI)}`);
+    if (!r.redo.marblingUpdated) problems.push(`[${r.label}] マーブリングを作り直しても作品画像が変わらない`);
+    if (r.redo.stampsAfterMarblingRedo !== r.restore.stampsAfter) problems.push(`[${r.label}] マーブリングの作り直しでスタンプが変わった`);
+    if (!r.redo.collageUpdated || r.redo.stampsAfterCollageRedo !== r.redo.stampsAfterMarblingRedo + 1) problems.push(`[${r.label}] コラージュの作り直しが反映されない`);
+  }
   for (const p of r.pages) for (const f of p.frames) {
     if (f.noRuby.length) problems.push(`[${r.label}] ${p.name} ${f.url}: ルビなし ${JSON.stringify(f.noRuby)}`);
     if (f.hOverflow > 0) problems.push(`[${r.label}] ${p.name} ${f.url}: 横にはみ出し ${f.hOverflow}px`);

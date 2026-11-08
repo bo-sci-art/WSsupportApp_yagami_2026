@@ -8,9 +8,13 @@
 //   mapUrl    : 「ハザードマップ」ボタンで開く地図（任意）
 //   frameSave : iframe 内の保存関数名（例 'WS_flushSave'）。「つぎへ」「もどる」の前に呼んで、保存が終わってから移動する
 //   beforeNext: async function（任意）。false を返すと移動しない
+//   editNext  : 確認画面から「作り直す」で開いたとき（URL に ?edit=1）の「修正完了」の行き先
 // ※大人版にあった「作品を保存しましたか？」の確認バナーは使わない（自動保存にしたため）
 (function () {
   var S = window.WS_STEP || {};
+  // 確認画面の「作り直す」から開いたとき：「修正完了」だけを出し、保存して確認画面へもどる
+  var EDIT = /[?&]edit=1(&|$)/.test(location.search) && !!S.editNext;
+  if (EDIT) { S.prev = null; S.next = S.editNext; S.nextLabel = '✓ <ruby>修正完了<rt>しゅうせいかんりょう</rt></ruby>'; }
   var LABELS = ['ハザードマップ', 'マーブリング', 'コラージュ', 'メッセージ'];
 
   var header = document.createElement('header');
@@ -29,7 +33,7 @@
   }
 
   header.innerHTML =
-    '<div class="left">' + (S.title || '') + '</div>' +
+    '<div class="left">' + (EDIT ? '<span class="ws-edit-badge">✏️ <ruby>修正中<rt>しゅうせいちゅう</rt></ruby></span>' : '') + (S.title || '') + '</div>' +
     '<div class="center">' + stepperHtml + '</div>' +
     '<div class="right">' +
       (S.mapUrl ? '<button class="btn" id="mapBtn" type="button">🗺 ハザードマップ</button>' : '') +
