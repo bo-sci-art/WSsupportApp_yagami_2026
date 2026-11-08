@@ -1,0 +1,83 @@
+:root{
+  --main-color:#EE8972; --sub-color:#6BAA9F; --accent-color:#F2C94C;
+  --base-color:#F9F8F4; --text-color:#4A4A4A; --border-color:#E0E0E0;
+  --font-family:"Helvetica Neue",Arial,"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic UI",Meiryo,sans-serif;
+}
+*{box-sizing:border-box}
+/* 画面全体は固定（スクロールさせない）。タブレットの動的ビューポート対策で 100% を使用 */
+html,body{height:100%;width:100%;margin:0;overflow:hidden}
+body{display:flex;height:100%;overflow:hidden;background:var(--base-color);color:var(--text-color);font-family:var(--font-family)}
+
+/* 左：操作パネル（中身が長い＝凡例が出たときだけ内部スクロール） */
+#sidebar{width:352px;height:100%;background:#fff;border-right:1px solid var(--border-color);
+  display:flex;flex-direction:column;z-index:20;box-shadow:2px 0 5px rgba(0,0,0,.05)}
+.side-scroll{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:18px 20px}
+.side-title{font-size:1.05em;font-weight:bold;color:var(--main-color);margin:0 0 3px}
+.side-lead{font-size:.74em;color:#999;line-height:1.6;margin:0 0 4px;border-bottom:1px solid #eee;padding-bottom:12px}
+
+.filter-label{font-size:.8em;color:#8C6A60;font-weight:bold;margin:16px 0 8px}
+.filter-chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{padding:6px 12px;font-size:.78em;border-radius:50px;cursor:pointer;font-weight:bold;
+  background:#fff;border:1px solid var(--border-color);color:#666;transition:all .2s;white-space:nowrap}
+.chip:hover{background:var(--base-color);border-color:var(--main-color);color:var(--main-color)}
+.chip.active{background:var(--main-color);border-color:var(--main-color);color:#fff;box-shadow:0 2px 5px rgba(238,137,114,.3)}
+
+.hazard-group{border:1px solid var(--border-color);border-radius:12px;margin-top:12px;overflow:hidden}
+.hg-head{padding:9px 14px;font-weight:bold;font-size:.84em;color:#fff}
+.hg-mizu .hg-head{background:#5a9fd4}.hg-jiban .hg-head{background:#c9964e}.hg-jishin .hg-head{background:#b5776e}
+.hg-body{padding:6px 12px 10px}
+.fopt{display:flex;align-items:center;gap:9px;padding:7px 2px;font-size:.85em}
+.fopt input{accent-color:var(--main-color);width:16px;height:16px;flex:none;cursor:pointer}
+.fopt label{cursor:pointer;line-height:1.35}
+.fopt-head{font-size:.85em;font-weight:bold;padding:9px 2px 5px}
+.fopt.disabled{opacity:.55}.fopt.disabled input{cursor:not-allowed}
+.info-btn{margin-left:auto;width:18px;height:18px;border-radius:50%;border:1px solid var(--sub-color);
+  background:#fff;color:var(--sub-color);font-size:.7em;font-weight:bold;cursor:pointer;flex:none;line-height:1}
+.tag-todo{margin-left:auto;font-size:.64em;color:#a05a00;background:#fff3e0;border-radius:999px;padding:2px 8px;font-weight:bold;white-space:nowrap}
+.tag-ref{font-size:.6em;color:#0a6;background:#e6f6ee;border-radius:999px;padding:1px 7px;font-weight:bold;margin-left:6px}
+.ext-link{display:block;margin:2px 0;padding:10px 12px;border:1.5px dashed var(--main-color);border-radius:10px;
+  font-size:.78em;color:var(--main-color);text-decoration:none;font-weight:bold;line-height:1.4}
+.ext-link small{display:block;color:#999;font-weight:normal;margin-top:3px}
+
+/* 凡例・説明 */
+#legend-box{margin-top:10px;border-top:1px solid #eee;padding-top:12px}
+.legend-item{margin-bottom:14px;background:var(--base-color);border-radius:10px;padding:10px 12px}
+.legend-item .lg-name{font-size:.82em;font-weight:bold;color:var(--text-color);margin-bottom:4px}
+.legend-item .lg-desc{font-size:.72em;color:#666;line-height:1.6;margin-bottom:8px}
+.legend-item img{max-width:100%;border:1px solid #eee;border-radius:4px;background:#fff}
+.lg-css-row{display:flex;align-items:center;gap:8px;font-size:.71em;margin:3px 0;color:#666}
+.lg-swatch{width:22px;height:13px;border-radius:2px;flex:none;border:1px solid rgba(0,0,0,.15)}
+.lg-grad{height:12px;border-radius:3px;margin:4px 0 2px}
+.lg-ends{display:flex;justify-content:space-between;font-size:.66em;color:#888}
+.lg-safety-note{font-size:.74em;color:#b0503a;background:#fff4ef;border-radius:8px;padding:7px 10px;margin-bottom:10px;line-height:1.5}
+.legend-empty{font-size:.74em;color:#bbb;padding:2px}
+
+/* 地図 */
+#map-area{flex:1;position:relative}
+#viewDiv{position:absolute;inset:0}
+.leaflet-container{background:#dfe6ee;font-family:var(--font-family)}
+#basemap-toggle{position:absolute;left:16px;bottom:20px;z-index:600;display:flex;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.15);border:1px solid var(--border-color)}
+#basemap-toggle button{padding:7px 15px;border:none;background:#fff;color:#666;font-weight:bold;font-size:.78em;cursor:pointer;font-family:inherit}
+#basemap-toggle button.active{background:var(--main-color);color:#fff}
+.attr{position:absolute;right:8px;bottom:4px;z-index:600;font-size:10px;color:#667;background:rgba(255,255,255,.7);padding:2px 6px;border-radius:4px}
+.attr a{color:var(--sub-color)}
+
+/* ===== 周辺の防災資源 ===== */
+.res-toggles{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+.res-toggle{display:flex;align-items:center;gap:7px;font-size:.82em;cursor:pointer}
+.res-toggle input{accent-color:var(--main-color);width:15px;height:15px;flex:none;cursor:pointer}
+.res-dot{display:inline-block;width:12px;height:12px;border-radius:50%;border:1.5px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.15);flex:none}
+.res-legend{display:flex;flex-direction:column;gap:8px}
+.res-item{display:flex;align-items:flex-start;gap:8px}
+.res-badge{flex:none;width:22px;height:22px;border-radius:50%;color:#fff;font-size:.72em;display:inline-flex;align-items:center;justify-content:center;margin-top:2px}
+.res-text{font-size:.8em;line-height:1.5;color:#445}
+.res-text b{color:#223}
+.res-desc{display:block;color:#667}
+.res-note{font-size:.76em;color:#6a5a1e;background:#fff8e6;border:1px solid #f0e2b8;border-radius:6px;padding:6px 8px;line-height:1.5}
+.res-source{font-size:.66em;color:#aaa;line-height:1.4}
+
+/* 浸水深の目安ピクトグラム（凡例の右） */
+.lg-shinsui{display:flex;gap:6px;align-items:flex-start}
+.lg-shinsui img{flex:0 1 auto;min-width:0}
+.depth-guide{flex:none}
+.lg-guide-note{font-size:.66em;color:#888;margin-top:4px;line-height:1.5}

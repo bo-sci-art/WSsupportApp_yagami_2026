@@ -1,0 +1,300 @@
+:root { --bg:#ffffff; --panel:#f7f7f7; --ink:#222222; --accent:#22c55e; }
+
+* { box-sizing: border-box; }
+html, body { height: 100%; margin:0; background:var(--bg); color:var(--ink); font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans JP", sans-serif; }
+
+/* ============== ヘッダー（基本） ============== */
+.ws-header {
+  position: sticky; top:0; z-index:1000; background:rgba(255,255,255,0.95);
+  backdrop-filter: blur(6px);
+  display:flex; align-items:center; gap:12px; padding:10px 14px;
+  border-bottom:1px solid #ddd;
+  color:#222;
+}
+.ws-header .left { 
+  flex: 0 0 auto;
+  font-weight: 600;
+  font-size: 1rem;
+  white-space: nowrap;
+  padding-right: 16px;
+}
+.ws-header .center { 
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.ws-header .right { 
+  display:flex; 
+  gap:8px;
+  flex: 0 0 auto;
+}
+
+/* === ヘッダー内のボタン === */
+.ws-header .right .btn {
+  background: #ffffff;
+  color: #222222;
+  border: 1px solid #cccccc;
+  padding: 8px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  white-space: nowrap;
+}
+
+.ws-header .right .btn:hover {
+  background: #f2f2f2;
+  border-color: #aaaaaa;
+}
+
+/* 「次へ▶」ボタン用（アクセントカラー） */
+.ws-header .right .btn.accent {
+  background: var(--accent);
+  color: #ffffff;
+  border: none;
+}
+
+.ws-header .right .btn.accent:hover {
+  background: #16a34a;
+}
+
+/* ============== ★★★ ステップインジケーター（改善版） ★★★ ============== */
+.ws-stepper {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 4px 0;
+}
+
+.ws-stepper__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+/* 状態ごとの見え方 */
+.ws-stepper__item.todo { opacity: 0.22; }
+.ws-stepper__item.done { opacity: 0.55; }
+.ws-stepper__item.current { opacity: 1; transform: translateY(-1px); }
+
+.ws-stepper__dot {
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-size: 0.95rem;
+  font-weight: 800;
+  line-height: 1;
+  background: #fff;
+  border: 2px solid #d1d5db;
+  color: #6b7280;
+  transition: all 0.2s ease;
+}
+
+/* done：アクセントの塗りつぶし＋チェック */
+.ws-stepper__item.done .ws-stepper__dot {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+/* current：リング強調（塗りは白のまま） */
+.ws-stepper__item.current .ws-stepper__dot {
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.18);
+}
+
+/* ラベル */
+.ws-stepper__label {
+  font-size: 0.78rem;
+  line-height: 1.2;
+  text-align: center;
+  color: #6b7280;
+  white-space: nowrap;
+  font-weight: 600;
+}
+.ws-stepper__item.current .ws-stepper__label {
+  color: #111827;
+  font-weight: 800;
+}
+.ws-stepper__item.todo .ws-stepper__label {
+  color: #9ca3af;
+}
+
+/* モバイル： “現在”のラベルだけ表示 */
+@media (max-width: 768px) {
+  .ws-stepper { gap: 10px; }
+  .ws-stepper__label { display: none; }
+  .ws-stepper__item.current .ws-stepper__label { display: block; }
+  .ws-stepper__dot { width: 26px; height: 26px; font-size: 0.9rem; }
+}
+
+/* ============== タイマー関連は完全削除 ============== */
+/* （要件：タイマーは不要のため削除） */
+
+main.stage { min-height: calc(100dvh - 56px); padding:16px; }
+.page { max-width:1200px; margin:0 auto; }
+
+/* === 「このセクションのミッション」モーダル（削除しないが体験ページでは使わない） === */
+.help-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.25);
+  display: none;
+  place-items: center;
+  z-index: 2000;
+}
+
+.help-card {
+  width: min(680px, 92vw);
+  background: #ffffff;
+  border: 2px solid #000000;
+  border-radius: 16px;
+  padding: 24px;
+  color: #000000;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+
+.help-card h2 {
+  margin: 0 0 12px;
+  font-weight: 600;
+  font-size: 1.4rem;
+}
+
+.help-card p {
+  line-height: 1.7;
+  opacity: 1;
+}
+
+.help-card .actions {
+  text-align: right;
+  margin-top: 20px;
+}
+
+.help-card .actions button {
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 1px solid #000;
+  background: #fff;
+  color: #000;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.help-card .actions button:hover {
+  background: #000;
+  color: #fff;
+}
+
+.panel {
+  position:fixed; top:0; right:0; width:min(70vw, 900px); height:100dvh;
+  background:#0d0f15; border-left:1px solid #2a2f3a; transform: translateX(100%);
+  transition: transform .35s ease; z-index:1900; display:flex; flex-direction:column;
+}
+.panel.open { transform: translateX(0); }
+.panel header { padding:10px 14px; border-bottom:1px solid #222; display:flex; justify-content:space-between; align-items:center; }
+.panel .body { flex:1; }
+.panel iframe { width:100%; height:100%; border:0; }
+.panel .footer { padding:10px 14px; border-top:1px solid #222; display:flex; gap:8px; }
+
+.big-button { display:inline-block; padding:14px 18px; border-radius:12px; background:var(--accent); color:#062212; font-weight:600; text-decoration:none; }
+.card {
+  background:#ffffff;
+  border:1px solid #e5e7eb;
+  border-radius:14px;
+  padding:16px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.05);
+}
+
+.help-card h3 {
+  margin-top: 1em;
+  font-size: 1.1em;
+  color: #333;
+}
+
+.help-card ol {
+  margin: 0.5em 0 0.5em 1.2em;
+  padding: 0;
+}
+
+.help-card li {
+  margin-bottom: 0.3em;
+}
+
+.help-card details {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin-top: 10px;
+}
+.help-card details + details { margin-top: 8px; }
+.help-card summary {
+  cursor: pointer;
+  font-weight: 600;
+  outline: none;
+}
+.help-card ul { margin: 6px 0 0 1.1em; }
+.help-card li { margin: 4px 0; line-height: 1.6; }
+
+.chip {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: .85em;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  margin-right: 4px;
+}
+
+/* === パネルのレイアウト（モーダル全体） === */
+.ws-panel {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(0,0,0,.35);
+  z-index: 1000;
+}
+
+.ws-panel__card {
+  width: min(960px, 92vw);
+  max-height: 92vh;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.15);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.ws-panel__head {
+  padding: 14px 18px;
+  border-bottom: 1px solid #eef0f3;
+  flex: 0 0 auto;
+}
+.ws-panel__foot {
+  padding: 12px 18px;
+  border-top: 1px solid #eef0f3;
+  flex: 0 0 auto;
+}
+
+.ws-panel__body {
+  padding: 16px 18px;
+  flex: 1 1 auto;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+html.body-lock, body.body-lock { overflow: hidden; }
+
+.ws-panel__body .chip { white-space: nowrap; }
+.ws-panel__body p, .ws-panel__body li { overflow-wrap: anywhere; }

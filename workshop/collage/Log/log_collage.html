@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log | コラージュ作品の記録</title>
+    <link rel="stylesheet" href="./log_collage_styles.css?v=20261013">
+    <link rel="stylesheet" href="../../common/log-fit.css?v=20261013">
+</head>
+<body>
+    <!-- Main Container -->
+    <div class="container">
+        
+        <!-- Header -->
+        <header class="page-header">
+            <div class="step-indicator">STEP 3 / 4</div>
+            <h1 class="page-title">コラージュ作品の記録</h1>
+            <p class="page-subtitle">コラージュで表現した防災行動やイメージを記録します。</p>
+            <p class="page-description">
+                コラージュで表現した「してほしい防災行動」や「備え」について、作品を振り返りながら文章で記録してください。
+            </p>
+        </header>
+
+        <!-- Main Content -->
+        <main class="content">
+
+            <!-- Input Section -->
+            <section class="input-section">
+                <h2 class="section-title">
+                    コラージュで表現した防災行動について教えてください。
+                    <span class="required-badge">必須</span>
+                </h2>
+                
+                <div class="hint-text">
+                    <p>・どんな行動や備えを表現しましたか？</p>
+                    <p>・その行動をしてほしいのは、誰ですか？<br>
+                       （住民／通勤・通学者／買い物客／旅行者 など）</p>
+                </div>
+
+                <textarea 
+                    id="collageDescription" 
+                    class="description-textarea"
+                    rows="4"
+                    placeholder="例）浸水時に早めに避難できるよう、地域の住民が避難経路を確認する行動を表現しました。通勤・通学者に向けたメッセージです。"
+                    aria-label="コラージュで表現した防災行動の説明"
+                    required
+                ></textarea>
+
+                <div class="validation-message" id="descriptionValidation" style="display: none;">
+                    ⚠️ 作品について説明を入力してください
+                </div>
+
+                <div class="character-count" id="characterCount">
+                    <span id="currentCount">0</span> 文字
+                </div>
+            </section>
+
+            <!-- 防災行動のタイミング（2026/10 追加） -->
+            <section class="input-section phase-section">
+                <h2 class="section-title">
+                    表現した防災行動は、どのタイミングの行動ですか？
+                    <span class="required-badge">必須</span>
+                </h2>
+                <p class="section-description">当てはまるものをすべて選んでください（複数選択可）</p>
+                <div class="phase-options" id="phaseOptions">
+                    <label class="phase-option"><input type="checkbox" value="事前"><span class="phase-name">事前</span><span class="phase-desc">災害が起きる前の備え</span></label>
+                    <label class="phase-option"><input type="checkbox" value="災害時"><span class="phase-name">災害時</span><span class="phase-desc">災害が起きているときの行動・避難</span></label>
+                    <label class="phase-option"><input type="checkbox" value="復旧時"><span class="phase-name">復旧時</span><span class="phase-desc">災害のあと、生活を取り戻すための行動</span></label>
+                </div>
+                <div class="validation-message" id="phaseValidation" style="display: none;">
+                    ⚠️ 1つ以上選んでください
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Footer Navigation -->
+        <footer class="page-footer">
+            <button type="button" class="btn-secondary" id="backBtn">
+                ← 戻る
+            </button>
+            <button type="button" class="btn-primary" id="nextBtn" disabled>
+                次へ →
+            </button>
+        </footer>
+
+    </div>
+
+    <script src="./log_collage_script.js?v=20261013"></script>
+</body>
+</html>

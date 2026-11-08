@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log | マーブリング作品の記録</title>
+    <link rel="stylesheet" href="log_marbling_styles.css">
+    <link rel="stylesheet" href="../../common/log-fit.css?v=20261013">
+</head>
+<body>
+    <!-- Main Container -->
+    <div class="container">
+        
+        <!-- Header -->
+        <header class="page-header">
+            <div class="step-indicator">STEP 2 / 4</div>
+            <h1 class="page-title">マーブリング作品の記録</h1>
+            <p class="page-subtitle">制作したマーブリング作品について、表現した災害リスクやイメージを記録します。</p>
+            <p class="page-description">
+                マーブリングで表現した対象地点／区域の災害リスクについて、作品を振り返りながら文章で記録してください。
+            </p>
+        </header>
+
+        <!-- Main Content -->
+        <main class="content">
+
+            <!-- Input Section -->
+            <section class="input-section">
+                <h2 class="section-title">
+                    マーブリングで表現した災害リスクについて教えてください。
+                    <span class="required-badge">必須</span>
+                </h2>
+                
+                <div class="hint-text">
+                    <p>・模様は、どんなことをイメージしていますか？</p>
+                    <p>・色は、何を表していますか？</p>
+                </div>
+
+                <textarea 
+                    id="marblingDescription" 
+                    class="description-textarea"
+                    rows="4"
+                    placeholder="例）川の水が一気に広がる様子を、にじむ模様で表しました。濃い色は浸水が深い場所、薄い色は比較的安全な場所を表しています。"
+                    aria-label="マーブリングで表現した危険性の説明"
+                    required
+                ></textarea>
+
+                <div class="validation-message" id="descriptionValidation" style="display: none;">
+                    ⚠️ 作品について説明を入力してください
+                </div>
+
+                <div class="character-count" id="characterCount">
+                    <span id="currentCount">0</span> 文字
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Footer Navigation -->
+        <footer class="page-footer">
+            <button type="button" class="btn-secondary" id="backBtn">
+                ← 戻る
+            </button>
+            <button type="button" class="btn-primary" id="nextBtn" disabled>
+                次へ →
+            </button>
+        </footer>
+
+    </div>
+
+    <script src="log_marbling_script.js"></script>
+</body>
+</html>

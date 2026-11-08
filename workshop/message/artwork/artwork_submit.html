@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>作品をまとめる | ワークショップ</title>
+    <link rel="stylesheet" href="./artwork_submit_styles.css">
+    <link rel="stylesheet" href="../../common/log-fit.css?v=20261013">
+</head>
+<body>
+    <!-- Main Container -->
+    <div class="container">
+        
+        <!-- Header -->
+        <header class="page-header">
+            <div class="step-indicator">STEP 4 / 4</div>
+            <h1 class="page-title">作品をまとめる</h1>
+            <p class="page-subtitle">ここまでの体験で生まれた作品を、誰かに届けるためにまとめてみましょう。</p>
+        </header>
+
+        <!-- Main Content -->
+        <main class="content">
+
+            <!-- Guide Section -->
+            <section class="guide-section">
+                <div class="guide-text">
+                    <p>・この作品は、誰に見てほしいですか？</p>
+                    <p>・その人に、どんな思いや気づきを伝えたいですか？</p>
+                    <p>・色や形、コラージュは、その思いをどう表していますか？</p>
+                </div>
+            </section>
+
+            <!-- Input Section 1: Title -->
+            <section class="input-section">
+                <h2 class="section-title">
+                    作品タイトル（メッセージ）
+                    <span class="required-badge">必須</span>
+                </h2>
+                
+                <input 
+                    type="text" 
+                    id="artworkTitle" 
+                    class="title-input"
+                    placeholder="例：高台に向かって走れ！"
+                    aria-label="作品タイトル"
+                    required
+                />
+
+                <div class="validation-message" id="titleValidation" style="display: none;">
+                    ⚠️ 作品タイトルを入力してください
+                </div>
+            </section>
+
+            <!-- Input Section 3: Creator Name -->
+            <section class="input-section">
+                <h2 class="section-title">
+                    ペンネーム
+                    <span class="required-badge">必須</span>
+                </h2>
+                
+                <input 
+                    type="text" 
+                    id="creatorName" 
+                    class="name-input"
+                    placeholder="ペンネーム可（例：chiba / anonymous）"
+                    aria-label="制作者名"
+                    required
+                />
+
+                <div class="validation-message" id="nameValidation" style="display: none;">
+                    ⚠️ ペンネームを入力してください
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Footer Navigation -->
+        <footer class="page-footer">
+            <button type="button" class="btn-secondary" id="backBtn">
+                ← 戻る
+            </button>
+            <button type="button" class="btn-primary" id="nextBtn" disabled>
+                入力内容を確認へ →
+            </button>
+        </footer>
+
+    </div>
+
+    <script src="./artwork_submit_script.js"></script>
+</body>
+</html>

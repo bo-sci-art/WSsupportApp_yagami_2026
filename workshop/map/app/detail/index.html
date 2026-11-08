@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>ハザードマップ（対象区域の選定）</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+  <link rel="stylesheet" href="./style.css?v=20261013">
+</head>
+<body>
+
+<!-- 左：操作パネル -->
+<div id="sidebar">
+  <div class="side-scroll">
+    <!-- 災害種フィルタ -->
+    <div class="filter-label" style="margin-top:2px">災害の種類</div>
+    <div class="filter-chips">
+      <button class="chip active" data-cat="all">すべて</button>
+      <button class="chip" data-cat="mizu">水害</button>
+      <button class="chip" data-cat="jiban">地盤</button>
+      <button class="chip" data-cat="jishin">地震</button>
+    </div>
+
+    <!-- 水害 -->
+    <div class="hazard-group hg-mizu" data-cat="mizu">
+      <div class="hg-head">水害</div>
+      <div class="hg-body">
+        <div class="fopt"><input type="checkbox" id="chk-flood_l2"><label for="chk-flood_l2">洪水（外水氾濫）</label><button class="info-btn" data-k="flood_l2">?</button></div>
+        <div class="fopt"><input type="checkbox" id="chk-hightide"><label for="chk-hightide">高潮</label><button class="info-btn" data-k="hightide">?</button></div>
+        <div class="fopt-head">内水氾濫</div>
+        <a class="ext-link" href="https://wwwm.city.yokohama.lg.jp/yokohama/Map?mid=65&amp;mpx=139.62630111702703&amp;mpy=35.536158445033394&amp;mps=10000&amp;mtp=dm&amp;gprj=3" target="_blank" rel="noopener">
+          🔗 横浜市の「わいわい防災マップ」を見る
+          <small>下水道や水路からあふれる内水氾濫の浸水想定を確認できます（外部サイト）</small>
+        </a>
+      </div>
+    </div>
+
+    <!-- 地盤 -->
+    <div class="hazard-group hg-jiban" data-cat="jiban">
+      <div class="hg-head">地盤</div>
+      <div class="hg-body">
+        <div class="fopt"><input type="checkbox" id="chk-kyukei"><label for="chk-kyukei">土砂災害（急傾斜地の崩壊）</label><button class="info-btn" data-k="kyukei">?</button></div>
+      </div>
+    </div>
+
+    <!-- 地震 -->
+    <div class="hazard-group hg-jishin" data-cat="jishin">
+      <div class="hg-head">地震</div>
+      <div class="hg-body">
+        <div class="fopt"><input type="checkbox" id="chk-tsunami"><label for="chk-tsunami">津波</label><button class="info-btn" data-k="tsunami">?</button></div>
+        <a class="ext-link" href="https://wwwm.city.yokohama.lg.jp/yokohama/Map?mid=6&amp;mpx=139.62630111702703&amp;mpy=35.536158445033394&amp;mps=10000&amp;mtp=dm&amp;gprj=3" target="_blank" rel="noopener">
+          🔗 横浜市の「わいわい防災マップ」を見る
+          <small>震度・液状化危険度・地震火災（焼失棟数）・津波を確認できます（外部サイト）</small>
+        </a>
+      </div>
+    </div>
+
+    <!-- 凡例・説明 -->
+    <div class="filter-label" style="margin-top:16px">凡例・説明</div>
+    <div id="legend-box"><div class="legend-empty">災害を選ぶと、説明と凡例が表示されます</div></div>
+
+    <!-- 周辺の防災資源 -->
+    <div class="filter-label" style="margin-top:16px">周辺の防災資源</div>
+    <div id="resource-toggles" class="res-toggles"></div>
+    <div id="resource-legend" class="res-legend">
+      <div class="res-item"><span class="res-badge" style="background:#2e9e5b">避</span><div class="res-text"><b>指定緊急避難場所</b><span class="res-desc">災害が迫ったときに緊急で「逃げ込む」場所。洪水・津波など<u>災害の種類ごと</u>に、その災害から安全な場所が指定されています。</span></div></div>
+      <div class="res-item"><span class="res-badge" style="background:#2f6fb0">拠</span><div class="res-text"><b>地域防災拠点</b><span class="res-desc">災害後に「避難生活を送る」ための指定避難所（横浜市）。多くは学校で、水・食料の備蓄や情報の受け伝えの拠点になります。</span></div></div>
+      <div class="res-item"><span class="res-badge" style="background:#0f9bb5">水</span><div class="res-text"><b>災害時給水所</b><span class="res-desc">断水したときに水をもらえる場所。配水池・災害用地下給水タンク・緊急給水栓などがあります。</span></div></div>
+      <div class="res-note">※「逃げ込む先（避難場所）」と「避難生活の場（拠点）」は役割が違います。</div>
+      <div class="res-source">出典: 指定緊急避難場所（国土地理院）／地域防災拠点・災害時給水所（横浜市オープンデータ, CC BY 4.0）</div>
+    </div>
+  </div>
+</div>
+
+<!-- 地図 -->
+<div id="map-area">
+  <div id="viewDiv"></div>
+  <div id="basemap-toggle"><button id="bm-white" class="active">白地図</button><button id="bm-sat">衛星画像</button></div>
+  <div class="attr">出典：<a href="https://disaportal.gsi.go.jp/" target="_blank" rel="noopener">国土地理院</a>（地理院タイル／重ねるハザードマップ）</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="./script.js?v=20261013"></script>
+</body>
+</html>

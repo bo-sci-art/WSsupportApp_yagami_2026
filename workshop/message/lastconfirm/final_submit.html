@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FINAL STEP | 最終確認・提出</title>
+    <link rel="stylesheet" href="./final_submit_styles.css?v=2.1.1">
+    <!-- Leaflet (map preview) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+    <!-- Main Container -->
+    <div class="container">
+        
+
+        <!-- Header Section -->
+        <header class="final-header">
+            <div class="step-badge">FINAL STEP</div>
+            <h1 class="main-title">最終確認・提出</h1>
+            <p class="subtitle">入力した内容を確認し、防災行動マップに登録します<br>直したいところは各項目の「✏️ 修正する」から、この画面で修正できます</p>
+        </header>
+
+        <!-- Step 1: Data Summary -->
+        <section class="step-section" id="step-summary">
+            <div class="step-header">
+                <div class="step-icon">📋</div>
+                <h2 class="step-title">Step 1: あなたの入力内容</h2>
+            </div>
+            
+            <!-- 作品プレビュー（コラージュ保存時に localStorage へ保存された画像） -->
+            <div class="artwork-preview-card">
+                <h3 class="artwork-preview-label">🖼️ あなたの作品</h3>
+                <div class="artwork-preview-frame">
+                    <img id="artwork-preview-img" alt="あなたの作品" style="display:none;">
+                    <div id="artwork-preview-empty" class="artwork-preview-empty" style="display:none;">
+                        まだ作品画像が見つかりません。コラージュのページで「保存」すると、ここに表示されます。
+                    </div>
+                </div>
+            </div>
+
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <div class="summary-head"><h3 class="summary-label">🗺️ 対象地点／区域</h3><button type="button" class="edit-btn" data-edit="location">✏️ 修正する</button></div>
+                    <div class="summary-editor" id="editor-location" style="display:none;"></div>
+                    <div id="summary-location" class="summary-value">読込中...</div>
+                    <div id="summary-map" class="summary-map"></div>
+                </div>
+                
+                <div class="summary-card">
+                    <div class="summary-head"><h3 class="summary-label">⚠️ 選択したハザードマップ</h3><button type="button" class="edit-btn" data-edit="hazards">✏️ 修正する</button></div>
+                    <div class="summary-editor" id="editor-hazards" style="display:none;"></div>
+                    <div id="summary-hazards" class="summary-value">読込中...</div>
+                </div>
+                
+                <div class="summary-card">
+                    <div class="summary-head"><h3 class="summary-label">🎨 マーブリング作品の意図</h3><button type="button" class="edit-btn" data-edit="marbling">✏️ 修正する</button></div>
+                    <div class="summary-editor" id="editor-marbling" style="display:none;"></div>
+                    <div id="summary-marbling" class="summary-value">読込中...</div>
+                </div>
+                
+                <div class="summary-card">
+                    <div class="summary-head"><h3 class="summary-label">✂️ コラージュ作品の意図</h3><button type="button" class="edit-btn" data-edit="collage">✏️ 修正する</button></div>
+                    <div class="summary-editor" id="editor-collage" style="display:none;"></div>
+                    <div id="summary-collage" class="summary-value">読込中...</div>
+                </div>
+
+                <div class="summary-card">
+                    <div class="summary-head"><h3 class="summary-label">⏱️ 防災行動のタイミング</h3><button type="button" class="edit-btn" data-edit="phases">✏️ 修正する</button></div>
+                    <div class="summary-editor" id="editor-phases" style="display:none;"></div>
+                    <div id="summary-phases" class="summary-value">読込中...</div>
+                </div>
+                
+                <div class="summary-card">
+                    <div class="summary-head"><h3 class="summary-label">💬 作品タイトル</h3><button type="button" class="edit-btn" data-edit="title">✏️ 修正する</button></div>
+                    <div class="summary-editor" id="editor-title" style="display:none;"></div>
+                    <div id="summary-title" class="summary-value">読込中...</div>
+                </div>
+                
+                <div class="summary-card">
+                    <div class="summary-head"><h3 class="summary-label">✍️ 制作者名（ペンネーム）</h3><button type="button" class="edit-btn" data-edit="creator">✏️ 修正する</button></div>
+                    <div class="summary-editor" id="editor-creator" style="display:none;"></div>
+                    <div id="summary-creator" class="summary-value">読込中...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Step 2: 作品を登録する -->
+        <section class="step-section" id="step-survey">
+            <div class="step-header">
+                <div class="step-icon">📤</div>
+                <h2 class="step-title">Step 2: 登録する</h2>
+            </div>
+
+            <div class="survey-instructions">
+                <h3 class="instructions-title">送信の手順</h3>
+                <ol class="instructions-list">
+                    <li>上の入力内容を確認</li>
+                    <li>下の「登録する」ボタンをクリック</li>
+                    <li>自動的に防災行動マップに反映されます（画面が切り替わるまでそのままお待ちください）</li>
+                </ol>
+            </div>
+
+            <!-- 作品画像が見つからない場合の注意 -->
+            <div class="alert-card warning" id="image-missing-alert" style="display:none;">
+                <div class="alert-icon">⚠️</div>
+                <div class="alert-content">
+                    <h3 class="alert-title">作品画像が見つかりません</h3>
+                    <p class="info-note">
+                        コラージュのページで「保存」操作を行うと、作品画像が自動的にこのページへ引き継がれます。まだの場合はコラージュのページに戻ってください。
+                    </p>
+                    <div class="action-section" style="margin-top:0.75rem;">
+                        <button class="btn btn-secondary" onclick="navigateToPage('collage')" type="button">コラージュのページへ</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-section">
+                <button class="btn btn-large btn-primary" onclick="submitArtwork()" id="btn-submit-artwork" type="button">
+                    📤 登録する →
+                </button>
+            </div>
+
+            <div id="submit-status" class="submit-status" style="display:none;"></div>
+        </section>
+
+        <!-- Step 4: Completion Message (hidden until checkbox is checked) -->
+        <section class="step-section success-section" id="step-complete" style="display:none;">
+            <div class="success-card">
+                <div class="success-icon">🎉</div>
+                <h2 class="success-title">作品が防災行動マップに登録されました！</h2>
+                <p class="success-message">
+                    あなたの作品が、防災への気づきを共有する作品集マップに追加されました。<br>
+                    次のステップとして、防災行動を計画しましょう。
+                </p>
+                <div class="next-action">
+                    <button class="btn btn-large btn-success" onclick="goToNextAction()">
+                        🚀 次の防災行動マップへ →
+                    </button>
+                </div>
+            </div>
+        </section>
+
+
+
+    </div>
+
+    <!-- Scripts -->
+    <script src="./final_submit_script.js?v=3.2.0"></script>
+</body>
+</html>

@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>作品詳細 - 防災行動マップ</title>
+  
+  <link rel="stylesheet" href="./leaflet.css">
+  <link rel="stylesheet" href="detail_style.css">
+</head>
+<body>
+
+  <div id="detail-tutorial-overlay" class="tutorial-overlay" style="display: none;">
+    <div class="tutorial-card">
+      
+      <div class="tutorial-image-container">
+        <img id="dt-img" alt="ガイド画像" class="tutorial-img">
+      </div>
+
+      <div class="tutorial-content">
+        <h3 id="dt-title">タイトル</h3>
+        <p id="dt-desc">説明文</p>
+      </div>
+
+      <div class="tutorial-footer">
+        <button type="button" id="dt-skip-btn" class="tutorial-nav-btn secondary">スキップ</button>
+        
+        <div class="tutorial-dots">
+          <span class="dt-dot active"></span>
+          <span class="dt-dot"></span>
+          <span class="dt-dot"></span>
+          <span class="dt-dot"></span>
+        </div>
+
+        <button type="button" id="dt-next-btn" class="tutorial-nav-btn primary">次へ ＞</button>
+      </div>
+
+    </div>
+  </div>
+  
+  <header id="global-header">
+    <div class="header-left">
+      <div class="header-logo-icon">🗺️</div>
+      <div class="header-titles">
+        <h1 class="header-main-title">防災行動マップ</h1>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <div class="status-item">鑑賞済み <span id="view-count"></span></div>
+      <div class="status-item">💖 <span id="header-heart-count">0</span></div>
+      <div class="status-item">✨ <span id="header-action-count">0</span></div>
+      
+      <button type="button" id="detail-help-btn">？</button>
+
+      <button type="button" id="back-to-map-btn" onclick="window.location.href='index.html'">
+        ＜ マップに戻る
+      </button>
+    </div>
+  </header>
+
+  <div class="page-container">
+    
+    <div class="content-container">  
+      
+      <div class="column left-column">
+        <div id="artwork-info" class="artwork-info"></div>
+        <div class="art-panel">
+          <img id="art-image" src="" alt="アート作品">
+        </div>
+      </div>
+
+      <div class="column right-column">
+
+        <div id="quest-menu-panel" class="quest-menu-panel">
+
+          <div class="appreciation-guide">
+            <div class="guide-header">
+              <span class="guide-icon">✨</span> 鑑賞ガイド
+            </div>
+            <p class="guide-text">
+              順番に鑑賞を進めて、作品に込められた<strong>作者の想い</strong>を受け取りましょう。
+            </p>
+          </div>
+
+          <div class="quest-item step-coral active" id="quest-item-1">
+            <div class="card-badge-clear">CLEAR!</div>
+            <div class="quest-card-layout">
+              <div class="quest-number-circle">1</div>
+              <div class="quest-text-content">
+                <div class="quest-header">災害リスク</div>
+              </div>
+            </div>
+            <button type="button" class="quest-button" onclick="startQuest(1)">マーブリングを鑑賞する ＞</button>
+          </div>
+
+          <div class="quest-item step-sage locked" id="quest-item-2">
+            <div class="card-badge-clear">CLEAR!</div>
+            <div class="quest-card-layout">
+              <div class="quest-number-circle">2</div>
+              <div class="quest-text-content">
+                <div class="quest-header">防災行動</div>
+              </div>
+            </div>
+            <button type="button" class="quest-button" id="btn-step2" onclick="startQuest(2)" disabled>マーブリング鑑賞後に進めます</button>
+          </div>
+
+          <div class="quest-item step-dandelion locked" id="quest-item-3">
+            <div class="card-badge-clear">CLEAR!</div>
+            
+            <div class="quest-card-layout">
+              <div class="quest-number-circle">3</div>
+              <div class="quest-text-content">
+                <div class="quest-header">作者の想い</div>
+              </div>
+            </div>
+            <button type="button" class="quest-button" id="btn-step3" onclick="startQuest(3)" disabled>コラージュ鑑賞後に進めます</button>
+          </div>
+
+          <div id="post-quest-area" class="post-quest-area" style="display: none;">
+            <div class="completion-message-area">
+              <p>この作品の鑑賞が完了しました！</p>
+            </div>
+
+            <button type="button" id="find-nearby-btn" class="nav-button btn-primary btn-full-width" style="font-size: 1.1em;">
+              🗺️ 次に鑑賞する作品を探す
+            </button>
+          </div>
+
+        </div>
+        <div id="interaction-panel" class="interaction-panel" style="display: none;">
+          
+          <div id="split-layout-container" class="split-layout-container">
+            
+            <div class="info-box-container">
+              <div id="step1-info" style="display: none;">
+                <div class="box-header">
+                  <span class="icon">🕵️</span> 作者が見つけた災害リスク
+                </div>
+                <div id="mabling-text" class="box-content-text">読み込み中...</div>
+              </div>
+              
+              <div id="step2-info" style="display: none;">
+                <div class="box-header action-theme">
+                  <span class="icon">🏃</span> 作者が考えた防災行動
+                </div>
+                <div id="collage-text" class="box-content-text">読み込み中...</div>
+              </div>
+            </div>
+
+            <div class="verification-box-container">
+              
+              <div class="verify-header-area">
+                <span class="verify-title">▼ ハザードマップを重ねてピン周辺の災害リスクを確認しよう</span>
+                
+                <div id="step1-controls" style="display: none;">
+                  <div id="step1-hazard-check-area" class="dynamic-check-area-row"></div>
+                </div>
+
+                <div id="step2-controls" style="display: none;">
+                   <div id="step2-resource-check-area" class="dynamic-check-area-row"></div>
+                </div>
+              </div>
+
+              <div class="map-wrapper">
+                <div id="surrounding-map"></div>
+              </div>
+
+              <div class="verify-footer-area">
+                <div id="step1-btn-area" style="display: none;">
+                  <button type="button" class="nav-button btn-primary btn-full-width" onclick="finishQuest(1)">
+                    ✅ 完了(STEP1 クリア)
+                  </button>
+                </div>
+
+                <div id="step2-btn-area" style="display: none;">
+                  <button type="button" class="nav-button btn-primary btn-full-width" onclick="finishQuest(2)">
+                    ✅ 完了(STEP2 クリア)
+                  </button>
+                </div>
+              </div>
+              
+            </div>
+          </div>
+
+          <div id="step3-content" style="display: none; height: 100%;">
+            <div class="letter-container">
+              
+              <div class="calm-letter-paper">
+                <div class="letter-header">Message</div>
+                <div class="letter-body">
+                  <div id="message-addressee" class="message-addressee"></div>
+                  <p id="author-message-text">読み込み中...</p>
+                </div>
+                <div class="letter-footer">
+                    <span id="author-name-signature" class="signature">作者より</span>
+                </div>
+              </div>
+
+              <div class="reaction-container">
+                
+                <div class="letter-reaction-section">
+                  <p class="reaction-msg">作者の想いは届きましたか？<br>あなたの気持ちを記録しましょう。</p>
+                  
+                  <div class="reaction-buttons-row">
+                    <button type="button" id="btn-heart" class="reaction-btn-large">
+                      <span class="emoji">🤍</span> 想いに共感した
+                    </button>
+                    <button type="button" id="btn-action" class="reaction-btn-large">
+                      <span class="emoji">⭐</span> 防災行動を実践したい
+                    </button>
+                  </div>
+                </div>
+
+                <div class="step3-finish-area">
+                  <button type="button" class="receive-button" onclick="finishQuest(3)">
+                    <span class="icon">💌</span> 想いを受け取って完了
+                  </button>
+                </div>
+
+              </div>
+            </div> 
+          </div>
+
+        </div> 
+        </div> </div> <div id="nearby-overlay" class="nearby-overlay" style="display: none;">
+      <div class="nearby-mini-header">
+        <button type="button" class="text-link-button back-link" onclick="closeNearbyOverlay()">
+          ＜ 作品画面に戻る
+        </button>
+      </div>
+      <div class="nearby-body">
+        <div class="nearby-left-container">
+          <h2 class="section-label">次に鑑賞する作品を探す</h2>
+          <div class="nearby-left-panel">
+            <div class="recommend-section">
+              <h3 class="rec-title"><span class="icon">🌊</span> 同じ災害リスクを扱った作品</h3>
+              <div id="grid-risk" class="compact-grid"></div>
+            </div>
+            <div class="recommend-section">
+              <h3 class="rec-title"><span class="icon">⏰</span> 同じタイミングの防災行動を扱った作品</h3>
+              <div id="grid-time" class="compact-grid"></div>
+            </div>
+          </div>
+          <div class="left-action-area">
+            <button type="button" class="nav-button btn-secondary btn-full" onclick="window.location.href='index.html'">
+              🔍 全ての作品から探す
+            </button>
+          </div>
+        </div>
+        <div class="nearby-right-container">
+          <div class="nearby-right-panel">
+            <div id="nearby-map-view" class="simple-map-view"></div>
+          </div>
+          <div class="right-action-area">
+             <button type="button" class="nav-button btn-primary btn-short" onclick="showFinalCTA()">
+              鑑賞を終了する ＞
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="final-cta-overlay" class="nearby-overlay final-mode" style="display: none;">
+      <div id="final-background" class="final-bg-container"></div>
+      <div class="final-content" style="z-index: 2;"> <div class="final-header">
+          <span class="icon-lamp">🤝</span>
+          <h2>現在 <span id="total-art-count" style="color:#EE8972; font-size:1.3em;">--</span> 作品の<br>共助の想いが集まっています。</h2>
+        </div>
+        <p class="final-message" style="font-size: 1.1em; margin-bottom: 40px; text-shadow: 0 2px 5px rgba(255,255,255,0.8);">
+          誰かを守りたいという温かい気持ちが<br>この地域の防災力を高めます。<br><br>
+        </p>
+        <div class="final-exit">
+          <button type="button" class="nav-button btn-secondary" onclick="window.location.href='index.html'">
+            マップに戻る
+          </button>
+          <button type="button" class="nav-button btn-primary" onclick="window.location.href='../../index.html'">
+            トップ画面へ
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div> <script src="./leaflet.js"></script>
+  <script src="./detail_script.js?v=20261013"></script>
+
+</body>
+</html>

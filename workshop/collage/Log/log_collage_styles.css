@@ -1,0 +1,357 @@
+/* ============================================
+   CSS Variables
+   ============================================ */
+:root {
+    /* Colors */
+    --color-primary: #4A9BA8;
+    --color-primary-hover: #3a7f8a;
+    --color-secondary: #6c757d;
+    --color-success: #28a745;
+    --color-warning: #ffc107;
+    --color-danger: #dc3545;
+    --color-bg: #f9f7f4;
+    --color-bg-secondary: #ffffff;
+    --color-text-primary: #2c3e50;
+    --color-text-secondary: #5a6c7d;
+    --color-border: #ddd;
+    --color-disabled: #ccc;
+    --color-hint: #7a8d9a;
+    
+    /* Spacing */
+    --spacing-xs: 0.5rem;
+    --spacing-sm: 1rem;
+    --spacing-md: 1.5rem;
+    --spacing-lg: 2rem;
+    --spacing-xl: 3rem;
+    
+    /* Border Radius */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    
+    /* Shadows */
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.12);
+    --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* ============================================
+   Global Styles
+   ============================================ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+    background: var(--color-bg);
+    color: var(--color-text-primary);
+    line-height: 1.6;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* ============================================
+   Container
+   ============================================ */
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: clamp(1.5rem, 2.5vw, 2rem);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* ============================================
+   Header
+   ============================================ */
+.page-header {
+    margin-bottom: clamp(1rem, 2vw, 1.5rem);
+    padding-bottom: clamp(0.75rem, 1.5vw, 1rem);
+    border-bottom: 2px solid var(--color-border);
+    flex-shrink: 0;
+}
+
+.step-indicator {
+    font-size: clamp(0.8rem, 1.3vw, 0.9rem);
+    font-weight: 600;
+    color: var(--color-primary);
+    margin-bottom: 0.25rem;
+    letter-spacing: 0.5px;
+}
+
+.page-title {
+    font-size: clamp(1.3rem, 2.2vw, 1.6rem);
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    color: var(--color-text-primary);
+}
+
+.page-subtitle {
+    font-size: clamp(0.85rem, 1.3vw, 0.95rem);
+    color: var(--color-text-secondary);
+    margin-bottom: 0.25rem;
+}
+
+.page-description {
+    font-size: clamp(0.8rem, 1.2vw, 0.9rem);
+    color: var(--color-text-secondary);
+    line-height: 1.75;
+    opacity: 0.9;
+}
+
+/* ============================================
+   Main Content
+   ============================================ */
+.content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(1.25rem, 2vw, 1.75rem);
+    overflow: hidden;
+    min-height: 0;
+}
+
+/* Input Section */
+.input-section {
+    background: var(--color-bg-secondary);
+    padding: clamp(1.5rem, 2.5vw, 2rem);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.section-title {
+    font-size: clamp(1.05rem, 1.7vw, 1.25rem);
+    font-weight: 600;
+    margin-bottom: clamp(0.75rem, 1.2vw, 1rem);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    color: var(--color-text-primary);
+}
+
+.required-badge {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.5rem;
+    background: var(--color-danger);
+    color: white;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+}
+
+/* Hint Text */
+.hint-text {
+    margin-bottom: clamp(0.75rem, 1.2vw, 1rem);
+    padding: clamp(0.75rem, 1.2vw, 1rem);
+    background: #f0f8f9;
+    border-radius: var(--radius-md);
+    border: 1px solid #d0e8eb;
+}
+
+.hint-text p {
+    font-size: clamp(0.85rem, 1.3vw, 0.95rem);
+    color: var(--color-hint);
+    margin-bottom: 0.25rem;
+    line-height: 1.6;
+}
+
+.hint-text p:last-child {
+    margin-bottom: 0;
+}
+
+/* Textarea */
+.description-textarea {
+    width: 100%;
+    padding: clamp(0.85rem, 1.3vw, 1.1rem);
+    font-size: clamp(0.95rem, 1.5vw, 1.05rem);
+    font-family: inherit;
+    line-height: 1.7;
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
+    resize: vertical;
+    min-height: 120px;
+    transition: all 0.2s ease;
+    flex: 1;
+    background: white;
+}
+
+.description-textarea:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(74, 155, 168, 0.1);
+}
+
+.description-textarea::placeholder {
+    color: #aaa;
+    font-style: italic;
+}
+
+/* Character Count */
+.character-count {
+    margin-top: 0.5rem;
+    font-size: clamp(0.8rem, 1.2vw, 0.9rem);
+    color: var(--color-text-secondary);
+    text-align: right;
+}
+
+#currentCount {
+    font-weight: 600;
+    color: var(--color-primary);
+}
+
+/* Validation Messages */
+.validation-message {
+    background: #fff3cd;
+    border: 1px solid var(--color-warning);
+    color: #856404;
+    padding: clamp(0.6rem, 1vw, 0.75rem);
+    border-radius: var(--radius-md);
+    margin-top: clamp(0.6rem, 1vw, 0.75rem);
+    font-size: clamp(0.85rem, 1.3vw, 0.95rem);
+    font-weight: 500;
+}
+
+/* ============================================
+   Footer Navigation
+   ============================================ */
+.page-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-top: clamp(1rem, 1.5vw, 1.25rem);
+    margin-top: clamp(1rem, 1.5vw, 1.25rem);
+    border-top: 2px solid var(--color-border);
+    flex-shrink: 0;
+}
+
+.btn-primary,
+.btn-secondary {
+    padding: clamp(0.7rem, 1.2vw, 0.95rem) clamp(1.75rem, 3vw, 2.5rem);
+    font-size: clamp(0.95rem, 1.4vw, 1.1rem);
+    font-weight: 600;
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.btn-primary {
+    background: var(--color-primary);
+    color: white;
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: var(--color-primary-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-primary:disabled {
+    background: var(--color-disabled);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.btn-secondary {
+    background: white;
+    color: var(--color-text-primary);
+    border: 2px solid var(--color-border);
+}
+
+.btn-secondary:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+/* ============================================
+   Responsive Design
+   ============================================ */
+@media screen and (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+
+    body {
+        overflow-y: auto;
+    }
+
+    .container {
+        height: auto;
+        min-height: 100vh;
+        overflow: visible;
+    }
+
+    .content {
+        overflow-y: visible;
+    }
+
+    .description-textarea {
+        min-height: 100px;
+    }
+
+    .page-footer {
+        flex-direction: column;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        width: 100%;
+    }
+}
+
+
+/* ============================================
+   防災行動のタイミング（2026/10 追加）
+   ============================================ */
+.phase-section { flex: 0 0 auto; }
+.section-description {
+    font-size: clamp(0.8rem, 1.2vw, 0.9rem);
+    color: var(--color-text-secondary);
+    margin-bottom: 0.75rem;
+}
+.phase-options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+}
+.phase-option {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 0.5rem;
+    align-items: center;
+    padding: 0.75rem 0.9rem;
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: #fff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.phase-option:hover { border-color: var(--color-primary); background: #f0f8f9; }
+.phase-option.selected { border-color: var(--color-primary); background: #e6f4f6; box-shadow: var(--shadow-sm); }
+.phase-option input { width: 18px; height: 18px; accent-color: var(--color-primary); cursor: pointer; grid-row: span 2; }
+.phase-name { font-weight: 700; font-size: 1rem; }
+.phase-desc { font-size: 0.78rem; color: var(--color-text-secondary); line-height: 1.4; }
+@media (max-width: 640px) {
+    .phase-options { grid-template-columns: 1fr; }
+}
+
+/* ===== 画面固定レイアウト（2026/10）：説明欄は残りの高さに合わせて伸縮 ===== */
+.content > .input-section:first-child { flex: 1 0 auto; }
+.hint-text { padding: 0.6rem 0.9rem; margin-bottom: 0.6rem; }
+.hint-text p { font-size: 0.85rem; margin-bottom: 0.1rem; }
+@media (max-height: 800px) {
+    .phase-option { padding: 0.5rem 0.7rem; }
+    .phase-desc { font-size: 0.72rem; }
+    .character-count { margin-top: 2px; }
+}

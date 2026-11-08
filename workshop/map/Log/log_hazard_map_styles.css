@@ -1,0 +1,473 @@
+/* ============================================
+   CSS Variables
+   ============================================ */
+:root {
+    /* Colors */
+    --color-primary: #4A9BA8;
+    --color-primary-hover: #3a7f8a;
+    --color-secondary: #6c757d;
+    --color-success: #28a745;
+    --color-warning: #ffc107;
+    --color-danger: #dc3545;
+    --color-bg: #f9f7f4;
+    --color-bg-secondary: #ffffff;
+    --color-text-primary: #2c3e50;
+    --color-text-secondary: #5a6c7d;
+    --color-border: #ddd;
+    --color-disabled: #ccc;
+    
+    /* Spacing */
+    --spacing-xs: 0.5rem;
+    --spacing-sm: 1rem;
+    --spacing-md: 1.5rem;
+    --spacing-lg: 2rem;
+    --spacing-xl: 3rem;
+    
+    /* Border Radius */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    
+    /* Shadows */
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.12);
+    --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* ============================================
+   Global Styles
+   ============================================ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+    background: var(--color-bg);
+    color: var(--color-text-primary);
+    line-height: 1.6;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* ============================================
+   Container
+   ============================================ */
+.container {
+    max-width: 100%;
+    width: 100%;
+    margin: 0;
+    padding: clamp(1rem, 2vw, 1.5rem);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* ============================================
+   Header
+   ============================================ */
+.page-header {
+    margin-bottom: clamp(0.5rem, 1vw, 1rem);
+    padding-bottom: clamp(0.5rem, 1vw, 0.75rem);
+    border-bottom: 2px solid var(--color-border);
+    flex-shrink: 0;
+}
+
+.step-indicator {
+    font-size: clamp(0.75rem, 1.2vw, 0.85rem);
+    font-weight: 600;
+    color: var(--color-primary);
+    margin-bottom: 0.25rem;
+    letter-spacing: 0.5px;
+}
+
+.page-title {
+    font-size: clamp(1.1rem, 2vw, 1.4rem);
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    color: var(--color-text-primary);
+}
+
+.page-subtitle {
+    font-size: clamp(0.8rem, 1.2vw, 0.9rem);
+    color: var(--color-text-secondary);
+}
+
+/* ============================================
+   Main Content
+   ============================================ */
+.content {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: clamp(1rem, 2vw, 1.5rem);
+    overflow: hidden;
+    min-height: 0;
+}
+
+.input-section {
+    background: var(--color-bg-secondary);
+    padding: clamp(0.75rem, 1.5vw, 1.25rem);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.section-title {
+    font-size: clamp(1rem, 1.5vw, 1.15rem);
+    font-weight: 600;
+    margin-bottom: clamp(0.5rem, 1vw, 0.75rem);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.required-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    background: var(--color-danger);
+    color: white;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+}
+
+.section-description {
+    font-size: clamp(0.8rem, 1.2vw, 0.9rem);
+    color: var(--color-text-secondary);
+    margin-bottom: clamp(0.5rem, 1vw, 0.75rem);
+    flex-shrink: 0;
+}
+
+/* ============================================
+   Hazard Selection (Checkboxes)
+   ============================================ */
+.hazard-selection {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(0.5rem, 1vw, 0.75rem);
+    overflow-y: auto;
+    padding-right: 0.5rem;
+    flex: 1;
+    align-content: start;
+}
+
+.hazard-option {
+    display: flex;
+    align-items: center;
+    padding: clamp(0.5rem, 1vw, 0.75rem);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: white;
+    height: fit-content;
+}
+
+.hazard-option:hover {
+    border-color: var(--color-primary);
+    background: #f0f8f9;
+}
+
+.hazard-option.selected {
+    border-color: var(--color-primary);
+    background: #e6f4f6;
+    box-shadow: var(--shadow-sm);
+}
+
+.hazard-option input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    margin-right: 0.5rem;
+    cursor: pointer;
+    accent-color: var(--color-primary);
+    flex-shrink: 0;
+}
+
+.hazard-option label {
+    cursor: pointer;
+    font-size: clamp(0.8rem, 1.2vw, 0.9rem);
+    font-weight: 500;
+    flex: 1;
+    line-height: 1.4;
+}
+
+/* ============================================
+   Map Container
+   ============================================ */
+.map-container {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.map {
+    width: 100%;
+    height: 100%;
+    border-radius: var(--radius-md);
+    border: 2px solid var(--color-border);
+    z-index: 1;
+}
+
+.map-instruction {
+    position: absolute;
+    top: 0.75rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    font-size: clamp(0.75rem, 1.2vw, 0.85rem);
+    font-weight: 500;
+    color: var(--color-text-primary);
+    z-index: 1000;
+    pointer-events: none;
+    max-width: 90%;
+    text-align: center;
+}
+
+/* ============================================
+   Location Confirmation
+   ============================================ */
+.location-confirmation {
+    background: #fff8e1;
+    padding: clamp(0.5rem, 1vw, 0.75rem);
+    border-radius: var(--radius-md);
+    border: 2px solid var(--color-warning);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+    flex-shrink: 0;
+}
+
+.location-info {
+    flex: 1;
+}
+
+.location-label {
+    font-weight: 600;
+    font-size: clamp(0.8rem, 1.2vw, 0.9rem);
+    margin-bottom: 0.2rem;
+    color: var(--color-text-primary);
+}
+
+.location-coords {
+    font-family: 'Courier New', monospace;
+    font-size: clamp(0.75rem, 1.1vw, 0.85rem);
+    color: var(--color-text-secondary);
+    margin-bottom: 0.2rem;
+}
+
+.location-status {
+    font-size: clamp(0.75rem, 1.1vw, 0.8rem);
+    color: var(--color-warning);
+    font-weight: 600;
+}
+
+.btn-confirm-location {
+    padding: 0.6rem 1rem;
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: clamp(0.85rem, 1.2vw, 0.95rem);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.btn-confirm-location:hover {
+    background: var(--color-primary-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+/* ============================================
+   Location Confirmed
+   ============================================ */
+.location-confirmed {
+    background: #e8f5e9;
+    padding: clamp(0.5rem, 1vw, 0.75rem);
+    border-radius: var(--radius-md);
+    border: 2px solid var(--color-success);
+    margin-top: 0.75rem;
+    flex-shrink: 0;
+}
+
+.confirmed-badge {
+    font-size: clamp(0.9rem, 1.3vw, 1rem);
+    font-weight: 600;
+    color: var(--color-success);
+    margin-bottom: 0.4rem;
+}
+
+.confirmed-coords {
+    font-family: 'Courier New', monospace;
+    font-size: clamp(0.75rem, 1.1vw, 0.85rem);
+    color: var(--color-text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.btn-change-location {
+    padding: 0.4rem 0.8rem;
+    background: white;
+    color: var(--color-text-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    font-size: clamp(0.75rem, 1.1vw, 0.85rem);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-change-location:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+/* ============================================
+   Validation Messages
+   ============================================ */
+.validation-message {
+    background: #fff3cd;
+    border: 1px solid var(--color-warning);
+    color: #856404;
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius-md);
+    margin-top: 0.5rem;
+    font-size: clamp(0.75rem, 1.1vw, 0.85rem);
+    font-weight: 500;
+    flex-shrink: 0;
+}
+
+/* ============================================
+   Footer Navigation
+   ============================================ */
+.page-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-top: clamp(0.75rem, 1.5vw, 1rem);
+    margin-top: clamp(0.75rem, 1.5vw, 1rem);
+    border-top: 2px solid var(--color-border);
+    flex-shrink: 0;
+}
+
+.btn-primary,
+.btn-secondary {
+    padding: clamp(0.6rem, 1.2vw, 0.9rem) clamp(1.5rem, 3vw, 2rem);
+    font-size: clamp(0.9rem, 1.3vw, 1rem);
+    font-weight: 600;
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.btn-primary {
+    background: var(--color-primary);
+    color: white;
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: var(--color-primary-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-primary:disabled {
+    background: var(--color-disabled);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.btn-secondary {
+    background: white;
+    color: var(--color-text-primary);
+    border: 2px solid var(--color-border);
+}
+
+.btn-secondary:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+/* ============================================
+   Responsive Design
+   ============================================ */
+@media screen and (max-width: 1024px) {
+    .content {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+        overflow-y: auto;
+    }
+    
+    body {
+        overflow-y: auto;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+
+    .hazard-selection {
+        grid-template-columns: 1fr;
+    }
+
+    .location-confirmation {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .btn-confirm-location {
+        width: 100%;
+    }
+
+    .page-footer {
+        flex-direction: column;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        width: 100%;
+    }
+}
+
+/* ============================================
+   Leaflet Custom Styles
+   ============================================ */
+.leaflet-popup-content-wrapper {
+    border-radius: var(--radius-md);
+}
+
+.leaflet-popup-content {
+    font-family: inherit;
+    font-size: 0.9rem;
+}
+
+
+/* ===== 画面固定レイアウト（2026/10）：タブレット縦・スマホでは地図の高さを確保 ===== */
+@media screen and (max-width: 1024px) {
+    .content { grid-template-rows: auto minmax(300px, 1fr) !important; }
+    .hazard-selection { grid-template-columns: 1fr 1fr !important; overflow: visible !important; }
+    .map-container { flex: 1 1 auto !important; min-height: 220px !important; height: auto !important; }
+}
+/* 横向きタブレット（幅900〜1024px）は PC と同じ左右2列にして、スクロールなしで収める */
+@media screen and (min-width: 900px) and (max-width: 1024px) and (orientation: landscape) {
+    .content { grid-template-columns: 0.9fr 1.1fr !important; grid-template-rows: 1fr !important; }
+    .hazard-selection { grid-template-columns: 1fr !important; }
+}

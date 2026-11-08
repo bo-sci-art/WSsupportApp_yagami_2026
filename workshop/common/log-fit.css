@@ -1,0 +1,64 @@
+/* =========================================================
+   ログ画面（STEP1〜4）共通：画面サイズに合わせて固定する（2026/10）
+   - ページ全体はスクロールさせない（見出しと「戻る／次へ」は常に表示）
+   - 入りきらない場合だけ、中央の入力エリアの中でスクロールする
+   - 100dvh：スマホのアドレスバーの出入りにも追従
+   各ページのCSSのあとに読み込むこと
+   ========================================================= */
+html, body {
+  height: 100% !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+body { height: 100vh !important; height: 100dvh !important; }
+
+.container {
+  height: 100vh !important;
+  height: 100dvh !important;
+  min-height: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  padding: clamp(10px, 2.4vh, 28px) clamp(12px, 2.4vw, 32px) !important;
+}
+.page-header {
+  flex: 0 0 auto !important;
+  margin-bottom: clamp(8px, 1.6vh, 20px) !important;
+  padding-bottom: clamp(6px, 1.2vh, 14px) !important;
+}
+.page-footer {
+  flex: 0 0 auto !important;
+  margin-top: clamp(8px, 1.6vh, 20px) !important;
+  padding-top: clamp(8px, 1.4vh, 16px) !important;
+}
+.content {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+  gap: clamp(10px, 2vh, 24px) !important;
+}
+.input-section { padding: clamp(12px, 2.4vh, 28px) clamp(14px, 2.2vw, 28px) !important; }
+
+/* 高さの低い画面（ノートPC・横向きタブレットなど）では見出しを詰める */
+@media (max-height: 800px) {
+  .page-title { font-size: clamp(1.05rem, 2.6vh, 1.4rem) !important; margin-bottom: 2px !important; }
+  .page-subtitle, .page-description { font-size: .82rem !important; line-height: 1.5 !important; margin-bottom: 0 !important; }
+  .step-indicator { margin-bottom: 0 !important; }
+  .section-title { margin-bottom: 8px !important; }
+}
+@media (max-height: 640px) {
+  .page-description { display: none !important; }
+}
+
+/* 入力ブロックは中身より小さく潰さない（入りきらない時は .content の中でスクロール） */
+.content > .input-section { min-height: auto !important; flex-shrink: 0 !important; overflow: visible !important; }
+/* 説明欄は「残った高さ」いっぱいに広げる（最低3行分は確保） */
+.description-textarea { flex: 1 1 0 !important; height: auto !important; min-height: 84px !important; resize: none !important; }
+
+/* スマホ：「戻る／次へ」を横並びにして縦の場所を節約 */
+@media (max-width: 640px) {
+  .page-footer { flex-direction: row !important; gap: 10px !important; }
+  .page-footer > button, .page-footer > a { flex: 1 1 0 !important; width: auto !important; margin: 0 !important; min-width: 0 !important; }
+}

@@ -1,0 +1,1781 @@
+/* --- ★カラーパレット定義 --- */
+:root {
+  --main-color: #EE8972;   /* コーラルオレンジ */
+  --sub-color: #6BAA9F;    /* セージグリーン */
+  --accent-color: #F2C94C; /* ダンデライオン */
+  --base-color: #F9F8F4;   /* アイボリー */
+  --text-color: #4A4A4A;   /* ウォームグレー */
+  --border-color: #E0E0E0; /* 薄いグレー */
+  
+  --font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", sans-serif;
+}
+
+/* 基本設定 */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  font-family: var(--font-family);
+  display: flex;
+  flex-direction: column;
+  background-color: var(--base-color); /* 背景色をアイボリーに */
+  color: var(--text-color);
+}
+
+.page-container {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-height: 0;
+  padding: 20px; 
+  box-sizing: border-box;
+}
+
+/* --- ヘッダー --- */
+#global-header {
+  height: 50px;
+  background-color: #ffffff;
+  border-bottom: 3px solid var(--main-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  z-index: 2001; 
+  flex-shrink: 0;
+  box-sizing: border-box;
+  position: sticky; /* スクロールしても画面にくっついてくる設定 */
+  top: 0;           /* 画面の一番上に固定 */
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.header-logo-icon {
+  width: 40px; 
+  height: 40px;
+  background: var(--main-color);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5em;
+  color: white;
+  box-shadow: 0 2px 5px rgba(238, 137, 114, 0.4);
+}
+
+.header-titles {
+  display: flex;
+  flex-direction: column;
+}
+
+.header-main-title {
+  margin: 0;
+  font-size: 1.3em;
+  font-weight: bold;
+  color: var(--text-color);
+  letter-spacing: 1px;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  font-size: 0.9em;
+  font-weight: bold;
+}
+
+.status-item {
+  background: var(--base-color);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.85em;
+  white-space: nowrap;
+}
+
+/* 戻るボタン */
+#back-to-map-btn {
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  font-size: 0.9em;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: bold;
+  margin-left: 5px;
+}
+
+#back-to-map-btn:hover {
+  background-color: #5a6268;
+  transform: translateY(-1px);
+}
+
+/* --- ヘッダーの「？」ボタン --- */
+#detail-help-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background-color: var(--accent-color); /* 黄色 */
+  color: #5d4037; /* 濃い茶色 */
+  border: 2px solid #fff;
+  font-weight: bold;
+  font-size: 1.2em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 10px rgba(242, 201, 76, 0.4);
+  transition: all 0.2s ease;
+  margin-left: 5px;
+}
+#detail-help-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 5px 15px rgba(242, 201, 76, 0.6);
+}
+
+
+/* --- 2カラムレイアウト --- */
+.content-container {
+  display: flex;
+  flex-grow: 1;
+  gap: 30px; /* カラム間の隙間 */
+  min-height: 0;
+}
+
+.column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.right-column {
+  gap: 0;
+  position: relative;
+}
+
+/* --- 左カラム：額縁アートとキャプション --- */
+.artwork-info {
+  background: transparent;
+  padding: 0;
+  margin-bottom: 8px;
+  display: block;
+  text-align: left;
+}
+
+.simple-author-label {
+  font-size: 15px;
+  font-weight: bold;
+  color: var(--text-color);
+}
+
+/* 額縁アートパネル */
+.art-panel {
+  flex-grow: 1;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 0;
+  position: relative;
+  
+  border: 10px solid #8B5A2B;
+  border-radius: 4px;
+  background-color: #fffaf0;
+  padding: 20px;
+  box-shadow: inset 0 0 15px rgba(0,0,0,0.2), 0 5px 15px rgba(0,0,0,0.3);
+}
+
+#art-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  border: 2px solid #C0A060;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+}
+
+/* --- 右カラム：クエストメニュー（★新・ステージカードデザイン★） --- */
+
+.quest-menu-panel {
+  background: transparent;
+  padding: 0;
+  border: none;
+  position: relative;
+  height: auto;
+}
+
+/* 鑑賞ガイド（カード1） */
+.appreciation-guide {
+  background-color: #ffffff;
+  border: 2px solid var(--text-color); 
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 25px;
+  text-align: left;
+  box-shadow: 0 4px 15px rgba(107, 170, 159, 0.15); /* 緑っぽい影 */
+  position: relative;
+  z-index: 2;
+}
+
+.guide-header {
+  font-weight: bold;
+  color: var(--sub-color);
+  font-size: 1.0em;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.guide-icon { color: var(--accent-color); font-size: 1.2em; }
+.guide-text { font-size: 0.95em; color: var(--text-color); margin: 0; line-height: 1.6; }
+
+
+/* --- ステージカード共通スタイル --- */
+.quest-item {
+  border-radius: 16px;
+  padding: 15px;
+  margin-bottom: 20px;
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  overflow: hidden; /* バッジのはみ出し防止 */
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  z-index: 2;
+}
+
+.quest-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+/* カード内レイアウト（番号とテキストの並び） */
+.quest-card-layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  position: relative;
+}
+
+/* 番号の丸 */
+.quest-number-circle {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.3); /* 半透明の白 */
+  display: flex; align-items: center; justify-content: center;
+  font-weight: bold; font-size: 1.2em;
+  flex-shrink: 0;
+  color: inherit; /* 親の色を引き継ぐ */
+}
+
+/* テキストエリア */
+.quest-text-content {
+  flex-grow: 1;
+}
+
+.quest-header {
+  font-size: 1.1em;
+  font-weight: bold;
+  margin-top: 5px;
+  margin-bottom: 4px;
+  line-height: 1.2;
+  border-bottom: none; /* 古いスタイル消去 */
+  padding-bottom: 0;
+}
+
+/* --- テーマカラー定義 --- */
+/* STEP 1: コーラルオレンジ */
+.quest-item.step-coral {
+  --theme-color: var(--main-color); /* #EE8972 */
+  --bg-color: #FFF0ED; /* 薄いコーラル */
+}
+/* STEP 2: セージグリーン */
+.quest-item.step-sage {
+  --theme-color: var(--sub-color); /* #6BAA9F */
+  --bg-color: #F0FAF9; /* 薄いグリーン */
+}
+/* STEP 3: ダンデライオン */
+.quest-item.step-dandelion {
+  --theme-color: var(--accent-color); /* #F2C94C */
+  --bg-color: #FFFAEB; /* 薄い黄色 */
+}
+
+
+/* --- 状態ごとのデザイン --- */
+
+/* 1. 挑戦中 (Active) -> ベタ塗り */
+.quest-item.active {
+  background-color: var(--theme-color);
+  color: white;
+  border: 2px solid var(--theme-color);
+}
+.quest-item.active .quest-number-circle {
+  background: white;
+  color: var(--theme-color);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+.quest-item.active .quest-button {
+  background: white;
+  color: var(--theme-color);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+.quest-item.active .quest-button:hover {
+  background: #f9f9f9;
+  transform: translateY(-1px);
+}
+
+/* 2. ロック中 (Locked) -> グレー */
+.quest-item.locked {
+  background-color: #EFEFEF;
+  color: #999;
+  border: 1px solid #ddd;
+  pointer-events: none; /* 押せないように */
+}
+.quest-item.locked .quest-number-circle {
+  background: #ddd;
+  color: #fff;
+}
+.quest-item.locked .quest-button {
+  background: transparent;
+  color: #999;
+  border: 1px solid #ccc;
+  box-shadow: none;
+}
+
+/* 3. クリア済み (Completed) -> 白抜き＋枠線 */
+/* detail_style.css */
+
+/* detail_style.css の以下の部分を修正・追記 */
+
+/* --- クリア済みカードのデザイン変更 --- */
+.quest-item.completed {
+  /* 背景はテーマカラー（濃い色） */
+  background-color: var(--theme-color) !important;
+  border: none;
+  /* ヘッダーの文字などは白くする */
+  color: white !important; 
+  padding-bottom: 20px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* クリア後の番号の丸（白背景にテーマカラー文字） */
+.quest-item.completed .quest-number-circle {
+  background: white;
+  color: var(--theme-color);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* --- ★修正：解説テキストボックス（白いメモ風） --- */
+.quest-result-text {
+  /* 1. 黒文字・白背景 */
+  color: var(--text-color); 
+  background: #ffffff;
+  
+  /* 2. 見た目の調整 */
+  font-size: 0.8em;
+  line-height: 1.6;
+  font-weight: bold;
+  padding: 12px 15px;
+  border-radius: 8px;
+  
+  /* アクセント（左端にテーマカラーの線を入れるとオシャレ） */
+  border-left: 5px solid rgba(0,0,0,0.1); 
+  
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* 軽く影を落として浮かせる */
+  animation: fadeIn 0.5s ease;
+  
+  /* 横幅いっぱいに使う */
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* STEPごとの左線の色調整（背景と同化しないように少し濃くする等の工夫も可ですが、シンプルに） */
+.step-coral .quest-result-text { border-left-color: #E67A60; }
+.step-sage .quest-result-text { border-left-color: #558b2f; }
+.step-dandelion .quest-result-text { border-left-color: #fbc02d; }
+
+/* バッジ類の表示 */
+.card-badge-clear, .card-badge-complete {
+  display:none;
+}
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+.quest-item.completed .quest-stage-label {
+  background: var(--bg-color);
+  color: var(--theme-color);
+}
+.quest-item.completed .quest-button {
+  background: rgb(255, 255, 255);
+  color: var(--text-color);
+    border: 1px solid var(--theme-color);
+  box-shadow: none;
+}
+.quest-item.completed .quest-button:hover {
+  background: var(--text-color);
+}
+
+/* クリアバッジ */
+.card-badge-clear {
+  position: absolute;
+  top: 15px; left: -30px;
+  background: var(--accent-color);
+  color: #5d4037;
+  font-weight: bold;
+  font-size: 0.7em;
+  padding: 5px 30px;
+  transform: rotate(-45deg);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  display: none; /* 最初は隠す */
+  z-index: 10;
+}
+.quest-item.completed .card-badge-clear {
+  display: block; /* クリア時に表示 */
+  animation: badgeDrop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes badgeDrop {
+  0% { transform: rotate(-45deg) scale(2); opacity: 0; }
+  100% { transform: rotate(-45deg) scale(1); opacity: 1; }
+}
+
+/* ボタン共通設定 */
+.quest-button {
+  width: 100%;
+  padding: 12px;
+  border-radius: 30px;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 1em;
+  transition: all 0.2s;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+
+/* --- ★修正：サンドイッチ型レイアウト --- */
+
+.interaction-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+}
+
+/* 上段：コントロールエリア */
+.quest-top-area {
+  flex-shrink: 0; /* 中身の分だけ高さを確保 */
+  max-height: 40%; /* 地図が消えないように最大高さを制限 */
+  overflow-y: auto;
+  padding: 15px;
+  background: white;
+  border-bottom: 1px solid #eee;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  z-index: 5;
+}
+
+.step-instruction {
+  font-size: 0.9em;
+  color: #333;
+  font-weight: bold;
+  margin-top: 10px;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+/* チェックボックス（2列） */
+.dynamic-check-area {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.hazard-check-item {
+  display: flex; align-items: center; gap: 5px;
+  padding: 8px;
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.8em;
+  cursor: pointer;
+}
+.hazard-check-item:hover { background: #f0f8ff; border-color: var(--sub-color); }
+.hazard-check-item input { transform: scale(1.1); }
+.hazard-check-item label { cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* 中段：地図エリア（残りの高さを全部使う） */
+.map-panel {
+  flex: 1; 
+  width: 100%;
+  position: relative;
+  min-height: 0;
+}
+#surrounding-map { width: 100%; height: 100%; }
+
+/* 下段：フッター（ボタン） */
+.verify-footer-area {
+  padding: 10px 15px;
+  background: white;
+  border-top: 1px solid #eee;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.btn-full-width {
+  width: 100%;
+  padding: 12px;
+  font-size: 1.0em;
+}
+
+/* STEP2用：クイズのグリッド */
+.quiz-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr; /* 3つ横並び、あるいはスマホなら縦かも */
+  gap: 5px;
+}
+@media (max-width: 400px) {
+    .quiz-grid { grid-template-columns: 1fr; } /* スマホは縦並び */
+}
+.choice-button-compact {
+  padding: 8px;
+  background: white; border: 1px solid #ddd; border-radius: 8px;
+  cursor: pointer; color: var(--main-color); font-weight: bold; font-size: 0.9em;
+}
+.choice-button-compact:hover { background: #fff5f2; border-color: var(--main-color); }
+
+/* STEP3だけは全画面使うためのスタイル */
+#content-step3 .explanation-panel { height: 100%; }
+
+/* 汎用ボタン（インタラクションパネル内） */
+.nav-button {
+  padding: 10px 24px;
+  border-radius: 30px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.95em;
+  transition: all 0.2s;
+}
+.btn-primary {
+  background-color: var(--main-color);
+  color: white;
+  box-shadow: 0 4px 10px rgba(238, 137, 114, 0.3);
+}
+.btn-primary:hover {
+  background-color: #E67A60;
+  transform: translateY(-2px);
+}
+.btn-wide { width: 80%; padding: 12px; margin-bottom: 10px; }
+.text-link-button { background: none; border: none; color: #999; text-decoration: underline; cursor: pointer; }
+
+
+/* --- クイズボタン --- */
+.choice-button {
+  display: block; width: 100%; padding: 15px 20px; margin-bottom: 15px;
+  background-color: white; color: var(--main-color); 
+  border: 2px solid #eee;
+  border-radius: 12px; font-size: 1em; font-weight: bold; text-align: left; cursor: pointer; transition: all 0.2s;
+}
+.choice-button:hover {
+  border-color: var(--main-color);
+  background-color: #fff5f2;
+}
+.choice-button:active {
+  background-color: var(--main-color); color: white;
+}
+
+/* --- リアクションボタン（右カラム下部） --- */
+.reaction-section {
+  margin-top: 20px;
+  text-align: center;
+  background: white;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 4px 15px rgba(238, 137, 114, 0.15);
+  animation: popIn 0.5s ease;
+  border: none;
+}
+@keyframes popIn {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.reaction-guide {
+  font-size: 0.9em;
+  color: var(--main-color);
+  margin: 0 0 15px 0;
+  font-weight: bold;
+}
+.reaction-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  gap: 10px;
+}
+.reaction-label {
+  font-size: 0.85em; font-weight: bold; color: #555; text-align: left; line-height: 1.2; width: 90px;
+}
+.reaction-label small { font-size: 0.8em; color: #999; font-weight: normal; }
+
+.reaction-btn {
+  flex-grow: 1; padding: 10px;
+  background: #f9f9f9; border: 1px solid #eee;
+  border-radius: 30px; font-weight: bold; color: #888;
+  cursor: pointer; transition: all 0.2s; font-size: 0.9em;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.reaction-btn:hover { background-color: white; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+.reaction-btn#btn-heart.active {
+  background-color: #fff0f5; color: #ff69b4; border-color: #ff69b4;
+}
+.reaction-btn#btn-action.active {
+  background-color: #fffff0; color: #fbc02d; border-color: #fbc02d;
+}
+
+/* --- ★新・近くの作品オーバーレイ（修正版・レイアウト強化） --- */
+.nearby-overlay {
+  position: fixed;
+  top: 50px;
+  left: 0;
+  width: 100%;
+  height: calc(100% - 50px);
+  background: #F9F8F4;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* 全体のスクロールを禁止 */
+}
+
+/* 1. ヘッダー */
+.nearby-mini-header {
+  height: 40px;
+  background: white;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  flex-shrink: 0; /* 縮まないように固定 */
+}
+.back-link {
+  font-size: 0.9em;
+  font-weight: bold;
+  color: #666;
+  text-decoration: none;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 20px;
+  transition: background 0.2s;
+}
+.back-link:hover { background: #f0f0f0; color: #333; }
+
+/* 2. ボディ（左右分割コンテナ） */
+.nearby-body {
+  flex: 1; /* 残りの高さを全部使う */
+  display: flex; /* 横並びにする */
+  padding: 20px;
+  gap: 20px;
+  min-height: 0; /* Flexアイテムがはみ出さないおまじない */
+  box-sizing: border-box;
+}
+
+/* --- 左コンテナ（リストエリア） --- */
+.nearby-left-container {
+  flex: 1; /* 幅50% */
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 100%; /* 親の高さいっぱい */
+  min-width: 0; /* 横幅確保 */
+}
+
+.section-label {
+  text-align: center;       /* 文字を中央揃え */
+  width: 100%;              /* 幅を確保 */
+  font-size: 1.1em;         /* 少し大きくして見出し感を出す */
+  margin: 0 0 0 0 ; 
+}
+
+.nearby-left-panel {
+  flex: 1; /* 縦方向の余白を埋める */
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  overflow-y: auto; /* ここだけスクロールさせる */
+  padding-right: 5px;
+  padding-bottom: 10px;
+}
+
+.recommend-section {
+  background: transparent;
+  padding: 0;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.rec-title { font-size: 0.9em; color: var(--text-color); margin: 0 0 5px 5px; font-weight: bold; display: flex; align-items: center; gap: 6px; }
+
+/* カードの並び（2列） */
+.compact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* 均等2列 */
+  gap: 15px;
+}
+
+/* カードデザイン */
+.nearby-item.compact {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  display: flex; flex-direction: column;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 8px 15px rgba(0,0,0,0.1); 
+  transform: translateY(-3px);
+  position: relative;
+  /* 枠線はJSで色がつきますが、太さを確保 */
+  border-width: 4px;
+  border-style: solid; 
+}
+.nearby-item.compact:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+}
+
+.compact-thumb-box {
+  width: 100%; height: 140px; 
+  position: relative; background: #f0f0f0;
+}
+.compact-thumb { width: 100%; height: 100%; object-fit: cover; }
+.compact-info {
+  padding: 8px; text-align: center; background: white;
+  border-top: 1px solid #f5f5f5;
+}
+.compact-author { font-weight: bold; font-size: 0.85em; color: var(--text-color); }
+
+/* --- 右コンテナ（地図エリア） --- */
+.nearby-right-container {
+  flex: 1; /* 幅50% */
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 15px;
+  min-width: 0;
+}
+
+.nearby-right-panel {
+  flex: 1; /* 地図を縦いっぱいに広げる */
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  border: 1px solid #eee;
+  position: relative;
+}
+#nearby-map-view { width: 100%; height: 100%; }
+
+/* --- 下部のボタンエリア --- */
+/* 左側（リストの下） */
+.left-action-area {
+  width: 100%;
+  padding-top: 15px;
+}
+
+/* 右側（地図の下） */
+.right-action-area {
+  margin-top: auto; /* 下に押し下げる */
+  text-align: right;
+}
+
+/* ボタン共通 */
+.btn-full {
+  width: 100%;
+  padding: 14px;
+  font-size: 1.0em;
+  font-weight: bold;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-sizing: border-box;
+  display: block; /* 確実にブロック要素にする */
+}
+
+/* 左ボタン（控えめ） */
+.btn-secondary {
+  background: white; border: 2px solid #ddd; color: #666;
+}
+.btn-secondary:hover { border-color: #bbb; color: #444; background: #f9f9f9; }
+
+.left-action-area .btn-full {
+  width: 100% !important;   /* 強制的に幅100% */
+  display: block;
+  box-sizing: border-box;   /* パディングを含めた幅計算 */
+  margin-top: 10px;
+}
+
+/* 右ボタン（メイン・終了） */
+.btn-primary {
+  background: var(--main-color); color: white; border: none;
+  box-shadow: 0 4px 12px rgba(238, 137, 114, 0.4);
+}
+.btn-primary:hover { background: #E67A60; transform: translateY(-2px); }
+
+/* 短いボタン（右下用） */
+.btn-short {
+  width: auto;             /* 幅をなりゆき（文字数合わせ）にする */
+  min-width: 200px;        /* さすがに小さすぎないように最低幅は確保 */
+  display: inline-block;   /* 右寄せ(text-align: right)が効くようにする */
+  padding: 14px 30px;      /* 余白たっぷりで押しやすく */
+  font-size: 1.0em;
+  font-weight: bold;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+/* チュートリアル（詳細画面用） */
+.tutorial-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background-color: rgba(0, 0, 0, 0.7); /* 少し暗め */
+  backdrop-filter: blur(4px);
+  z-index: 9999; /* 最前面 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.tutorial-card {
+  width: 90%;
+  max-width: 400px;
+  background: white;
+  border-radius: 20px;
+  padding: 25px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* 画像エリア */
+.tutorial-image-container {
+  width: 100%;
+  height: 200px;
+  background-color: #F9F8F4;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  border: 1px solid #eee;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.tutorial-img {
+  width: 100%; height: 100%; object-fit: contain;
+}
+
+/* ドット */
+.tutorial-dots {
+  display: flex;
+  gap: 8px;
+  position: absolute; 
+  left: 50%;
+  transform: translateX(-50%); /* ど真ん中に持ってくる */
+  margin: 0;
+}
+/* ドット自体のデザイン */
+.tutorial-dots .dt-dot {
+  width: 8px; height: 8px;
+  background-color: #ddd;
+  border-radius: 50%;
+  transition: all 0.3s;
+}
+
+/* アクティブなドット */
+.tutorial-dots .dt-dot.active {
+  background-color: var(--main-color);
+  width: 20px;
+  border-radius: 10px;
+}
+/* テキスト */
+.tutorial-content { margin-bottom: 25px; width: 100%; min-height: 80px; }
+#dt-title { font-size: 1.2em; color: var(--text-color); margin: 0 0 10px 0; font-weight: bold; }
+#dt-desc { font-size: 0.95em; color: #666; line-height: 1.6; margin: 0; text-align: center; }
+
+/* フッターボタン（左右配置） */
+.tutorial-footer {
+  display: flex;
+  justify-content: space-between; /* ボタンを端へ */
+  align-items: center;
+  width: 100%;
+  margin-top: auto;
+  position: relative; /* ここが重要！ */
+  padding-top: 20px;  /* 少し余白を開ける */
+}
+
+.tutorial-nav-btn {
+  padding: 10px 20px; border-radius: 30px; font-weight: bold; cursor: pointer; border: none; font-size: 0.9em; transition: all 0.2s;
+}
+.tutorial-nav-btn.primary {
+  background-color: var(--main-color); color: white; box-shadow: 0 4px 10px rgba(238, 137, 114, 0.4);
+}
+.tutorial-nav-btn.secondary {
+  background-color: transparent; color: #999;
+}
+.tutorial-nav-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+
+/* --- ★修正：番号バッジ（画像の上に浮かせる版） --- */
+.number-badge-float {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 32px;  /* 少し大きく */
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 1.1em;
+  border-bottom-right-radius: 10px; /* 角を丸くしてオシャレに */
+  z-index: 10;
+  box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+}
+
+/* 上段（リスク）用の色 */
+.badge-risk { background: #EE8972; }
+/* 下段（時間）用の色 */
+.badge-time { background: #6BAA9F; }
+
+
+/* --- ★終了画面（一本勝負デザイン） --- */
+
+/* オーバーレイ全体の配置 */
+.final-mode {
+  justify-content: center; /* 上下中央 */
+  align-items: center;     /* 左右中央 */
+  background: #F9F8F4;     /* 優しいアイボリー背景 */
+  z-index: 3000;           /* 最前面 */
+}
+
+.final-content {
+  width: 90%;
+  max-width: 600px;        /* 幅を制限して読みやすく */
+  text-align: center;
+  animation: fadeIn 0.5s ease;
+}
+
+/* ヘッダーアイコンとタイトル */
+.icon-lamp {
+  font-size: 3em;
+  display: block;
+  margin-bottom: 10px;
+  animation: float 3s ease-in-out infinite; /* ゆらゆら動く */
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.final-header h2 {
+  font-size: 1.8em;
+  color: #5d4037; /* 濃い茶色でしっかり伝える */
+  margin: 0 0 20px 0;
+  letter-spacing: 1px;
+}
+
+.final-message {
+  font-size: 1.0em;
+  color: #666;
+  line-height: 1.8;
+  margin-bottom: 40px; /* カードとの距離を空ける */
+}
+.final-message strong {
+  color: var(--main-color);
+  background: linear-gradient(transparent 70%, #ffe0b2 70%); /* マーカー線 */
+}
+
+
+/* --- ★修正：メッセージの花道＆吹き出しデザイン --- */
+
+.final-bg-container {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* 浮遊するカード全体 */
+.floating-card {
+  position: absolute;
+  bottom: -250px; /* 画面外からスタート */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: 0;
+  animation: floatUp linear forwards;
+  width: 140px; /* 幅を固定して安定させる */
+}
+
+/* ★吹き出し本体 */
+.floating-bubble {
+  background: white;
+  color: #333;
+  padding: 8px 14px;
+  border-radius: 20px; /* 丸くする */
+  font-size: 0.85em;
+  font-weight: bold;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+  margin-bottom: 8px; /* 画像との隙間 */
+  position: relative;
+  white-space: nowrap; /* 1行で表示 */
+  border: 2px solid var(--main-color); /* コーラル色の枠線で可愛く */
+  z-index: 2;
+}
+
+/* ★吹き出しの「しっぽ」（▼） */
+.floating-bubble::after {
+  content: "";
+  position: absolute;
+  bottom: -8px; /* 本体の下に突き出す */
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 8px 8px 0; /* 逆三角形を作る */
+  border-style: solid;
+  border-color: var(--main-color) transparent transparent transparent; /* 枠線と同じ色 */
+}
+/* しっぽの中身（白抜きにするための重ね技） */
+.floating-bubble::before {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 6px 6px 0;
+  border-style: solid;
+  border-color: white transparent transparent transparent;
+  z-index: 1;
+}
+
+/* 作品画像 */
+.floating-img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  background: #fff;
+  border: 4px solid white;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+  transition: transform 0.3s;
+}
+
+@keyframes floatUp {
+  0% {
+    bottom: -250px;
+    opacity: 0;
+    transform: scale(0.8); /* 最初は少し小さく */
+  }
+  10% {
+    opacity: 1;
+    transform: scale(1);   /* すっと元のサイズに */
+  }
+  90% {
+    opacity: 0.9;
+  }
+  100% {
+    bottom: 120%; /* まっすぐ上へ抜ける */
+    opacity: 0;
+    transform: scale(1);
+  }
+}
+
+/* --- ★修正：終了画面のボタンエリア --- */
+
+.final-exit {
+  display: flex;
+  justify-content: center;
+  gap: 20px;       /* ボタン同士の間隔 */
+  width: 100%;
+  margin-top: 10px;
+}
+
+/* 終了画面のボタン調整 */
+.final-exit .nav-button {
+  padding: 14px 25px;   /* 少し大きめに */
+  font-size: 1.0em;
+  min-width: 160px;     /* 幅を揃える */
+}
+
+/* アンケートボタンを特に目立たせる演出 */
+.final-exit .btn-primary {
+  box-shadow: 0 5px 15px rgba(238, 137, 114, 0.4);
+  animation: pulseBtn 2s infinite; /* 脈打つようにアピール */
+}
+
+@keyframes pulseBtn {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+  100% { transform: scale(1); }
+}
+
+/* --- ★追加：2枚目用の軽量ヒントテキスト --- */
+.hint-text-area {
+  width: 100%;
+  background: #fff;
+  border-left: 4px solid var(--accent-color); /* 黄色のアクセント線 */
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  border-radius: 4px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  box-sizing: border-box;
+}
+
+.hint-icon {
+  font-size: 1.2em;
+}
+
+.hint-body {
+  font-size: 0.95em;
+  color: #555;
+  font-weight: bold;
+  line-height: 1.4;
+}
+
+.guide-header-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 8px;
+}
+.guide-label {
+  font-weight: bold;
+  color: #7f8c8d;
+  font-size: 0.9em;
+}
+/* 解説本文（メイン） */
+.guide-body-text {
+  font-size: 1.0em; /* 文字を少し大きくして読みやすく */
+  line-height: 1.5; /* 行間を空ける */
+  color: #d35400;   /* 文字色（テーマカラー） */
+  font-weight: bold;
+  border-bottom: 1px solid #eee; /* 下線で区切る */
+  padding-bottom: 15px;
+}
+
+/* STEP2の時は緑色に */
+.action-theme .guide-body-text {
+  color: #2e7d32;
+}
+
+/* --- ★修正：2つの箱レイアウト --- */
+
+.split-layout-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 15px;
+  gap: 15px; /* 上の箱と下の箱の間隔 */
+  box-sizing: border-box;
+  background: #fdfdfd; /* パネル全体の背景 */
+}
+
+/* ■ 上の箱：情報エリア */
+.info-box-container {
+  background: #ffffff;
+  border: 2px solid var(--main-color); 
+  border-radius: 12px;
+  padding: 15px;
+  flex-shrink: 0; /* 中身の分だけ高さを確保 */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.info-box-container.action-mode {
+  background: #ffffff;
+  /* 枠線：セージグリーン */
+  border-color: var(--sub-color);
+}
+
+.box-header {
+  font-weight: bold;
+  color: var(--main-color);
+  font-size: 0.9em;
+  margin-bottom: 8px;
+  display: flex; align-items: center; gap: 6px;
+}
+.box-header.action-theme { color: var(--sub-color); }
+
+.box-content-text {
+  font-size: 1.0em;
+  font-weight: bold;
+  color: var(--text-color);
+  line-height: 1.5;
+}
+
+/* ■ 下の箱：検証エリア（地図含む） */
+.verification-box-container {
+  flex: 1; /* 残りの高さを全部使う */
+  background: #ffffff;
+  border: 2px solid #ddd; /* グレーの枠線で囲む */
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* 角丸からはみ出さないように */
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+/* 指令エリア（箱の上部） */
+.verify-header-area {
+  padding: 10px 15px;
+  background: #f5f5f5; /* 少しグレーにして「操作盤」っぽく */
+  border-bottom: 1px solid #ddd;
+  flex-shrink: 0;
+}
+
+.verify-title {
+  display: block;
+  font-size: 0.9em;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+/* チェックボックス（横並び） */
+.dynamic-check-area-row {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.hazard-check-item {
+  background: white; border: 1px solid #ccc; padding: 6px 12px; border-radius: 20px; font-size: 0.8em; cursor: pointer; display: flex; align-items: center; gap: 5px;
+}
+.hazard-check-item:hover { border-color: var(--main-color); background: #fff5f2; }
+
+/* クイズボタン（横並び） */
+.quiz-row { display: flex; gap: 8px; justify-content: center; width: 100%; }
+.choice-btn { flex: 1; padding: 8px; background: white; border: 1px solid #ccc; border-radius: 6px; cursor: pointer; font-size: 0.85em; font-weight: bold; color: #555; }
+.choice-btn:hover { background: #e8f5e9; border-color: #2e7d32; color: #2e7d32; }
+
+/* 地図エリア（箱の真ん中） */
+.map-wrapper {
+  flex: 1; /* 箱の中で最大限広がる */
+  width: 100%;
+  position: relative;
+  min-height: 0;
+}
+#surrounding-map { width: 100%; height: 100%; }
+
+/* フッター（箱の下部） */
+.verify-footer-area {
+  padding: 10px 15px;
+  background: white;
+  border-top: 1px solid #eee;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+/* --- ★追加：STEP3 落ち着いた便箋デザイン --- */
+
+.letter-container {
+  height: 100%;
+  background-color: #f2f0eb; /* 背景：落ち着いたグレーベージュ */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.calm-letter-paper {
+  background: #fffcf7; /* 便箋：温かみのある白 */
+  width: 100%;
+  max-width: 450px;
+  padding: 40px 30px;
+  box-sizing: border-box;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.08); /* 柔らかい影 */
+  border: 1px solid #e0e0e0;
+  position: relative;
+  
+  /* 紙の質感 */
+  background-image: linear-gradient(#f5f5f0 1px, transparent 1px);
+  background-size: 100% 2em; /* 罫線 */
+}
+
+/* 上部の装飾テープ風 */
+.calm-letter-paper::before {
+  content: "";
+  position: absolute;
+  top: -10px; left: 50%; transform: translateX(-50%);
+  width: 30%; height: 20px;
+  background: rgba(238, 137, 114, 0.3); /* コーラル色の半透明テープ */
+  transform: translateX(-50%) rotate(-1deg);
+}
+
+.letter-header {
+  font-family: "Times New Roman", serif;
+  text-align: center;
+  color: #c0a060; /* ゴールドっぽい色 */
+  margin-bottom: 20px;
+  font-size: 1.2em;
+  letter-spacing: 2px;
+}
+
+.letter-body {
+  font-family: "Yu Mincho", "Hiragino Mincho ProN", serif; /* 明朝体 */
+  font-size: 1.1em;
+  line-height: 2.0; /* 罫線に合わせる */
+  color: #4a4a4a;
+  text-align: justify;
+}
+
+.letter-footer {
+  margin-top: 30px;
+  text-align: right;
+}
+.signature {
+  font-family: "Yu Mincho", serif;
+  color: #888;
+  font-size: 0.9em;
+}
+
+/* --- ★追加：COMPLETEスタンプ演出 --- */
+.card-badge-complete {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%) scale(3); /* 最初はでっかく */
+  opacity: 0;
+  border: 4px solid var(--accent-color); /* 黄色 */
+  color: var(--accent-color);
+  font-weight: 900;
+  font-size: 2.0em;
+  padding: 5px 15px;
+  border-radius: 8px;
+  z-index: 20;
+  background: rgba(255,255,255,0.9);
+  pointer-events: none;
+  white-space: nowrap;
+  letter-spacing: 2px;
+  transform-origin: center;
+}
+
+/* スタンプが押されるアニメーション */
+.stamp-animation {
+  animation: stampDrop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes stampDrop {
+  0% { transform: translate(-50%, -50%) scale(3) rotate(-10deg); opacity: 0; }
+  50% { opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(1) rotate(-10deg); opacity: 1; }
+}
+
+/* --- ★追加：クリア後のリアクションエリア --- */
+.post-quest-area {
+  margin-top: 20px;
+  border-top: 2px dashed #ddd;
+  animation: slideUpFade 0.8s ease forwards;
+}
+@keyframes slideUpFade {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.reaction-msg {
+  text-align: center; font-size: 0.9em; color: #555; margin-bottom: 15px; font-weight: bold;
+}
+.reaction-buttons-row {
+  display: flex; gap: 10px; justify-content: center;
+}
+.reaction-btn-large {
+  flex: 1;
+  padding: 12px;
+  border-radius: 12px;
+  border: 2px solid #eee;
+  background: white;
+  font-weight: bold;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
+}
+.reaction-btn-large .emoji { font-size: 1.5em; }
+
+.reaction-btn-large:hover { background: #fafafa; border-color: #ddd; }
+
+/* 押した状態 */
+.reaction-btn-large.active#btn-heart { border-color: #ff69b4; background: #fff0f5; color: #ff69b4; }
+.reaction-btn-large.active#btn-action { border-color: #fbc02d; background: #fffff0; color: #f57f17; }
+
+/* --- ★追加：手紙の下のリアクションエリア --- */
+.letter-reaction-section {
+  width: 100%;
+  max-width: 450px; /* 便箋と同じ幅 */
+  margin-top: 30px;
+  text-align: center;
+  animation: fadeIn 1s ease;
+}
+
+/* メッセージ調整 */
+.letter-reaction-section .reaction-msg {
+  font-size: 0.9em;
+  color: var(--text-color);
+  margin-bottom: 15px;
+}
+
+/* ボタンのスタイル調整（便箋の下用） */
+.letter-reaction-section .reaction-btn-large {
+  background: white;
+  border: 1px solid #dcdcdc;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  font-family: var(--font-family); /* ボタンの文字はゴシックで見やすく */
+}
+
+.letter-reaction-section .reaction-btn-large:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* 完了メッセージエリア（サイドバー用） */
+.completion-message-area {
+  text-align: center;
+  color: var(--main-color);
+  font-weight: bold;
+  font-size: 0.9em;
+}
+.completion-message-area p {
+  margin-top: 10px;
+  padding: 0;
+}
+
+/* --- detail_style.css の末尾に追加 --- */
+
+/* ★STEP3：リアクション・完了ボタンを囲む箱 */
+.reaction-container {
+  background: #ffffff;
+  border: 2px solid #dddddd; /* ご指定のdddカラー */
+  border-radius: 12px;       /* 角を丸く */
+  padding: 25px;
+  margin-top: 30px;          /* 手紙との隙間 */
+  width: 100%;
+  max-width: 450px;          /* 手紙と同じ幅に揃える */
+  box-sizing: border-box;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.03); /* うっすら影 */
+}
+
+/* メッセージ部分 */
+.letter-reaction-section .reaction-msg {
+  font-size: 0.9em;
+  color: #555;
+  margin-bottom: 20px;
+  font-weight: bold;
+  line-height: 1.6;
+}
+
+/* リアクションボタンの並び */
+.reaction-buttons-row {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-bottom: 25px; /* 完了ボタンとの隙間 */
+}
+
+/* リアクションボタンのデザイン */
+.reaction-btn-large {
+  flex: 1;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  background: #f9f9f9;
+  font-weight: bold;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
+}
+.reaction-btn-large:hover { background: #fff; border-color: #bbb; }
+
+/* 押した時の色（ハート・アクション） */
+.reaction-btn-large.active#btn-heart { border-color: #ff69b4; background: #fff0f5; color: #ff69b4; }
+.reaction-btn-large.active#btn-action { border-color: #fbc02d; background: #fffff0; color: #f57f17; }
+
+/* 完了ボタンエリア */
+.step3-finish-area {
+  border-top: 1px dashed #eee; /* 薄い区切り線 */
+  padding-top: 20px;
+}
+
+/* 完了ボタン（receive-button）の微調整（既存クラスの上書き） */
+.receive-button {
+  width: 100%;               /* 箱の中で幅いっぱいに */
+  background: var(--main-color); /* 茶色からメインカラー(コーラル)に変更して明るく */
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 30px;
+  font-size: 1.0em;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(238, 137, 114, 0.3);
+}
+.receive-button:hover {
+  background: #E67A60;
+  transform: translateY(-2px);
+}
+/* --- ★ STEP2 専用デザイン：横並びメニューと右パネル（修正版） --- */
+
+/* 1. 左側：横並びメニューエリア */
+.resource-menu-container {
+  display: flex;
+  flex-wrap: wrap; 
+  gap: 8px;
+  justify-content: space-between; 
+  padding-bottom: 10px;
+}
+
+/* メニューボタン */
+.resource-menu-btn {
+  flex: 1; 
+  min-width: auto; /* 幅の制限を緩める */
+  display: flex;
+  flex-direction: row; /* ★ここを変更！横並びにする */
+  align-items: center;
+  justify-content: center;
+  gap: 6px;            /* アイコンと文字の間隔 */
+  padding: 8px 10px;   /* 余白を調整 */
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.rm-icon { 
+  font-size: 1.0em; /* アイコンの大きさ */
+  line-height: 1; 
+}
+
+.rm-label { 
+  font-size: 0.9em; 
+  font-weight: bold; 
+  color: #666;
+  white-space: nowrap; /* 文字が折り返されないようにする */
+}
+
+/* ホバー */
+.resource-menu-btn:hover {
+  background: #f9f9f9;
+  transform: translateY(-2px);
+}
+
+/* 選択中（アクティブ） */
+.resource-menu-btn.active {
+  background: #fff;
+  border-color: var(--sub-color);
+  box-shadow: 0 0 0 2px var(--sub-color) inset;
+}
+.resource-menu-btn.active .rm-label { color: var(--sub-color); }
+
+/* おすすめ（リコメンド） */
+.resource-menu-btn.recommend {
+  background: #fff;       /* ★修正：黄色(#fff8e1)をやめて白に */
+  border-color: #ff9800;  /* 枠線だけオレンジにして少し目立たせる？（不要なら #ddd にしてね） */
+  position: relative;
+}
+
+/* ★マークの設定（これはそのまま！） */
+.resource-menu-btn.recommend::after {
+  content: "★";
+  position: absolute;
+  top: -5px; right: -5px;
+  background: #ff9800;
+  color: white;
+  font-size: 0.6em;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid white;
+}
+
+/* 選択中かつおすすめの場合 */
+.resource-menu-btn.recommend.active {
+  border-color: #ff9800; /* アクティブ時もオレンジ枠 */
+  box-shadow: 0 0 0 2px #ff9800 inset;
+}
+.resource-menu-btn.recommend.active .rm-label { color: #d35400; }
+
+
+/* 2. 右側：地図上に浮く詳細パネル（位置と見た目を修正） */
+.resource-floating-panel {
+  position: absolute;
+  top: 10px;   /* ★修正：地図の上端ギリギリに！ */
+  right: 10px; /* 右端 */
+  width: 220px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 8px; /* 角丸を少し小さく */
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+  border: 1px solid #eee;
+  z-index: 50;
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slideInRight 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* パネルのヘッダー（×ボタンだけにする） */
+.rf-header {
+  background: #f9f9f9;
+  padding: 5px 10px; /* ★修正：高さをコンパクトに */
+  font-size: 0.9em;
+  border-bottom: 1px solid #eee;
+  display: flex; 
+  justify-content: flex-end; /* ★修正：右寄せにする */
+  align-items: center;
+}
+
+/* 閉じるボタン */
+.rf-close {
+  cursor: pointer; 
+  font-size: 1.4em; /* 少し大きくして押しやすく */
+  color: #999; 
+  line-height: 1;
+  font-weight: bold;
+}
+.rf-close:hover { color: #555; }
+
+/* パネルの中身（リスト） */
+.rf-content {
+  padding: 8px;
+  max-height: 300px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px; /* 間隔を詰める */
+}
+
+/* チェックボックスアイテム */
+.rf-item {
+  display: flex; align-items: center;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: #fff;
+  border: 1px solid #eee;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.rf-item:hover { background: #fafafa; border-color: #ddd; }
+.rf-item label { 
+  font-size: 0.85em; 
+  color: #333; 
+  margin-left: 6px; 
+  cursor: pointer; 
+  line-height: 1.4;
+}
+.rf-item input { transform: scale(1.1); cursor: pointer; }
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* --- 凡例（Legend）を小さくする設定 --- */
+
+/* 1. 凡例パネル全体のサイズ制限 */
+#surrounding-map .esri-expand__content {
+    max-width: 250px !important; /* 幅を広がりすぎないように */
+    max-height: 350px !important; /* 高さを制限 */
+    overflow-y: auto; /* はみ出たらスクロール */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+}
+
+/* 2. タイトル文字を小さく */
+#surrounding-map .esri-legend__service-label {
+    font-size: 8px !important;
+    padding-bottom: 2px !important;
+}
+
+/* 3. 各項目の文字を小さく */
+#surrounding-map .esri-legend__layer-cell--info {
+    font-size: 8px !important;
+    padding: 2px 4px !important;
+}
+
+/* 4. 余白を詰める */
+#surrounding-map .esri-legend__layer-row {
+    padding: 0 !important;
+}
+
+/* 5. 色のアイコンを少し小さく */
+#surrounding-map .esri-legend__symbol {
+    width: 16px !important;
+    height: 16px !important;
+}
+
+/* --- ★追加：手紙の宛名（〇〇へ）のデザイン --- */
+.message-addressee {
+  font-size: 1.0em;      /* 本文より少し大きく */
+  font-weight: bold;     /* 太字で強調 */
+  color: #555;           /* 濃いグレー */
+  margin-bottom: 15px;   /* 本文との間隔をあける */
+  text-align: left;      /* 左寄せ */
+  font-family: "Yu Mincho", serif; /* 明朝体で手紙っぽく */
+}
+/* ===== Leaflet移行 追加分（detail） ===== */
+#surrounding-map, #nearby-map-view { width:100%; height:100%; min-height:300px; }
+.map-wrapper { position:relative; }
+.leaflet-container { font-family:inherit; background:#dfe6ee; }
+.art-pin{ background:none;border:none; }
+.art-pin svg{ display:block; filter:drop-shadow(0 1px 2px rgba(0,0,0,.35)); }
+.num-pin{ background:none;border:none; }
+
+/* ===== STEP2 防災資源トグル（レイアウト整理） ===== */
+#step2-resource-check-area { text-align:left; }
+.res-note { font-size:.8em; color:#666; line-height:1.5; margin-bottom:6px; }
+.res-toggle-row { display:flex; flex-wrap:wrap; gap:6px 8px; justify-content:flex-start; }
+.res-toggle { display:inline-flex; align-items:center; gap:5px; background:#fff; border:1px solid #ccc; border-radius:20px; padding:5px 10px; font-size:.8em; cursor:pointer; white-space:nowrap; }
+.res-toggle:hover { border-color:var(--main-color); background:#fff5f2; }
+.res-toggle input { margin:0; }
+.res-badge { display:inline-flex; align-items:center; justify-content:center; width:16px; height:16px; border-radius:50%; color:#fff; font-size:9px; line-height:1; }
+.res-source { font-size:.68em; color:#aaa; margin-top:8px; line-height:1.4; }
+
+/* ===== STEP2完了ボタン到達性：地図を固定高＋必要時スクロール ===== */
+.interaction-panel { overflow: visible; }
+.split-layout-container { height: auto; min-height: 100%; }
+.verification-box-container { flex: 0 0 auto; }
+.map-wrapper { flex: 0 0 auto; height: 300px; min-height: 300px; }
+.right-column { overflow-y: auto; }
+
+/* ===== モバイル鑑賞レイアウト改善（STEP1ハザード操作の到達性確保） ===== */
+@media (max-width: 760px) {
+  .content-container { flex-direction: column; gap: 14px; overflow-y: auto; }
+  .column { flex: 0 0 auto; width: 100%; }
+  .left-column { max-height: 34vh; }
+  .left-column .art-panel { max-height: 30vh; }
+  .left-column .art-panel img { max-height: 30vh; width: auto; margin: 0 auto; display: block; }
+  .right-column { overflow: visible; }
+  .info-box-container { max-height: 28vh; overflow-y: auto; }
+  .map-wrapper { height: 320px !important; min-height: 320px; }
+}

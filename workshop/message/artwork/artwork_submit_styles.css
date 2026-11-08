@@ -1,0 +1,354 @@
+/* ============================================
+   CSS Variables
+   ============================================ */
+:root {
+    /* Colors */
+    --color-primary: #4A9BA8;
+    --color-primary-hover: #3a7f8a;
+    --color-secondary: #6c757d;
+    --color-success: #28a745;
+    --color-warning: #ffc107;
+    --color-danger: #dc3545;
+    --color-bg: #f9f7f4;
+    --color-bg-secondary: #ffffff;
+    --color-text-primary: #2c3e50;
+    --color-text-secondary: #5a6c7d;
+    --color-border: #ddd;
+    --color-disabled: #ccc;
+    --color-guide: #e8f4f5;
+    
+    /* Spacing */
+    --spacing-xs: 0.5rem;
+    --spacing-sm: 1rem;
+    --spacing-md: 1.5rem;
+    --spacing-lg: 2rem;
+    --spacing-xl: 3rem;
+    
+    /* Border Radius */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    
+    /* Shadows */
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.12);
+    --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* ============================================
+   Global Styles
+   ============================================ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+    background: var(--color-bg);
+    color: var(--color-text-primary);
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+/* ============================================
+   Container
+   ============================================ */
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: clamp(1.5rem, 2.5vw, 2.5rem);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ============================================
+   Header
+   ============================================ */
+.page-header {
+    margin-bottom: clamp(1.5rem, 2.5vw, 2rem);
+    padding-bottom: clamp(1rem, 1.5vw, 1.25rem);
+    border-bottom: 2px solid var(--color-border);
+}
+
+.step-indicator {
+    font-size: clamp(0.8rem, 1.3vw, 0.9rem);
+    font-weight: 600;
+    color: var(--color-primary);
+    margin-bottom: 0.25rem;
+    letter-spacing: 0.5px;
+}
+
+.page-title {
+    font-size: clamp(1.5rem, 2.5vw, 1.8rem);
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--color-text-primary);
+}
+
+.page-subtitle {
+    font-size: clamp(0.9rem, 1.4vw, 1rem);
+    color: var(--color-text-secondary);
+    line-height: 1.7;
+}
+
+/* ============================================
+   Main Content
+   ============================================ */
+.content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(1.5rem, 2.5vw, 2rem);
+}
+
+/* Guide Section */
+.guide-section {
+    background: var(--color-guide);
+    padding: clamp(1.25rem, 2vw, 1.5rem);
+    border-radius: var(--radius-lg);
+    border-left: 4px solid var(--color-primary);
+}
+
+.guide-text p {
+    font-size: clamp(0.85rem, 1.3vw, 0.95rem);
+    color: var(--color-text-secondary);
+    margin-bottom: 0.5rem;
+    line-height: 1.7;
+}
+
+.guide-text p:last-child {
+    margin-bottom: 0;
+}
+
+/* Input Section */
+.input-section {
+    background: var(--color-bg-secondary);
+    padding: clamp(1.5rem, 2.5vw, 2rem);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+.section-title {
+    font-size: clamp(1.05rem, 1.7vw, 1.2rem);
+    font-weight: 600;
+    margin-bottom: clamp(0.75rem, 1.2vw, 1rem);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    color: var(--color-text-primary);
+}
+
+.required-badge {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.5rem;
+    background: var(--color-danger);
+    color: white;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+}
+
+.section-description {
+    font-size: clamp(0.85rem, 1.3vw, 0.95rem);
+    color: var(--color-text-secondary);
+    margin-bottom: clamp(1rem, 1.5vw, 1.25rem);
+    line-height: 1.6;
+}
+
+/* Text Inputs */
+.title-input,
+.name-input {
+    width: 100%;
+    padding: clamp(0.85rem, 1.3vw, 1rem);
+    font-size: clamp(1rem, 1.6vw, 1.15rem);
+    font-family: inherit;
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
+    transition: all 0.2s ease;
+    background: white;
+}
+
+.title-input {
+    font-weight: 500;
+}
+
+.title-input:focus,
+.name-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(74, 155, 168, 0.1);
+}
+
+.title-input::placeholder,
+.name-input::placeholder {
+    color: #aaa;
+    font-style: italic;
+}
+
+/* File Upload */
+.upload-area {
+    margin-bottom: 0.75rem;
+}
+
+.file-input {
+    display: none;
+}
+
+.upload-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: clamp(0.85rem, 1.3vw, 1rem) clamp(1.5rem, 2.5vw, 2rem);
+    font-size: clamp(0.95rem, 1.4vw, 1.05rem);
+    font-weight: 500;
+    color: var(--color-primary);
+    background: white;
+    border: 2px solid var(--color-primary);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.upload-button:hover {
+    background: var(--color-primary);
+    color: white;
+}
+
+.upload-button svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* Image Preview */
+.image-preview {
+    margin-top: 1rem;
+    position: relative;
+    display: inline-block;
+}
+
+.image-preview img {
+    max-width: 100%;
+    max-height: 300px;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    display: block;
+}
+
+.remove-button {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: white;
+    background: var(--color-danger);
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow-sm);
+}
+
+.remove-button:hover {
+    background: #c82333;
+    transform: translateY(-1px);
+}
+
+/* Note Text */
+.note-text {
+    font-size: clamp(0.8rem, 1.2vw, 0.85rem);
+    color: var(--color-text-secondary);
+    opacity: 0.8;
+    font-style: italic;
+}
+
+/* Validation Messages */
+.validation-message {
+    background: #fff3cd;
+    border: 1px solid var(--color-warning);
+    color: #856404;
+    padding: clamp(0.6rem, 1vw, 0.75rem);
+    border-radius: var(--radius-md);
+    margin-top: clamp(0.6rem, 1vw, 0.75rem);
+    font-size: clamp(0.85rem, 1.3vw, 0.95rem);
+    font-weight: 500;
+}
+
+/* ============================================
+   Footer Navigation
+   ============================================ */
+.page-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-top: clamp(1.5rem, 2vw, 2rem);
+    margin-top: clamp(1.5rem, 2vw, 2rem);
+    border-top: 2px solid var(--color-border);
+}
+
+.btn-primary,
+.btn-secondary {
+    padding: clamp(0.85rem, 1.3vw, 1rem) clamp(1.75rem, 3vw, 2.5rem);
+    font-size: clamp(0.95rem, 1.4vw, 1.1rem);
+    font-weight: 600;
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.btn-primary {
+    background: var(--color-primary);
+    color: white;
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: var(--color-primary-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-primary:disabled {
+    background: var(--color-disabled);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.btn-secondary {
+    background: white;
+    color: var(--color-text-primary);
+    border: 2px solid var(--color-border);
+}
+
+.btn-secondary:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+/* ============================================
+   Responsive Design
+   ============================================ */
+@media screen and (max-width: 768px) {
+    .container {
+        padding: 1.25rem;
+    }
+
+    .image-preview img {
+        max-height: 200px;
+    }
+
+    .page-footer {
+        flex-direction: column;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        width: 100%;
+    }
+}
