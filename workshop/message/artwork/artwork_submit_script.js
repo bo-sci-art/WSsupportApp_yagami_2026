@@ -1,353 +1,141 @@
 /**
- * Artwork Submit Page - JavaScript
- * Handles form input, image upload, validation, and localStorage saving
+ * S7 タイトル・伝えたいこと・いつの行動か・番号（矢上小版・授業案 rev3）
+ * 保存先：localStorage.artworkSubmit = { title, body, phase, number, creationDate }
+ *   phase  : 事前／災害時／復旧時（保存する値は変えない。画面は「災害の前／とき／あと」）
+ *   number : クラス＋出席番号の4桁（4201〜4228）
  */
-
-// ============================================
-// Configuration
-// ============================================
-
 const CONFIG = {
-    // Navigation URLs
-    backUrl: '../../collage/Log/log_collage.html',
-    nextUrl: '../lastconfirm/final_submit.html', // Placeholder for confirmation page
-    
-    // localStorage key
-    storageKey: 'artworkSubmit',
-    
-    // Validation
-    maxImageSize: 10 * 1024 * 1024, // 10MB
+    backUrl: '../../collage/app/index.html',
+    nextUrl: '../lastconfirm/final_submit.html',
+    storageKey: 'artworkSubmit'
 };
 
-// ============================================
-// State Management
-// ============================================
 
-const state = {
-    title: '',
-    //imageFile: null,
-    //imageDataUrl: null,
-    creatorName: ''
+// 確認画面の「直す」から開いたとき（?edit=1）：「修正完了」で確認画面にもどる
+const EDIT = /[?&]edit=1(&|$)/.test(location.search);
+const CONFIRM_URL = '../lastconfirm/final_submit.html';
+function applyEditMode(nextBtn, backBtn) {
+    if (!EDIT) return;
+    nextBtn.innerHTML = window.rubyHTML('✓ 修正{しゅうせい}完了{かんりょう}');
+    if (backBtn) backBtn.style.visibility = 'hidden';
+    const t = document.querySelector('.step-indicator');
+    if (t) t.innerHTML = '✏️ ' + window.rubyHTML('修正中{しゅうせいちゅう}');
+}
+
+const el = {
+    title: document.getElementById('artworkTitle'),
+    body: document.getElementById('artworkBody'),
+    number: document.getElementById('creatorNumber'),
+    phases: document.getElementById('phaseOptions'),
+    titleV: document.getElementById('titleValidation'),
+    bodyV: document.getElementById('bodyValidation'),
+    phaseV: document.getElementById('phaseValidation'),
+    numberV: document.getElementById('numberValidation'),
+    back: document.getElementById('backBtn'),
+    next: document.getElementById('nextBtn')
 };
 
-// ============================================
-// DOM Elements
-// ============================================
+const state = { title: '', body: '', phase: '', number: '', creationDate: '' };
 
-const elements = {
-    titleInput: document.getElementById('artworkTitle'),
-    //imageInput: document.getElementById('artworkImage'),
-    nameInput: document.getElementById('creatorName'),
-    //imagePreview: document.getElementById('imagePreview'),
-    previewImg: document.getElementById('previewImg'),
-    removeImageBtn: document.getElementById('removeImage'),
-    titleValidation: document.getElementById('titleValidation'),
-    //imageValidation: document.getElementById('imageValidation'),
-    nameValidation: document.getElementById('nameValidation'),
-    backBtn: document.getElementById('backBtn'),
-    nextBtn: document.getElementById('nextBtn')
-};
-
-// ============================================
-// Initialization
-// ============================================
-
-function init() {
-    console.log('Initializing Artwork Submit page...');
-    
-    // Load saved data if exists
-    loadSavedData();
-    
-    // Set up event listeners
-    setupEventListeners();
-    
-    // Update button state
-    updateNextButtonState();
-    
-    console.log('Initialization complete');
+function load() {
+    try {
+        const d = JSON.parse(localStorage.getItem(CONFIG.storageKey) || '{}');
+        state.title = d.title || '';
+        state.body = d.body || '';
+        state.phase = d.phase || '';
+        state.number = d.number || '';
+        state.creationDate = d.creationDate || '';
+    } catch (e) { console.warn(e); }
+    el.title.value = state.title;
+    el.body.value = state.body;
+    el.number.value = state.number;
+}
+function save() {
+    if (!state.creationDate) state.creationDate = new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 10);
+    localStorage.setItem(CONFIG.storageKey, JSON.stringify(Object.assign({}, state, { updatedAt: new Date().toISOString() })));
 }
 
-// ============================================
-// Event Listeners
-// ============================================
-
-function setupEventListeners() {
-    // Title input
-    if (elements.titleInput) {
-        elements.titleInput.addEventListener('input', handleTitleInput);
-        elements.titleInput.addEventListener('blur', () => validateField('title'));
-    }
-    
-    // Image upload
-    if (elements.imageInput) {
-        elements.imageInput.addEventListener('change', handleImageUpload);
-    }
-    
-    // Remove image
-    if (elements.removeImageBtn) {
-        elements.removeImageBtn.addEventListener('click', removeImage);
-    }
-    
-    // Name input
-    if (elements.nameInput) {
-        elements.nameInput.addEventListener('input', handleNameInput);
-        elements.nameInput.addEventListener('blur', () => validateField('name'));
-    }
-    
-    // Navigation buttons
-    if (elements.backBtn) {
-        elements.backBtn.addEventListener('click', handleBack);
-    }
-    
-    if (elements.nextBtn) {
-        elements.nextBtn.addEventListener('click', handleNext);
-    }
-}
-
-// ============================================
-// Input Handlers
-// ============================================
-
-function handleTitleInput(event) {
-    state.title = event.target.value.trim();
-    
-    if (state.title.length > 0) {
-        elements.titleValidation.style.display = 'none';
-    }
-    
-    updateNextButtonState();
-    autoSave();
-}
-
-function handleNameInput(event) {
-    state.creatorName = event.target.value.trim();
-    
-    if (state.creatorName.length > 0) {
-        elements.nameValidation.style.display = 'none';
-    }
-    
-    updateNextButtonState();
-    autoSave();
-}
-
-function handleImageUpload(event) {
-    const file = event.target.files[0];
-    
-    if (!file) return;
-    
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-        alert('画像ファイルを選択してください。');
-        event.target.value = '';
-        return;
-    }
-    
-    // Validate file size
-    if (file.size > CONFIG.maxImageSize) {
-        alert('ファイルサイズは10MB以下にしてください。');
-        event.target.value = '';
-        return;
-    }
-    
-    // Read and display image
-    const reader = new FileReader();
-    
-    reader.onload = function(e) {
-        state.imageFile = file;
-        state.imageDataUrl = e.target.result;
-        
-        // Display preview
-        elements.previewImg.src = e.target.result;
-        elements.imagePreview.style.display = 'block';
-        
-        // Hide validation message
-        elements.imageValidation.style.display = 'none';
-        
-        // Update button state
-        updateNextButtonState();
-        
-        // Save to localStorage
-        autoSave();
-    };
-    
-    reader.onerror = function() {
-        alert('画像の読み込みに失敗しました。');
-    };
-    
-    reader.readAsDataURL(file);
-}
-
-function removeImage() {
-    state.imageFile = null;
-    state.imageDataUrl = null;
-    
-    elements.imageInput.value = '';
-    elements.imagePreview.style.display = 'none';
-    elements.previewImg.src = '';
-    
-    updateNextButtonState();
-    autoSave();
-}
-
-// ============================================
-// Validation
-// ============================================
-
-function validateField(fieldName) {
-    switch(fieldName) {
-        case 'title':
-            if (state.title.length === 0) {
-                elements.titleValidation.style.display = 'block';
-                return false;
-            }
-            elements.titleValidation.style.display = 'none';
-            return true;
-            
-        case 'image':
-            if (!state.imageDataUrl) {
-                elements.imageValidation.style.display = 'block';
-                return false;
-            }
-            elements.imageValidation.style.display = 'none';
-            return true;
-            
-        case 'name':
-            if (state.creatorName.length === 0) {
-                elements.nameValidation.style.display = 'block';
-                return false;
-            }
-            elements.nameValidation.style.display = 'none';
-            return true;
-            
-        default:
-            return false;
-    }
-}
-
-function validateForm() {
-    const titleValid = validateField('title');
-    const nameValid = validateField('name');
-    return titleValid && nameValid;
-}
-
-function updateNextButtonState() {
-    const hasTitle = elements.titleInput.value.trim().length > 0;
-    const hasImage = state.imageDataUrl !== null;
-    const hasName = elements.nameInput.value.trim().length > 0;
-    
-    elements.nextBtn.disabled = !(hasTitle && hasImage && hasName);
-}
-
-// ============================================
-// Data Persistence (localStorage)
-// ============================================
-
-function saveData() {
-    const data = {
-        title: elements.titleInput.value.trim(),
-        imageDataUrl: state.imageDataUrl,
-        creatorName: elements.nameInput.value.trim()
-    };
-    
-    localStorage.setItem(CONFIG.storageKey, JSON.stringify(data));
-    console.log('Data saved to localStorage');
-}
-
-function autoSave() {
-    saveData();
-}
-
-function loadSavedData() {
-    const savedData = localStorage.getItem(CONFIG.storageKey);
-    
-    if (savedData) {
-        try {
-            const data = JSON.parse(savedData);
-            console.log('Loaded saved data');
-            
-            // Restore title
-            if (data.title) {
-                elements.titleInput.value = data.title;
-                state.title = data.title;
-            }
-            
-            // Restore image
-            if (data.imageDataUrl) {
-                state.imageDataUrl = data.imageDataUrl;
-                elements.previewImg.src = data.imageDataUrl;
-                elements.imagePreview.style.display = 'block';
-            }
-            
-            // Restore name
-            if (data.creatorName) {
-                elements.nameInput.value = data.creatorName;
-                state.creatorName = data.creatorName;
-            }
-        } catch (e) {
-            console.error('Error loading saved data:', e);
-        }
-    }
-}
-
-// ============================================
-// Navigation
-// ============================================
-
-function handleBack() {
-    // Save current state before leaving
-    saveData();
-    window.location.href = CONFIG.backUrl;
-}
-
-function handleNext() {
-    // Validate before proceeding
-    if (!validateForm()) {
-        console.log('Validation failed');
-        return;
-    }
-    
-    // Save data to localStorage
-    saveData();
-    
-    // Navigate to next page
-    console.log('Proceeding to confirmation page...');
-    window.location.href = CONFIG.nextUrl;
-}
-
-// ============================================
-// Keyboard Shortcuts
-// ============================================
-
-function setupKeyboardShortcuts() {
-    document.addEventListener('keydown', (event) => {
-        // Ctrl/Cmd + Enter to submit
-        if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
-            event.preventDefault();
-            if (!elements.nextBtn.disabled) {
-                handleNext();
-            }
-        }
+function renderPhases() {
+    el.phases.innerHTML = '';
+    window.YAGAMI_PHASES.forEach(p => {
+        const label = document.createElement('label');
+        label.className = 'phase-option' + (state.phase === p.value ? ' selected' : '');
+        label.innerHTML = '<input type="radio" name="phase" value="' + p.value + '"' + (state.phase === p.value ? ' checked' : '') + '>'
+            + '<span class="phase-name">' + window.rubyHTML(p.label) + '</span>'
+            + '<span class="phase-desc">' + window.rubyHTML(p.desc) + '</span>';
+        label.querySelector('input').addEventListener('change', () => {
+            state.phase = p.value;
+            el.phases.querySelectorAll('.phase-option').forEach(o => o.classList.toggle('selected', o.querySelector('input').checked));
+            el.phaseV.style.display = 'none';
+            save(); update();
+        });
+        el.phases.appendChild(label);
     });
 }
 
-// ============================================
-// Initialize on DOM Ready
-// ============================================
-
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        init();
-        setupKeyboardShortcuts();
-    });
-} else {
-    init();
-    setupKeyboardShortcuts();
+function numberOK(v) { return window.YAGAMI_NUMBER_RE.test(v); }
+function update() {
+    el.next.disabled = !(state.title && state.body && state.phase && numberOK(state.number));
 }
 
-// ============================================
-// Save before leaving
-// ============================================
-
-window.addEventListener('beforeunload', () => {
-    saveData();
+el.title.addEventListener('input', () => { state.title = el.title.value.trim(); if (state.title) el.titleV.style.display = 'none'; save(); update(); });
+el.body.addEventListener('input', () => { state.body = el.body.value.trim(); if (state.body) el.bodyV.style.display = 'none'; save(); update(); });
+el.number.addEventListener('input', () => {
+    // 全角の数字も半角にして、数字だけ残す
+    const v = el.number.value.replace(/[０-９]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0)).replace(/[^0-9]/g, '').slice(0, 4);
+    if (v !== el.number.value) el.number.value = v;
+    state.number = v;
+    if (numberOK(v)) el.numberV.style.display = 'none';
+    save(); update();
 });
+el.title.addEventListener('blur', () => { if (!state.title) el.titleV.style.display = 'block'; });
+el.body.addEventListener('blur', () => { if (!state.body) el.bodyV.style.display = 'block'; });
+el.number.addEventListener('blur', () => { if (state.number && !numberOK(state.number)) el.numberV.style.display = 'block'; });
+
+el.back.addEventListener('click', () => { save(); location.href = CONFIG.backUrl; });
+el.next.addEventListener('click', () => {
+    let ok = true;
+    if (!state.title) { el.titleV.style.display = 'block'; ok = false; }
+    if (!state.body) { el.bodyV.style.display = 'block'; ok = false; }
+    if (!state.phase) { el.phaseV.style.display = 'block'; ok = false; }
+    if (!numberOK(state.number)) { el.numberV.style.display = 'block'; ok = false; }
+    if (!ok) return;
+    save();
+    location.href = EDIT ? CONFIRM_URL : CONFIG.nextUrl;
+});
+
+// ---------- 作品を見ながら書けるように：コラージュの自動保存の画像を出す ----------
+function idbGetArtwork() {
+    return new Promise(resolve => {
+        try {
+            const req = indexedDB.open('ws_art_db', 1);
+            req.onupgradeneeded = () => { if (!req.result.objectStoreNames.contains('images')) req.result.createObjectStore('images'); };
+            req.onsuccess = () => {
+                try {
+                    const g = req.result.transaction('images', 'readonly').objectStore('images').get('artwork_image');
+                    g.onsuccess = () => resolve(g.result || null);
+                    g.onerror = () => resolve(null);
+                } catch (e) { resolve(null); }
+            };
+            req.onerror = () => resolve(null);
+        } catch (e) { resolve(null); }
+    });
+}
+async function showArtwork() {
+    const img = document.getElementById('artPreview');
+    const empty = document.getElementById('artEmpty');
+    let src = null;
+    try { src = localStorage.getItem('artworkImage'); } catch (e) { /* ignore */ }
+    if (!src) { const blob = await idbGetArtwork(); if (blob) src = URL.createObjectURL(blob); }
+    if (!src) { empty.innerHTML = window.rubyHTML('作品{さくひん}の絵{え}が見{み}つかりません'); return; }
+    img.src = src;
+    img.style.display = 'block';
+    empty.style.display = 'none';
+    document.getElementById('artHint').style.display = 'block';
+    const zoom = document.getElementById('artZoom');
+    document.getElementById('artZoomImg').src = src;
+    document.getElementById('artFrame').addEventListener('click', () => { zoom.style.display = 'flex'; });
+    zoom.addEventListener('click', () => { zoom.style.display = 'none'; });
+}
+
+document.addEventListener('DOMContentLoaded', () => { load(); renderPhases(); update(); applyEditMode(el.next, el.back); showArtwork(); });

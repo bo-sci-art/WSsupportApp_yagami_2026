@@ -9,10 +9,12 @@ CREATE TABLE IF NOT EXISTS artworks (
   lon          REAL NOT NULL,
   field_23     TEXT,            -- 防災行動のタイミング（事前／災害時／復旧時、カンマ区切り）
   field_24     TEXT,            -- 見たハザードマップ（カンマ区切り）
-  field_25     TEXT,            -- ペンネーム
-  Message      TEXT,            -- 作品タイトル（メッセージ）
-  collage      TEXT,            -- コラージュの説明
-  Mabling      TEXT,            -- マーブリングの説明
+  field_25     TEXT,            -- 作者の番号（クラス＋出席番号の4桁 4201〜4228）
+  Message      TEXT,            -- 作品タイトル
+  Body         TEXT,            -- この作品で伝えたいこと（授業案 rev3）
+  place        TEXT,            -- 場所（hiyoshi5 / kagami / yagami）（授業案 rev3）
+  collage      TEXT,            -- （使わない：旧授業案のコラージュの説明）
+  Mabling      TEXT,            -- （使わない：旧授業案のマーブリングの説明）
   hazard       TEXT,            -- （予備：大人版データとの互換用）
   target       TEXT,            -- （予備：大人版データとの互換用）
   creationDate TEXT,            -- 制作日 YYYY-MM-DD
@@ -23,3 +25,4 @@ CREATE TABLE IF NOT EXISTS artworks (
 );
 
 CREATE INDEX IF NOT EXISTS idx_artworks_status ON artworks (status, id);
+CREATE INDEX IF NOT EXISTS idx_artworks_place ON artworks (place, id);

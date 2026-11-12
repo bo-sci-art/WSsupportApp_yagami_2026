@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>ハザードマップ</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
-  <link rel="stylesheet" href="./style.css?v=yagami3">
+  <link rel="stylesheet" href="./style.css?v=yagami4">
 </head>
 <body>
 
@@ -27,11 +27,6 @@
       <div class="hg-body">
         <div class="fopt"><input type="checkbox" id="chk-flood_l2"><label for="chk-flood_l2">洪水{こうずい}（外水氾濫{がいすいはんらん}）</label><button class="info-btn" data-k="flood_l2">?</button></div>
         <div class="fopt"><input type="checkbox" id="chk-hightide"><label for="chk-hightide">高潮{たかしお}</label><button class="info-btn" data-k="hightide">?</button></div>
-        <div class="fopt-head">内水氾濫{ないすいはんらん}</div>
-        <a class="ext-link" href="https://wwwm.city.yokohama.lg.jp/yokohama/Map?mid=65&amp;mpx=139.62630111702703&amp;mpy=35.536158445033394&amp;mps=10000&amp;mtp=dm&amp;gprj=3" target="_blank" rel="noopener">
-          🔗 横浜市{よこはまし}の「わいわい防災{ぼうさい}マップ」を見{み}る
-          <small>下水道{げすいどう}や水路{すいろ}からあふれる内水氾濫{ないすいはんらん}の浸水{しんすい}想定{そうてい}を確認{かくにん}できます（外部{がいぶ}サイト）</small>
-        </a>
       </div>
     </div>
 
@@ -47,10 +42,9 @@
     <div class="hazard-group hg-jishin" data-cat="jishin">
       <div class="hg-head">地震{じしん}</div>
       <div class="hg-body">
-        <div class="fopt"><input type="checkbox" id="chk-tsunami"><label for="chk-tsunami">津波{つなみ}</label><button class="info-btn" data-k="tsunami">?</button></div>
         <a class="ext-link" href="https://wwwm.city.yokohama.lg.jp/yokohama/Map?mid=6&amp;mpx=139.62630111702703&amp;mpy=35.536158445033394&amp;mps=10000&amp;mtp=dm&amp;gprj=3" target="_blank" rel="noopener">
           🔗 横浜市{よこはまし}の「わいわい防災{ぼうさい}マップ」を見{み}る
-          <small>震度{しんど}・液状化{えきじょうか}危険度{きけんど}・地震{じしん}火災{かさい}（焼失{しょうしつ}棟数{とうすう}）・津波{つなみ}を確認{かくにん}できます（外部{がいぶ}サイト）</small>
+          <small>震度{しんど}（地震{じしん}の揺{ゆ}れ）を確認{かくにん}できます（外部{がいぶ}サイト）</small>
         </a>
       </div>
     </div>
@@ -63,7 +57,7 @@
     <div class="filter-label" style="margin-top:16px">周辺{しゅうへん}の防災{ぼうさい}資源{しげん}</div>
     <div id="resource-toggles" class="res-toggles"></div>
     <div id="resource-legend" class="res-legend">
-      <div class="res-item"><span class="res-badge" style="background:#2e9e5b">避</span><div class="res-text"><b>指定{してい}緊急{きんきゅう}避難{ひなん}場所{ばしょ}</b><span class="res-desc">災害{さいがい}が迫{せま}ったときに緊急{きんきゅう}で「逃{に}げ込{こ}む」場所{ばしょ}。洪水{こうずい}・津波{つなみ}など<u>災害{さいがい}の種類{しゅるい}ごと</u>に、その災害{さいがい}から安全{あんぜん}な場所{ばしょ}が指定{してい}されています。</span></div></div>
+      <div class="res-item"><span class="res-badge" style="background:#2e9e5b">避</span><div class="res-text"><b>指定{してい}緊急{きんきゅう}避難{ひなん}場所{ばしょ}</b><span class="res-desc">災害{さいがい}が迫{せま}ったときに緊急{きんきゅう}で「逃{に}げ込{こ}む」場所{ばしょ}。洪水{こうずい}・土砂{どしゃ}災害{さいがい}など<u>災害{さいがい}の種類{しゅるい}ごと</u>に、その災害{さいがい}から安全{あんぜん}な場所{ばしょ}が指定{してい}されています。</span></div></div>
       <div class="res-item"><span class="res-badge" style="background:#2f6fb0">拠</span><div class="res-text"><b>地域{ちいき}防災{ぼうさい}拠点{きょてん}</b><span class="res-desc">災害{さいがい}後{ご}に「避難{ひなん}生活{せいかつ}を送{おく}る」ための指定{してい}避難所{ひなんじょ}（横浜市{よこはまし}）。多{おお}くは学校{がっこう}で、水{みず}・食料{しょくりょう}の備蓄{びちく}や情報{じょうほう}の受{う}け伝{つた}えの拠点{きょてん}になります。</span></div></div>
       <div class="res-item"><span class="res-badge" style="background:#0f9bb5">水</span><div class="res-text"><b>災害時{さいがいじ}給水所{きゅうすいじょ}</b><span class="res-desc">断水{だんすい}したときに水{みず}をもらえる場所{ばしょ}。配水池{はいすいち}・災害用{さいがいよう}地下{ちか}給水{きゅうすい}タンク・緊急{きんきゅう}給水栓{きゅうすいせん}などがあります。</span></div></div>
       <div class="res-note">※「逃{に}げ込{こ}む先{さき}（避難{ひなん}場所{ばしょ}）」と「避難{ひなん}生活{せいかつ}の場{ば}（拠点{きょてん}）」は役割{やくわり}が違{ちが}います。</div>
@@ -80,7 +74,8 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-<script src="../../../common/ruby.js?v=yagami3"></script>
-<script src="./script.js?v=yagami3"></script>
+<script src="../../../common/places.js?v=yagami4"></script>
+<script src="../../../common/ruby.js?v=yagami4"></script>
+<script src="./script.js?v=yagami5"></script>
 </body>
 </html>

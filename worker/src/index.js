@@ -17,7 +17,10 @@
 //   ALLOWED_ORIGINS  CORS を許可するオリジン（カンマ区切り）。localhost / 127.0.0.1 は常に許可
 
 const MAX_IMAGE_BYTES = 3 * 1024 * 1024;          // 画像の上限（1000px JPEG なら 0.3MB 前後）
-const MAX_TEXT = { field_23: 100, field_24: 500, field_25: 60, Message: 300, collage: 3000, Mabling: 3000, hazard: 500, target: 200, creationDate: 20 };
+const MAX_TEXT = { field_23: 100, field_24: 500, field_25: 60, Message: 300, Body: 1000, place: 20, collage: 3000, Mabling: 3000, hazard: 500, target: 200, creationDate: 20 };
+// 矢上小版（授業案 rev3）：作者は「クラス＋出席番号」の4桁（4201〜4228）、場所は3か所のどれか
+const NUMBER_RE = /^42(0[1-9]|1[0-9]|2[0-8])$/;
+const PLACES = ["hiyoshi5", "kagami", "yagami"];
 const TEXT_FIELDS = Object.keys(MAX_TEXT);
 const IMAGE_TYPES = { jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png", webp: "image/webp" };
 
@@ -68,6 +71,8 @@ async function submit(request, env, cors) {
     const v = props[k];
     fields[k] = (v === null || v === undefined) ? null : String(v).slice(0, MAX_TEXT[k]);
   }
+  if (!fields.field_25 || !NUMBER_RE.test(fields.field_25)) return json({ ok: false, error: "invalid number" }, 400, cors);
+  if (!fields.place || PLACES.indexOf(fields.place) < 0) return json({ ok: false, error: "invalid place" }, 400, cors);
   if (!fields.creationDate) fields.creationDate = new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 10);
 
   // 画像（data URL か base64）
@@ -82,10 +87,10 @@ async function submit(request, env, cors) {
   let id;
   try {
     const row = await env.DB.prepare(
-      `INSERT INTO artworks (lat, lon, field_23, field_24, field_25, Message, collage, Mabling, hazard, target, creationDate, image_key, status, created_at)
-       VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, 'approved', ?13) RETURNING id`
+      `INSERT INTO artworks (lat, lon, field_23, field_24, field_25, Message, collage, Mabling, hazard, target, creationDate, image_key, status, created_at, Body, place)
+       VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, 'approved', ?13, ?14, ?15) RETURNING id`
     ).bind(lat, lon, fields.field_23, fields.field_24, fields.field_25, fields.Message, fields.collage, fields.Mabling,
-           fields.hazard, fields.target, fields.creationDate, imageKey, new Date().toISOString()).first();
+           fields.hazard, fields.target, fields.creationDate, imageKey, new Date().toISOString(), fields.Body, fields.place).first();
     id = row && row.id;
   } catch (e) {
     await env.IMAGES.delete(imageKey).catch(() => {});   // 画像だけ残らないように
@@ -151,6 +156,8 @@ function toGeoJSON(rows, includeAdmin) {
         field_24: r.field_24,
         field_25: r.field_25,
         Message: r.Message,
+        Body: r.Body,
+        place: r.place,
         collage: r.collage,
         Mabling: r.Mabling,
         creationDate: r.creationDate,

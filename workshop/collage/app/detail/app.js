@@ -621,12 +621,9 @@ function selectIndex(i){
     stamps[i].selected = true;
     
   if (alphaEl){
-    // 透明度スライダーは「右ほど透明」＝ alpha を反転してつまみ位置に
-    const s = (ALPHA_MIN + ALPHA_MAX) - stamps[i].alpha; // スライダー値
-    alphaEl.value = String(s);
-    const t = (s - ALPHA_MIN) / (ALPHA_MAX - ALPHA_MIN); // 透明度(0..1)
-    if (alphaOut) alphaOut.textContent = Math.round(t * 100) + '%';
-  }    
+    // 矢上小版：濃さのレバーは「左＝うすく、右＝こく」。選んだスタンプの濃さにつまみを合わせる
+    alphaEl.value = String(stamps[i].alpha);
+  }
 
   if (colorEl){
       colorEl.value = stamps[i].color || '#ffffff';
@@ -639,14 +636,10 @@ function selectIndex(i){
 // ======== スライダー（サイズ／不透明度）参照＆反映 ========
 if (alphaEl){
   alphaEl.addEventListener('input', () => {
-    // %表示は常に更新（未選択でも反映）
-    const s = Number(alphaEl.value);
-    const t = (s - ALPHA_MIN) / (ALPHA_MAX - ALPHA_MIN); // 透明度(0..1)
-    if (alphaOut) alphaOut.textContent = Math.round(t * 100) + '%';
-
-    // スタンプ選択中のみ描画alphaを更新
+    // 矢上小版：つまみの値＝濃さ（不透明度）。選んでいるスタンプがあれば、その濃さを変える
+    // （選んでいないときは、つぎに置くスタンプの濃さになる）
     if (selectedIndex >= 0){
-      stamps[selectedIndex].alpha = (ALPHA_MIN + ALPHA_MAX) - s; // 1.2 - s
+      stamps[selectedIndex].alpha = Number(alphaEl.value);
       render();
     }
   });
@@ -744,9 +737,8 @@ function createStampAt(x, y) {
   const baseScale = defaultScaleForTex(currentStampTex);
   const multiplier = 1.0;
   const scale = baseScale * multiplier;
-  // 透明度スライダー値 s を alpha に反転
-  const sVal = alphaEl ? Number(alphaEl.value) : ALPHA_MAX; // 右端=1→透明度100%
-  const alpha = alphaEl ? (ALPHA_MIN + ALPHA_MAX) - sVal : KID_STAMP_ALPHA; // 矢上小版：透明度は固定
+  // 矢上小版：濃さのレバーの値をそのまま使う（左＝うすく 0.2 〜 右＝こく 1.0）
+  const alpha = alphaEl ? Number(alphaEl.value) : KID_STAMP_ALPHA;
   const stamp = {
     id: `${currentStampId || 'stamp'}-${Date.now()}`,
     tex: currentStampTex,

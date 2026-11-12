@@ -1,437 +1,174 @@
 /**
- * Log Hazard Map Page - JavaScript
- * Handles hazard selection, map interaction, location selection, and localStorage saving
+ * S2 作品にする場所と災害を選ぶ（矢上小版・授業案 rev3）
+ * - 場所は、先生が割り振った3か所（common/places.js）から1つ選ぶ。座標は固定
+ * - 読み取ったハザードマップを選ぶ（いくつでも）
+ * - 保存先：localStorage.hazardMapLog = { hazards:[正式名…], location:{ lat, lon, place, name } }
+ *   （保存する災害の値は大人版と同じ正式名。防災行動マップの絞り込みがそのまま動く）
  */
 
-// ============================================
-// Configuration
-// ============================================
-
 const CONFIG = {
-    // Default map center (Tsunashima Station, Yokohama)
-    defaultCenter: [35.5523, 139.6569],   // 矢上小学校の周辺
-    defaultZoom: 16,
-    
-    // Navigation URLs
     backUrl: '../app/index.html',
-    nextUrl: '../../marbling/app/index.html', // Placeholder for next page
-    
-    // localStorage key
+    nextUrl: './break.html',          // 1コマ目はここまで（休み時間のあと、マーブリングから）
     storageKey: 'hazardMapLog',
-    
-    // Hazard options (fixed list)
+    // 授業案 rev3：液状化危険度・地震火災・内水氾濫・津波は使わない（津波はこの3か所ではアプリの地図に重ねられないため）
     hazardOptions: [
         '洪水（外水氾濫）',
-        '内水氾濫',
         '高潮',
-        '津波',
         '土砂災害（急傾斜地の崩壊）',
-        '液状化危険度',
-        '地震の揺れ（震度）',
-        '地震火災（焼失棟数）'
+        '地震の揺れ（震度）'
     ],
-
-    // 矢上小版：画面に出す言葉（保存する値は上の正式名のまま＝防災行動マップの絞り込みが動く）
     hazardLabels: {
         '洪水（外水氾濫）': '洪水{こうずい}（外水氾濫{がいすいはんらん}）',
-        '内水氾濫': '内水氾濫{ないすいはんらん}',
         '高潮': '高潮{たかしお}',
-        '津波': '津波{つなみ}',
         '土砂災害（急傾斜地の崩壊）': '土砂{どしゃ}災害{さいがい}（急傾斜地{きゅうけいしゃち}の崩壊{ほうかい}）',
-        '液状化危険度': '液状化{えきじょうか}危険度{きけんど}',
-        '地震の揺れ（震度）': '地震{じしん}の揺{ゆ}れ（震度{しんど}）',
-        '地震火災（焼失棟数）': '地震{じしん}火災{かさい}（焼失{しょうしつ}棟数{とうすう}）'
+        '地震の揺れ（震度）': '地震{じしん}の揺{ゆ}れ（震度{しんど}）'
     }
 };
 
-// ============================================
-// State Management
-// ============================================
 
-const state = {
-    selectedHazards: new Set(),
-    tempLocation: null,      // Temporary pin location (not confirmed)
-    confirmedLocation: null, // Confirmed location
-    map: null,
-    tempMarker: null,
-    confirmedMarker: null
-};
+// 確認画面の「直す」から開いたとき（?edit=1）：「修正完了」で確認画面にもどる
+const EDIT = /[?&]edit=1(&|$)/.test(location.search);
+const CONFIRM_URL = '../../message/lastconfirm/final_submit.html';
+function applyEditMode(nextBtn, backBtn) {
+    if (!EDIT) return;
+    nextBtn.innerHTML = window.rubyHTML('✓ 修正{しゅうせい}完了{かんりょう}');
+    if (backBtn) backBtn.style.visibility = 'hidden';
+    const t = document.querySelector('.step-indicator');
+    if (t) t.innerHTML = '✏️ ' + window.rubyHTML('修正中{しゅうせいちゅう}');
+}
 
-// ============================================
-// DOM Elements
-// ============================================
+const state = { selectedHazards: new Set(), place: null, map: null, markers: {} };
 
-const elements = {
+const el = {
     hazardSelection: document.getElementById('hazardSelection'),
     hazardValidation: document.getElementById('hazardValidation'),
-    map: document.getElementById('map'),
-    mapInstruction: document.getElementById('mapInstruction'),
-    locationConfirmation: document.getElementById('locationConfirmation'),
-    locationCoords: document.getElementById('locationCoords'),
-    locationStatus: document.getElementById('locationStatus'),
-    confirmLocationBtn: document.getElementById('confirmLocationBtn'),
-    locationConfirmed: document.getElementById('locationConfirmed'),
-    confirmedCoords: document.getElementById('confirmedCoords'),
-    changeLocationBtn: document.getElementById('changeLocationBtn'),
+    placeButtons: document.getElementById('placeButtons'),
     locationValidation: document.getElementById('locationValidation'),
     backBtn: document.getElementById('backBtn'),
     nextBtn: document.getElementById('nextBtn')
 };
 
-// ============================================
-// Initialization
-// ============================================
+function rb(s) { return window.rubyHTML ? window.rubyHTML(s) : s; }
 
-function init() {
-    console.log('Initializing Log Hazard Map page...');
-    
-    // Load saved data if exists
-    loadSavedData();
-    
-    // Render hazard checkboxes
-    renderHazardOptions();
-    
-    // Initialize map
-    initMap();
-    
-    // Set up event listeners
-    setupEventListeners();
-    
-    // Update button state
-    updateNextButtonState();
-    
-    console.log('Initialization complete');
+// ---------- 保存と読み込み ----------
+function loadSaved() {
+    try {
+        const d = JSON.parse(localStorage.getItem(CONFIG.storageKey) || '{}');
+        (d.hazards || []).forEach(h => { if (CONFIG.hazardOptions.includes(h)) state.selectedHazards.add(h); });
+        if (d.location && d.location.place && window.yagamiPlace(d.location.place)) state.place = d.location.place;
+    } catch (e) { console.warn(e); }
 }
-
-// ============================================
-// Hazard Selection
-// ============================================
-
-function renderHazardOptions() {
-    elements.hazardSelection.innerHTML = '';
-    
-    CONFIG.hazardOptions.forEach((hazard, index) => {
-        const optionDiv = document.createElement('div');
-        optionDiv.className = 'hazard-option';
-        optionDiv.dataset.hazard = hazard;
-        
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.id = `hazard-${index}`;
-        checkbox.value = hazard;
-        
-        // Restore saved state
-        if (state.selectedHazards.has(hazard)) {
-            checkbox.checked = true;
-            optionDiv.classList.add('selected');
-        }
-        
-        const label = document.createElement('label');
-        label.htmlFor = `hazard-${index}`;
-        label.textContent = CONFIG.hazardLabels[hazard] || hazard;
-        
-        optionDiv.appendChild(checkbox);
-        optionDiv.appendChild(label);
-        
-        // Click event on entire div
-        optionDiv.addEventListener('click', (e) => {
-            // 矢上小版：チェックボックスや文字（label）をタッチしたときはブラウザが切りかえ、
-            // change イベントで反映する（ここでも切りかえると二重になって元にもどってしまうため）
-            if (e.target === checkbox || e.target.closest('label')) return;
-            checkbox.checked = !checkbox.checked;
-            handleHazardToggle(hazard, checkbox.checked, optionDiv);
-        });
-        
-        // Change event on checkbox
-        checkbox.addEventListener('change', (e) => {
-            handleHazardToggle(hazard, e.target.checked, optionDiv);
-        });
-        
-        elements.hazardSelection.appendChild(optionDiv);
-    });
-}
-
-function handleHazardToggle(hazard, checked, optionDiv) {
-    if (checked) {
-        state.selectedHazards.add(hazard);
-        optionDiv.classList.add('selected');
-    } else {
-        state.selectedHazards.delete(hazard);
-        optionDiv.classList.remove('selected');
-    }
-    
-    // Hide validation message if at least one is selected
-    if (state.selectedHazards.size > 0) {
-        elements.hazardValidation.style.display = 'none';
-    }
-    
-    updateNextButtonState();
-    console.log('Selected hazards:', Array.from(state.selectedHazards));
-}
-
-// ============================================
-// Map Initialization
-// ============================================
-
-function initMap() {
-    // Initialize Leaflet map
-    state.map = L.map('map').setView(CONFIG.defaultCenter, CONFIG.defaultZoom);
-    
-    // Add OpenStreetMap tile layer
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors',
-        maxZoom: 19
-    }).addTo(state.map);
-    
-    // Map click event
-    state.map.on('click', handleMapClick);
-    
-    console.log('Map initialized');
-}
-
-function handleMapClick(e) {
-    const lat = e.latlng.lat;
-    const lon = e.latlng.lng;
-    
-    console.log('Map clicked:', lat, lon);
-    
-    // Store as temporary location
-    state.tempLocation = { lat, lon };
-    
-    // Remove previous temporary marker
-    if (state.tempMarker) {
-        state.map.removeLayer(state.tempMarker);
-    }
-    
-    // Add new temporary marker (yellow/orange)
-    state.tempMarker = L.marker([lat, lon], {
-        icon: L.icon({
-            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-orange.png',
-            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
-            iconSize: [25, 41],
-            iconAnchor: [12, 41],
-            popupAnchor: [1, -34],
-            shadowSize: [41, 41]
-        })
-    }).addTo(state.map);
-    
-    // Update instruction
-    elements.mapInstruction.textContent = '📍 下{した}の「この場所{ばしょ}に決{き}める」を押{お}してください';
-    
-    // Show confirmation UI
-    elements.locationConfirmation.style.display = 'flex';
-    elements.locationCoords.textContent = `緯度: ${lat.toFixed(6)}, 経度: ${lon.toFixed(6)}`;
-    elements.locationStatus.textContent = '未確定';
-    
-    // Hide confirmed section if visible
-    elements.locationConfirmed.style.display = 'none';
-    elements.locationValidation.style.display = 'none';
-}
-
-function confirmLocation() {
-    if (!state.tempLocation) return;
-    
-    // Move temp location to confirmed
-    state.confirmedLocation = { ...state.tempLocation };
-    
-    console.log('Location confirmed:', state.confirmedLocation);
-    
-    // Remove temporary marker
-    if (state.tempMarker) {
-        state.map.removeLayer(state.tempMarker);
-        state.tempMarker = null;
-    }
-    
-    // Add confirmed marker (green)
-    if (state.confirmedMarker) {
-        state.map.removeLayer(state.confirmedMarker);
-    }
-    
-    state.confirmedMarker = L.marker([state.confirmedLocation.lat, state.confirmedLocation.lon], {
-        icon: L.icon({
-            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
-            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
-            iconSize: [25, 41],
-            iconAnchor: [12, 41],
-            popupAnchor: [1, -34],
-            shadowSize: [41, 41]
-        })
-    }).addTo(state.map);
-    
-    // Update UI
-    elements.mapInstruction.textContent = '✓ 場所{ばしょ}が決{き}まりました';
-    elements.locationConfirmation.style.display = 'none';
-    elements.locationConfirmed.style.display = 'block';
-    elements.confirmedCoords.textContent = `緯度: ${state.confirmedLocation.lat.toFixed(6)}, 経度: ${state.confirmedLocation.lon.toFixed(6)}`;
-    elements.locationValidation.style.display = 'none';
-    
-    // Clear temp location
-    state.tempLocation = null;
-    
-    updateNextButtonState();
-}
-
-function changeLocation() {
-    console.log('Changing location...');
-    
-    // Remove confirmed marker
-    if (state.confirmedMarker) {
-        state.map.removeLayer(state.confirmedMarker);
-        state.confirmedMarker = null;
-    }
-    
-    // Clear confirmed location
-    state.confirmedLocation = null;
-    
-    // Update UI
-    elements.locationConfirmed.style.display = 'none';
-    elements.mapInstruction.textContent = '📍 地図{ちず}をタップして場所{ばしょ}を選{えら}んでください';
-    
-    updateNextButtonState();
-}
-
-// ============================================
-// Validation
-// ============================================
-
-function validateForm() {
-    let isValid = true;
-    
-    // Check hazards
-    if (state.selectedHazards.size === 0) {
-        elements.hazardValidation.style.display = 'block';
-        isValid = false;
-    } else {
-        elements.hazardValidation.style.display = 'none';
-    }
-    
-    // Check location
-    if (!state.confirmedLocation) {
-        elements.locationValidation.style.display = 'block';
-        isValid = false;
-    } else {
-        elements.locationValidation.style.display = 'none';
-    }
-    
-    return isValid;
-}
-
-function updateNextButtonState() {
-    const hasHazards = state.selectedHazards.size > 0;
-    const hasLocation = state.confirmedLocation !== null;
-    
-    elements.nextBtn.disabled = !(hasHazards && hasLocation);
-}
-
-// ============================================
-// Data Persistence (localStorage)
-// ============================================
-
-function saveData() {
+function save() {
+    const p = window.yagamiPlace(state.place);
     const data = {
         hazards: Array.from(state.selectedHazards),
-        location: state.confirmedLocation
+        location: p ? { lat: p.lat, lon: p.lon, place: p.id, name: p.plain } : null
     };
-    
     localStorage.setItem(CONFIG.storageKey, JSON.stringify(data));
-    console.log('Data saved to localStorage:', data);
 }
 
-function loadSavedData() {
-    const savedData = localStorage.getItem(CONFIG.storageKey);
-    
-    if (savedData) {
-        try {
-            const data = JSON.parse(savedData);
-            console.log('Loaded saved data:', data);
-            
-            // Restore hazards
-            if (data.hazards && Array.isArray(data.hazards)) {
-                data.hazards.forEach(hazard => state.selectedHazards.add(hazard));
-            }
-            
-            // Restore location
-            if (data.location && data.location.lat && data.location.lon) {
-                state.confirmedLocation = data.location;
-                
-                // Will be rendered after map initialization
-                setTimeout(() => {
-                    if (state.confirmedLocation) {
-                        // Add confirmed marker
-                        state.confirmedMarker = L.marker([state.confirmedLocation.lat, state.confirmedLocation.lon], {
-                            icon: L.icon({
-                                iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
-                                shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
-                                iconSize: [25, 41],
-                                iconAnchor: [12, 41],
-                                popupAnchor: [1, -34],
-                                shadowSize: [41, 41]
-                            })
-                        }).addTo(state.map);
-                        
-                        // Center map on location
-                        state.map.setView([state.confirmedLocation.lat, state.confirmedLocation.lon], CONFIG.defaultZoom);
-                        
-                        // Update UI
-                        elements.mapInstruction.textContent = '✓ 場所{ばしょ}が決{き}まりました';
-                        elements.locationConfirmed.style.display = 'block';
-                        elements.confirmedCoords.textContent = `緯度: ${state.confirmedLocation.lat.toFixed(6)}, 経度: ${state.confirmedLocation.lon.toFixed(6)}`;
-                    }
-                }, 500);
-            }
-        } catch (e) {
-            console.error('Error loading saved data:', e);
-        }
-    }
+// ---------- 災害の選択 ----------
+function renderHazards() {
+    el.hazardSelection.innerHTML = '';
+    CONFIG.hazardOptions.forEach((hazard, i) => {
+        const div = document.createElement('div');
+        div.className = 'hazard-option' + (state.selectedHazards.has(hazard) ? ' selected' : '');
+        const cb = document.createElement('input');
+        cb.type = 'checkbox'; cb.id = 'hazard-' + i; cb.value = hazard; cb.checked = state.selectedHazards.has(hazard);
+        const label = document.createElement('label');
+        label.htmlFor = cb.id;
+        label.innerHTML = rb(CONFIG.hazardLabels[hazard] || hazard);
+        div.appendChild(cb); div.appendChild(label);
+        // 文字やチェックボックスを押したときはブラウザが切りかえる（二重に切りかえないように）
+        div.addEventListener('click', e => {
+            if (e.target === cb || e.target.closest('label')) return;
+            cb.checked = !cb.checked; toggleHazard(hazard, cb.checked, div);
+        });
+        cb.addEventListener('change', () => toggleHazard(hazard, cb.checked, div));
+        el.hazardSelection.appendChild(div);
+    });
+}
+function toggleHazard(hazard, on, div) {
+    if (on) state.selectedHazards.add(hazard); else state.selectedHazards.delete(hazard);
+    div.classList.toggle('selected', on);
+    if (state.selectedHazards.size) el.hazardValidation.style.display = 'none';
+    save(); updateNext();
 }
 
-// ============================================
-// Navigation
-// ============================================
-
-function handleBack() {
-    // Save current state before leaving
-    saveData();
-    window.location.href = CONFIG.backUrl;
+// ---------- 場所の選択（3か所のボタン） ----------
+function renderPlaces() {
+    el.placeButtons.innerHTML = '';
+    window.YAGAMI_PLACES.forEach(p => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'place-btn' + (state.place === p.id ? ' selected' : '');
+        b.dataset.place = p.id;
+        b.style.setProperty('--place-color', p.color);
+        b.innerHTML = '<span class="place-dot"></span><span class="place-name">' + rb(p.name) + '</span><span class="place-check">✓</span>';
+        b.addEventListener('click', () => selectPlace(p.id));
+        el.placeButtons.appendChild(b);
+    });
+}
+function selectPlace(id) {
+    state.place = id;
+    el.placeButtons.querySelectorAll('.place-btn').forEach(b => b.classList.toggle('selected', b.dataset.place === id));
+    el.locationValidation.style.display = 'none';
+    showPlaceOnMap(true);
+    save(); updateNext();
 }
 
+// ---------- 地図（3か所を表示し、選んだ場所を大きく） ----------
+function placeIcon(p, selected) {
+    const size = selected ? 22 : 14;
+    return L.divIcon({
+        className: 'place-marker' + (selected ? ' selected' : ''),
+        html: '<span class="pm-dot" style="background:' + p.color + ';width:' + size + 'px;height:' + size + 'px"></span>'
+            + '<span class="pm-label">' + rb(p.short) + '</span>',
+        iconSize: [size, size], iconAnchor: [size / 2, size / 2]
+    });
+}
+function initMap() {
+    state.map = L.map('map', { zoomControl: true });
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors', maxZoom: 19
+    }).addTo(state.map);
+    window.YAGAMI_PLACES.forEach(p => {
+        state.markers[p.id] = L.marker([p.lat, p.lon], { icon: placeIcon(p, false) })
+            .on('click', () => selectPlace(p.id))
+            .addTo(state.map);
+    });
+    state.map.fitBounds(window.yagamiPlacesBounds(), { padding: [40, 40] });
+    showPlaceOnMap(false);
+}
+function showPlaceOnMap(animate) {
+    if (!state.map) return;
+    window.YAGAMI_PLACES.forEach(p => {
+        const m = state.markers[p.id];
+        m.setIcon(placeIcon(p, p.id === state.place));
+        m.setZIndexOffset(p.id === state.place ? 1000 : 0);
+    });
+    const p = window.yagamiPlace(state.place);
+    if (p) state.map.setView([p.lat, p.lon], 17, { animate: !!animate });
+}
+
+// ---------- つぎへ・もどる ----------
+function updateNext() { el.nextBtn.disabled = !(state.place && state.selectedHazards.size > 0); }
 function handleNext() {
-    // Validate before proceeding
-    if (!validateForm()) {
-        console.log('Validation failed');
-        return;
-    }
-    
-    // Save data to localStorage
-    saveData();
-    
-    // Navigate to next page
-    console.log('Proceeding to next page...');
-    window.location.href = CONFIG.nextUrl;
+    let ok = true;
+    if (!state.place) { el.locationValidation.style.display = 'block'; ok = false; }
+    if (!state.selectedHazards.size) { el.hazardValidation.style.display = 'block'; ok = false; }
+    if (!ok) return;
+    save();
+    location.href = EDIT ? CONFIRM_URL : CONFIG.nextUrl;
 }
 
-// ============================================
-// Event Listeners
-// ============================================
-
-function setupEventListeners() {
-    // Confirm location button
-    elements.confirmLocationBtn.addEventListener('click', confirmLocation);
-    
-    // Change location button
-    elements.changeLocationBtn.addEventListener('click', changeLocation);
-    
-    // Navigation buttons
-    elements.backBtn.addEventListener('click', handleBack);
-    elements.nextBtn.addEventListener('click', handleNext);
-}
-
-// ============================================
-// Initialize on DOM Ready
-// ============================================
-
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-} else {
-    init();
-}
+document.addEventListener('DOMContentLoaded', () => {
+    loadSaved();
+    renderPlaces();
+    renderHazards();
+    initMap();
+    updateNext();
+    applyEditMode(el.nextBtn, el.backBtn);
+    el.backBtn.addEventListener('click', () => { save(); location.href = CONFIG.backUrl; });
+    el.nextBtn.addEventListener('click', handleNext);
+});

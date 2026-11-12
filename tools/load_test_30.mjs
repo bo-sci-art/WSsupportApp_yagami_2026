@@ -1,7 +1,7 @@
-// 30件の作品を同時に登録して、全件が登録されるかを確かめるテスト
+// 28件（4年2組の人数）の作品を同時に登録して、全件が登録されるかを確かめるテスト
 //
 // 使い方（Node.js 18 以上）:
-//   node tools/load_test_30.mjs <WorkerのURL> <ADMIN_KEY> [件数=30]
+//   node tools/load_test_30.mjs <WorkerのURL> <ADMIN_KEY> [件数=28]
 //   例）node tools/load_test_30.mjs https://yagami-submit.kazuki131214.workers.dev XXXXXXXX
 //
 // 流れ:
@@ -15,11 +15,17 @@
 const [, , base0, adminKey, n0] = process.argv.filter(a => a !== "--keep");
 const KEEP = process.argv.includes("--keep");
 if (!base0 || !adminKey) {
-  console.error("使い方: node tools/load_test_30.mjs <WorkerのURL> <ADMIN_KEY> [件数=30] [--keep]");
+  console.error("使い方: node tools/load_test_30.mjs <WorkerのURL> <ADMIN_KEY> [件数=28] [--keep]");
   process.exit(1);
 }
 const BASE = base0.replace(/\/+$/, "");
-const N = Number(n0 || 30);
+const N = Math.min(28, Number(n0 || 28));   // 番号は 4201〜4228 なので最大28件
+// 授業案 rev3：場所は3か所（座標は固定）。28件を 10・9・9 に分ける
+const PLACES = [
+  { id: "hiyoshi5", lat: 35.55112, lon: 139.65574 },
+  { id: "kagami",   lat: 35.54543, lon: 139.65512 },
+  { id: "yagami",   lat: 35.55400, lon: 139.65763 }
+];
 const SECRET = process.env.SUBMIT_SECRET || "yagami-ws-20261118";
 
 // 約200KB のダミー画像（JPEG の先頭・末尾つき。中身はランダム）
@@ -45,15 +51,15 @@ const t0 = Date.now();
 const results = await Promise.all(Array.from({ length: N }, async (_, i) => {
   const payload = {
     secret: SECRET,
-    lat: 35.5523 + (Math.random() - 0.5) * 0.01,
-    lon: 139.6569 + (Math.random() - 0.5) * 0.01,
+    lat: PLACES[i % 3].lat,
+    lon: PLACES[i % 3].lon,
     properties: {
       field_23: ["事前", "災害時", "復旧時"][i % 3],
       field_24: "洪水（外水氾濫）, 土砂災害（急傾斜地の崩壊）",
-      field_25: `テスト${i + 1}`,
+      field_25: String(4201 + i),
       Message: `${tag} #${i + 1} 大雨のときは早めに高いところへ！`,
-      collage: "高いところへにげる行動を表しました。",
-      Mabling: "川の水があふれるようすを表しました。",
+      Body: "大雨で川があふれそうなときは、家族といっしょに早めに高い場所へ避難してほしいです。",
+      place: PLACES[i % 3].id,
       creationDate: "2026-11-18"
     },
     imageBase64: dummyJpegDataURL(i),
@@ -84,7 +90,11 @@ const mine = after.filter(f => String(f.properties.Message || "").startsWith(tag
 console.log(`登録直後の GET /artworks: 全 ${after.length}件、今回の作品 ${mine.length}/${N}件 が表示`);
 const imgCheck = await fetch(BASE + "/" + mine[0]?.properties.images[0]);
 console.log(`画像の取得: ${imgCheck.status} ${imgCheck.headers.get("content-type")}`);
-const textOk = mine.every(f => f.properties.collage === "高いところへにげる行動を表しました。");
+const textOk = mine.every(f => f.properties.Body === "大雨で川があふれそうなときは、家族といっしょに早めに高い場所へ避難してほしいです。");
+const byPlace = PLACES.map(p => p.id + " " + mine.filter(f => f.properties.place === p.id).length + "件").join("・");
+console.log(`場所ごと: ${byPlace}`);
+const numsOk = new Set(mine.map(f => f.properties.field_25)).size === N;
+console.log(`番号: ${numsOk ? "全部ちがう番号で保存" : "おかしい！"}`);
 console.log(`日本語の文章: ${textOk ? "正しく保存" : "おかしい！"}`);
 
 if (!KEEP) {
@@ -97,6 +107,6 @@ if (!KEEP) {
   console.log(`テスト作品の削除: ${del}/${ok.length}件、削除後の作品数 ${last.length}（登録前 ${before.length}）`);
 }
 
-const pass = ok.length === N && mine.length === N && ids.size === N && textOk;
+const pass = ok.length === N && mine.length === N && ids.size === N && textOk && numsOk;
 console.log(pass ? "\n結果: OK（全件登録・直後に表示）" : "\n結果: NG");
 process.exit(pass ? 0 : 1);

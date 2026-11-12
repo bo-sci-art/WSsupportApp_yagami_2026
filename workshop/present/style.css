@@ -871,3 +871,46 @@ ruby rt { position: absolute; left: 50%; top: calc(50% - 2.05em); transform: tra
 
 /* 防災行動マップ：ふりがなを軽く（文字が重く見えないように） */
 ruby rt { font-size: .5em; font-weight: 400; color: inherit; opacity: .72; }
+
+/* ===== 授業案 rev3：場所ごとに作品を見る ===== */
+#sidebar-places { padding: 10px 16px 8px; border-bottom: 1px solid var(--border-color); background: #fff; }
+.place-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.place-tab { --pc: #4f8b80; appearance: none; display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 4px 10px; min-height: 46px; border: 2px solid var(--pc); border-radius: 12px; background: #fff; color: #1f2937; font-weight: 800; font-size: .92rem; line-height: 2.2; cursor: pointer; font-family: inherit; text-align: left; }
+.place-tab .pt-count { flex: none; min-width: 26px; padding: 0 6px; border-radius: 999px; background: var(--pc); color: #fff; font-size: .85rem; line-height: 1.7; text-align: center; }
+.place-tab.active { background: var(--pc); color: #fff; }
+.place-tab.active .pt-count { background: #fff; color: var(--pc); }
+.art-search-row { position: relative; margin-top: 8px; }
+.art-search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 1rem; }
+.art-search { width: 100%; box-sizing: border-box; min-height: 44px; padding: 6px 10px 6px 34px; border: 2px solid #d1d5db; border-radius: 12px; font-size: 1rem; font-family: inherit; }
+.art-search:focus { outline: none; border-color: #4f8b80; }
+.list-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 2px; font-weight: 800; color: #374151; line-height: 2.2; position: sticky; top: 0; background: #fff; z-index: 2; }
+.list-head .lh-count { color: #EE8972; }
+.art-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 2px; }
+.art-meta .art-num { font-weight: 800; letter-spacing: .08em; font-variant-numeric: tabular-nums; }
+.art-meta .art-place { --pc: #888; font-size: .8rem; font-weight: 700; color: var(--pc); border: 1.5px solid var(--pc); border-radius: 999px; padding: 0 8px; line-height: 2.2; }
+.art-meta .art-icons { margin-left: auto; }
+/* 地図：場所のピン（名前と作品の数） */
+.place-pin { background: none; border: 0; }
+.place-pin .pp-box { --pc: #4f8b80; position: absolute; left: 0; bottom: 10px; transform: translateX(-50%); display: flex; align-items: center; gap: 6px; white-space: nowrap; background: #fff; border: 3px solid var(--pc); border-radius: 14px; padding: 2px 6px 2px 10px; font-weight: 800; font-size: 14px; line-height: 2.3; color: #1f2937; box-shadow: 0 2px 8px rgba(0,0,0,.25); cursor: pointer; }
+.place-pin .pp-count { min-width: 26px; text-align: center; background: var(--pc); color: #fff; border-radius: 999px; padding: 0 6px; font-size: 13px; line-height: 1.8; }
+.place-pin .pp-tip { --pc: #4f8b80; position: absolute; left: 0; bottom: 0; transform: translateX(-50%); width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-top: 12px solid var(--pc); }
+.place-pin.sel .pp-box { background: var(--pc); color: #fff; transform: translateX(-50%) scale(1.12); transform-origin: bottom center; }
+.place-pin.sel .pp-count { background: #fff; color: var(--pc); }
+/* 場所のボタン：名前を1行に保つ */
+.place-tab { white-space: nowrap; font-size: .86rem; }
+.place-tab > .pt-name { overflow: hidden; text-overflow: ellipsis; }
+.list-head > .lh-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ===== 授業案 rev3：マップの使い方（写真つき・ふりがなが読める行の高さ） ===== */
+#tutorial-overlay .tutorial-card { max-width: 680px; width: 92%; padding: 18px 22px 16px; max-height: 94vh; overflow-y: auto; }
+#tutorial-overlay .tutorial-image-container { height: auto; aspect-ratio: 1180 / 820; margin: 4px 0 10px; border: 2px solid #e5e7eb; background: #fff; }
+#tutorial-overlay .tutorial-img { cursor: pointer; }
+#tutorial-overlay .tutorial-content { margin-bottom: 14px; }
+#tutorial-title { font-size: 1.3rem; line-height: 2.3; margin: 0 0 4px; }
+#tutorial-desc { font-size: 1.02rem; line-height: 2.5; color: #374151; padding: 0 4px; }
+#tutorial-desc strong { color: #1f2937; }
+#tutorial-overlay ruby rt { font-size: .55em; font-weight: 400; color: #6b7280; opacity: 1; }
+@media (max-width: 600px) {
+  #tutorial-desc { font-size: .95rem; line-height: 2.4; }
+  #tutorial-desc br { display: none; }
+}

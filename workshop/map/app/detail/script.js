@@ -16,19 +16,13 @@ const hazards = {
   flood_l2: {
     layer: L.tileLayer(HZ+"01_flood_l2_shinsuishin_data/{z}/{x}/{y}.png", {maxZoom:17, opacity:.7, attribution:"重ねるハザードマップ（国土地理院）"}),
     name: "洪水{こうずい}（外水氾濫{がいすいはんらん}）",
-    desc: "・想定{そうてい}最大{さいだい}規模{きぼ}の大雨{おおあめ}により、川{かわ}の水{みず}が堤防{ていぼう}を越{こ}えてまちへ流{なが}れ込{こ}む浸水{しんすい}です。<br>・発生{はっせい}しえるもっとも深{ふか}い場合{ばあい}を示{しめ}しています。<br>・下水{げすい}があふれる「内水氾濫{ないすいはんらん}」とは発生{はっせい}原因{げんいん}が異{こと}なります。",
-    legend: "shinsui"
-  },
-  tsunami: {
-    layer: L.tileLayer(HZ+"04_tsunami_newlegend_data/{z}/{x}/{y}.png", {maxZoom:17, opacity:.7, attribution:"重ねるハザードマップ（国土地理院）"}),
-    name: "津波{つなみ}",
-    desc: "・地震{じしん}などの地殻{ちかく}変動{へんどう}で発生{はっせい}した海面{かいめん}の変化{へんか}が大波{おおなみ}となって押{お}し寄{よ}せる浸水{しんすい}です。<br>・台風{たいふう}などが原因{げんいん}で海面{かいめん}が上昇{じょうしょう}する「高潮{たかしお}」とは発生{はっせい}原因{げんいん}が異{こと}なります。",
+    desc: "・想定{そうてい}最大{さいだい}規模{きぼ}の大雨{おおあめ}により、川{かわ}の水{みず}が堤防{ていぼう}を越{こ}えてまちへ流{なが}れ込{こ}む浸水{しんすい}です。<br>・発生{はっせい}しえるもっとも深{ふか}い場合{ばあい}を示{しめ}しています。",
     legend: "shinsui"
   },
   hightide: {
     layer: L.tileLayer(HZ+"03_hightide_l2_shinsuishin_data/{z}/{x}/{y}.png", {maxZoom:17, opacity:.7, attribution:"重ねるハザードマップ（国土地理院）"}),
     name: "高潮{たかしお}",
-    desc: "・台風{たいふう}などによる気圧{きあつ}低下{ていか}と強風{きょうふう}で海面{かいめん}が上昇{じょうしょう}し、海水{かいすい}が陸{りく}へ流{なが}れ込{こ}む浸水{しんすい}です。<br>・地震{じしん}などの地殻{ちかく}変動{へんどう}が原因{げんいん}で発生{はっせい}する「津波{つなみ}」とは発生{はっせい}原因{げんいん}が異{こと}なります。",
+    desc: "・台風{たいふう}などによる気圧{きあつ}低下{ていか}と強風{きょうふう}で海面{かいめん}が上昇{じょうしょう}し、海水{かいすい}が陸{りく}へ流{なが}れ込{こ}む浸水{しんすい}です。",
     legend: "shinsui"
   },
   kyukei: {
@@ -43,6 +37,19 @@ const hazards = {
 const YAGAMI_CENTER = [35.5523, 139.6569];
 const map = L.map("viewDiv", {center:YAGAMI_CENTER, zoom:16, zoomControl:true, layers:[bases.white]});
 L.control.scale({imperial:false}).addTo(map);
+
+/* ===== 授業案 rev3：作品にする3か所に名前つきの目印 ===== */
+(function(){
+  if (!window.YAGAMI_PLACES) return;
+  const rb = s => window.rubyHTML ? window.rubyHTML(s) : s;
+  window.YAGAMI_PLACES.forEach(p => {
+    L.marker([p.lat, p.lon], { zIndexOffset: 1000, icon: L.divIcon({
+      className: 'place-marker',
+      html: '<span class="pm-dot" style="background:'+p.color+'"></span><span class="pm-label">'+rb(p.short)+'</span>',
+      iconSize: [16,16], iconAnchor: [8,8] }) }).addTo(map);
+  });
+  map.fitBounds(window.yagamiPlacesBounds(), { padding: [60, 60], maxZoom: 16 });
+})();
 let curBase = bases.white;
 
 document.getElementById("bm-white").onclick = () => setBase("white");

@@ -17,8 +17,8 @@
     }
     return true;
   }
-  var RE = /([々一-鿿豈-﫿]+)\{([ぁ-ゟ゠-ヿー]+)\}/g;
-  var TEST = /[々一-鿿豈-﫿]\{[ぁ-ヿー]+\}/;
+  var RE = /([々ヶ一-鿿豈-﫿]+)\{([ぁ-ゟ゠-ヿー]+)\}/g;
+  var TEST = /[々ヶ一-鿿豈-﫿]\{[ぁ-ヿー]+\}/;
   var SKIP = { SCRIPT: 1, STYLE: 1, TEXTAREA: 1, INPUT: 1, RT: 1, NOSCRIPT: 1 };
 
   function convertTextNode(node) {

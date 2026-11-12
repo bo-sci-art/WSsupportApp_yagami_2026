@@ -483,3 +483,28 @@ body {
 .confirmed-badge { font-size: 1.2rem !important; line-height: 1.9; }
 .required-badge { font-size: .85rem !important; }
 .leaflet-touch .leaflet-bar a { width: 44px; height: 44px; line-height: 44px; font-size: 24px; }
+
+/* ===== 授業案 rev3：場所は3か所のボタンから選ぶ ===== */
+.place-buttons { display: grid; grid-template-columns: 1fr; gap: 10px; margin: 6px 0 12px; }
+.place-btn {
+  --place-color: #2f80ed;
+  display: flex; align-items: center; gap: 12px; width: 100%; text-align: left;
+  min-height: 64px; padding: 10px 16px; border-radius: 16px; cursor: pointer;
+  background: #fff; border: 3px solid #d1d5db; color: #1f2937;
+  font-size: 1.2rem; font-weight: 800; line-height: 2.1; font-family: inherit;
+}
+.place-btn .place-dot { flex: none; width: 18px; height: 18px; border-radius: 50%; background: var(--place-color); box-shadow: 0 0 0 3px #fff, 0 0 0 5px var(--place-color); }
+.place-btn .place-name { flex: 1; }
+.place-btn .place-check { flex: none; visibility: hidden; color: #fff; background: var(--place-color); border-radius: 50%; width: 32px; height: 32px; line-height: 32px; text-align: center; font-size: 1.1rem; }
+.place-btn.selected { border-color: var(--place-color); background: color-mix(in srgb, var(--place-color) 10%, #fff); }
+.place-btn.selected .place-check { visibility: visible; }
+.place-map-container .map { min-height: 220px; }
+/* 地図の目印（名前つき） */
+.place-marker { background: none; border: 0; }
+.place-marker .pm-dot { display: block; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,.45); box-sizing: content-box; }
+.place-marker .pm-label {
+  position: absolute; left: 50%; bottom: 100%; transform: translate(-50%, -6px); white-space: nowrap;
+  background: rgba(255,255,255,.95); border-radius: 8px; padding: 0 8px; font-size: 13px; font-weight: 800; line-height: 2.3;
+  color: #1f2937; box-shadow: 0 1px 3px rgba(0,0,0,.3); pointer-events: none;
+}
+.place-marker.selected .pm-label { font-size: 15px; background: #fff; outline: 2px solid #1f2937; }

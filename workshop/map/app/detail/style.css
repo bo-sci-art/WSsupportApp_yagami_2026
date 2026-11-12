@@ -112,3 +112,8 @@ ruby rt { position: absolute; left: 50%; top: calc(50% - 2.05em); transform: tra
 .leaflet-popup-content{font-size:16px;line-height:1.9}
 .leaflet-touch .leaflet-bar a{width:44px;height:44px;line-height:44px;font-size:24px}
 @media (max-width:900px){ #sidebar{width:320px} .side-scroll{font-size:16px} }
+
+/* 授業案 rev3：作品にする3か所の目印（名前つき） */
+.place-marker{background:none;border:0}
+.place-marker .pm-dot{display:block;width:16px;height:16px;border-radius:50%;border:3px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.45);box-sizing:content-box;margin:-3px}
+.place-marker .pm-label{position:absolute;left:50%;bottom:100%;transform:translate(-50%,-6px);white-space:nowrap;background:rgba(255,255,255,.95);border-radius:8px;padding:0 8px;font-size:14px;font-weight:800;line-height:2.3;color:#1f2937;box-shadow:0 1px 3px rgba(0,0,0,.3);pointer-events:none}

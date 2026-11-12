@@ -5,7 +5,7 @@
   <meta name="viewport"
       content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>コラージュ</title>
-  <link rel="stylesheet" href="./styles.css?v=yagami3" />
+  <link rel="stylesheet" href="./styles.css?v=yagami5" />
 </head>
 <body>
     <aside>
@@ -27,7 +27,17 @@
       <div class="swatches" id="swatches" role="listbox" aria-label="色"></div>
     </div>
 
-    <p class="kid-note">✓ <ruby>作品<rt>さくひん</rt></ruby>は<ruby>自動<rt>じどう</rt></ruby>で<ruby>保存<rt>ほぞん</rt></ruby>されるよ</p>
+    <div class="row" id="alphaRow">
+      <label class="kid-label" for="alpha"><span>スタンプの<ruby>濃<rt>こ</rt></ruby>さ</span></label>
+      <div class="alpha-slider">
+        <span class="alpha-end">うすく</span>
+        <input id="alpha" type="range" min="0.2" max="1" step="0.01" value="0.68" aria-label="スタンプの濃さ（左でうすく、右でこく）" />
+        <span class="alpha-end">こく</span>
+      </div>
+      <p class="alpha-hint"><ruby>選<rt>えら</rt></ruby>んだスタンプの<ruby>濃<rt>こ</rt></ruby>さが<ruby>変<rt>か</rt></ruby>わるよ</p>
+    </div>
+
+    <p class="kid-note">✓<ruby>作品<rt>さくひん</rt></ruby>は<ruby>自動<rt>じどう</rt></ruby>で<ruby>保存<rt>ほぞん</rt></ruby>されるよ</p>
   </aside>
 
   <main>
@@ -43,6 +53,6 @@
       </div>
     </div>
   </main>
-  <script src="./app.js?v=yagami3" defer></script>
+  <script src="./app.js?v=yagami5" defer></script>
 </body>
 </html>

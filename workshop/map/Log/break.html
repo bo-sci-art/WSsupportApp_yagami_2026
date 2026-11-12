@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>ここまで</title>
+<link rel="stylesheet" href="../../common/kids.css?v=yagami4">
+<style>
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body { display: grid; place-items: center; padding: 16px; color: #1f2937; background: linear-gradient(135deg, #fef9c3, #fff 50%, #dcfce7); }
+  .card { width: min(720px, 100%); background: #fff; border-radius: 28px; padding: 36px 32px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,.08); }
+  .icon { font-size: 3.4rem; line-height: 1.4; }
+  h1 { font-size: clamp(1.8rem, 4.6vw, 2.5rem); color: #166534; margin: 8px 0 16px; line-height: 1.9; }
+  .lead { font-size: 1.3rem; line-height: 2.3; margin: 0 0 12px; }
+  .chosen { display: inline-block; font-size: 1.15rem; font-weight: 800; background: #f0fdf4; border: 2px solid #86efac; border-radius: 14px; padding: 4px 18px; margin: 0 0 24px; line-height: 2.3; }
+  .btns { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; }
+  .btn { appearance: none; cursor: pointer; border-radius: 999px; font-weight: 800; font-family: inherit; line-height: 2; }
+  .go { background: #16a34a; color: #fff; border: 0; font-size: 1.4rem; padding: 12px 40px; box-shadow: 0 8px 24px rgba(22,163,74,.3); }
+  .back { background: #fff; color: #374151; border: 2px solid #d1d5db; font-size: 1.15rem; padding: 10px 28px; }
+</style>
+</head>
+<body>
+  <main class="card">
+    <div class="icon">☕</div>
+    <h1>1コマ目{め}はここまで！</h1>
+    <p class="lead">休{やす}み時間{じかん}のあとは、マーブリングから始{はじ}めます。<br>先生{せんせい}の合図{あいず}があるまで待{ま}ってください。</p>
+    <p class="chosen" id="chosen"></p>
+    <div class="btns">
+      <button class="btn back" type="button" onclick="location.href='./log_hazard_map.html'">◀ 場所{ばしょ}と災害{さいがい}を直{なお}す</button>
+      <button class="btn go" type="button" onclick="location.href='../../marbling/app/index.html'">マーブリングへ ▶</button>
+    </div>
+  </main>
+  <script src="../../common/progress.js?v=yagami4"></script>
+  <script src="../../common/places.js?v=yagami4"></script>
+  <script>
+    (function () {
+      try {
+        var d = JSON.parse(localStorage.getItem('hazardMapLog') || '{}');
+        var p = d.location && window.yagamiPlace(d.location.place);
+        if (p) document.getElementById('chosen').textContent = '📍 ' + p.name;
+        else document.getElementById('chosen').style.display = 'none';
+      } catch (e) {}
+    })();
+  </script>
+  <script src="../../common/ruby.js?v=yagami4"></script>
+</body>
+</html>

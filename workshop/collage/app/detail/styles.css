@@ -460,3 +460,10 @@ ruby rt { position: absolute; left: 50%; top: calc(50% - 2.05em); transform: tra
 @media (orientation: portrait) {
   .thumbs { --cell: 64px; height: calc(2 * var(--cell) + 1 * var(--gap) + 16px); }
 }
+/* 矢上小版：スタンプの濃さのレバー（左＝うすく、右＝こく） */
+.alpha-slider { display: flex; align-items: center; gap: 10px; }
+.alpha-slider .alpha-end { flex: none; font-size: 15px; font-weight: 800; color: #4b5563; }
+.alpha-slider .alpha-end:first-child { opacity: .55; }
+.alpha-slider #alpha { flex: 1; height: 36px; accent-color: #4f8b80; cursor: pointer; }
+.alpha-slider #alpha::-webkit-slider-thumb { width: 28px; height: 28px; }
+.alpha-hint { margin: 2px 0 0; font-size: 14px; color: #6b7280; line-height: 1.9; }

@@ -21,32 +21,72 @@
     width: min(760px, 100%); background: #fff; border-radius: 28px;
     padding: 40px 32px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,.08);
   }
-  .school { font-size: 1.3rem; font-weight: 700; color: #0e9f6e; margin: 0 0 8px; line-height: 2; }
   h1 { font-size: clamp(2rem, 5vw, 2.8rem); color: #166534; margin: 0 0 20px; line-height: 1.7; }
-  .lead { font-size: 1.35rem; line-height: 2.2; margin: 0 0 32px; }
+  .lead { font-size: 1.35rem; line-height: 2.2; margin: 0 0 28px; }
+  .btns { display: flex; flex-direction: column; align-items: center; gap: 18px; }
   .start {
     appearance: none; border: 0; background: var(--green); color: #fff; cursor: pointer;
-    font-size: 1.8rem; font-weight: 800; padding: 18px 64px; border-radius: 999px;
+    font-size: 1.8rem; font-weight: 800; padding: 18px 64px; border-radius: 999px; line-height: 2;
     box-shadow: 0 8px 24px rgba(22,163,74,.35);
   }
   .start:active { background: var(--green-d); transform: translateY(1px); }
+  .sub {
+    appearance: none; background: #fff; color: #374151; cursor: pointer; border: 2px solid #d1d5db;
+    font-size: 1.15rem; font-weight: 700; padding: 10px 32px; border-radius: 999px; line-height: 2.1;
+  }
+  .where { font-size: 1.05rem; color: #4b5563; margin: -6px 0 0; line-height: 2; }
+  [hidden] { display: none !important; }
 </style>
 </head>
 <body>
   <main class="card">
     <h1><ruby>防災<rt>ぼうさい</rt></ruby>アートをつくろう</h1>
-    <p class="lead">「はじめる」をおしてね。</p>
-    <button class="start" id="startBtn" type="button">はじめる ▶</button>
+
+    <!-- 途中のデータがないとき -->
+    <div id="viewNew" hidden>
+      <p class="lead">「はじめる」をおしてね。</p>
+      <div class="btns"><button class="start" id="startBtn" type="button">はじめる ▶</button></div>
+    </div>
+
+    <!-- 途中のデータがあるとき（1コマ目のつづき・休み時間のあとなど） -->
+    <div id="viewResume" hidden>
+      <p class="lead">「つづきから」をおしてね。</p>
+      <div class="btns">
+        <button class="start" id="resumeBtn" type="button">つづきから ▶</button>
+        <p class="where" id="resumeWhere"></p>
+        <button class="sub" id="restartBtn" type="button">さいしょから</button>
+      </div>
+    </div>
+
+    <!-- 登録まで終わっているとき（つぎの人が使う） -->
+    <div id="viewDone" hidden>
+      <p class="lead"><ruby>作品<rt>さくひん</rt></ruby>の<ruby>登録<rt>とうろく</rt></ruby>は<ruby>終<rt>お</rt></ruby>わっています。</p>
+      <div class="btns">
+        <button class="start" id="nextPersonBtn" type="button">さいしょから ▶</button>
+        <button class="sub" id="mapBtn" type="button"><ruby>防災<rt>ぼうさい</rt></ruby><ruby>行動<rt>こうどう</rt></ruby>マップを<ruby>見<rt>み</rt></ruby>る</button>
+      </div>
+    </div>
   </main>
 
-<script src="../common/config.js?v=yagami3"></script>
+<script src="../common/config.js?v=yagami4"></script>
 <script>
-  // 「はじめる」を押したときだけ、前の人の作品データを消す（共有のiPadでも真っさらから始められるように）
-  // ※ページを開いただけでは消さない（まちがえて開いても作品が消えないように）
-  var NEXT_URL = "../map/app/index.html";
+  // 「さいしょから」を押したときだけ、前の人の作品データを消す（共有のiPadでも真っさらから始められるように）
+  // ※ページを開いただけでは消さない。1コマ目と2コマ目のあいだはデータを残し、「つづきから」で再開する
+  var FIRST_URL = "../map/app/index.html";
   var LS_KEYS = ["hazardMapLog","marblingLog","collageLog","artworkSubmit","artworkImage","artworkImageExt",
-                 "pendingArtworkSubmitPayload","lastSubmittedArtworkId","lastColorHex","paletteName"];
+                 "pendingArtworkSubmitPayload","lastSubmittedArtworkId","lastColorHex","paletteName","wsResumePage"];
   var IDB_KEYS = ["latest_marbling_base","collage_stamps","artwork_image"];
+  var PAGE_NAMES = {
+    "map/app/index.html": "ハザードマップ",
+    "map/Log/log_hazard_map.html": "場所{ばしょ}と災害{さいがい}を選{えら}ぶ画面{がめん}",
+    "map/Log/break.html": "マーブリング",
+    "marbling/app/index.html": "マーブリング",
+    "collage/app/index.html": "コラージュ",
+    "message/artwork/artwork_submit.html": "タイトルを書{か}く画面{がめん}",
+    "message/lastconfirm/final_submit.html": "確認{かくにん}の画面{がめん}"
+  };
+  function ruby(s) { return String(s).replace(/([々一-鿿]+)\{([ぁ-ヿー]+)\}/g, '<ruby>$1<rt>$2</rt></ruby>'); }
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
 
   function resetWorkshopSession() {
     try { LS_KEYS.forEach(function (k) { localStorage.removeItem(k); }); } catch (e) { console.warn(e); }
@@ -69,11 +109,36 @@
       setTimeout(resolve, 1500);
     });
   }
+  function startFresh(btn) {
+    btn.disabled = true;
+    resetWorkshopSession().then(function () { location.href = FIRST_URL; });
+  }
 
-  document.getElementById("startBtn").addEventListener("click", function () {
-    this.disabled = true;
-    resetWorkshopSession().then(function () { location.href = NEXT_URL; });
+  // どの画面を出すか
+  var resume = lsGet("wsResumePage");
+  var hasData = !!(resume || lsGet("hazardMapLog") || lsGet("artworkSubmit") || lsGet("artworkImage"));
+  var done = !!lsGet("lastSubmittedArtworkId");
+  if (done) document.getElementById("viewDone").hidden = false;
+  else if (hasData) document.getElementById("viewResume").hidden = false;
+  else document.getElementById("viewNew").hidden = false;
+
+  if (resume && PAGE_NAMES[resume]) {
+    document.getElementById("resumeWhere").innerHTML = "（" + ruby(PAGE_NAMES[resume]) + "から）";
+  }
+
+  document.getElementById("startBtn").addEventListener("click", function () { startFresh(this); });
+  document.getElementById("resumeBtn").addEventListener("click", function () {
+    var page = resume && PAGE_NAMES[resume] ? resume : "map/app/index.html";
+    if (page === "map/Log/break.html") page = "marbling/app/index.html";   // 休み時間のあとは、マーブリングから
+    location.href = "../" + page;
   });
+  document.getElementById("restartBtn").addEventListener("click", function () {
+    if (confirm("前の作品のデータが消えます。さいしょから始めますか？")) startFresh(this);
+  });
+  document.getElementById("nextPersonBtn").addEventListener("click", function () {
+    if (confirm("登録した作品のデータをこのiPadから消して、さいしょから始めますか？\n（マップに登録した作品は消えません）")) startFresh(this);
+  });
+  document.getElementById("mapBtn").addEventListener("click", function () { location.href = "../present/index.html"; });
 </script>
 </body>
 </html>

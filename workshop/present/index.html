@@ -7,7 +7,7 @@
 
   <!-- ▼ Leaflet（同梱・外部依存なし） -->
   <link rel="stylesheet" href="./leaflet.css">
-  <link rel="stylesheet" href="./style.css?v=20261013">
+  <link rel="stylesheet" href="./style.css?v=yagami6">
 </head>
 <body>
 
@@ -21,8 +21,6 @@
 
     <div class="header-right">
       <div class="status-item">鑑賞済{かんしょうず}み <span id="view-count"></span></div>
-      <div class="status-item">💖 <span id="header-heart-count">0</span></div>
-      <div class="status-item">✨ <span id="header-action-count">0</span></div>
 
       <button type="button" id="header-help-btn">？</button>
       <button type="button" id="back-to-top-btn" class="header-back-btn">
@@ -35,14 +33,23 @@
 
     <div id="sidebar">
 
+      <div id="sidebar-places">
+        <div class="place-tabs" id="place-tabs"></div>
+        <div class="art-search-row">
+          <span class="art-search-icon">🔍</span>
+          <input type="search" id="art-search" class="art-search" inputmode="search" autocomplete="off"
+                 placeholder="番号（例 4201）かタイトルで探す" aria-label="番号かタイトルで探す">
+        </div>
+      </div>
+
       <div id="sidebar-filter">
 
         <div class="filter-main-header">
-          <span>🔍 絞{しぼ}り込{こ}み</span>
-          <span class="toggle-icon">﹀</span>
+          <span>⚙️ 絞{しぼ}り込{こ}み</span>
+          <span class="toggle-icon closed">﹀</span>
         </div>
 
-        <div class="filter-content">
+        <div class="filter-content closed">
           <div class="filter-group">
             <div class="filter-label">災害{さいがい}の種類{しゅるい}</div>
             <div class="filter-chips">
@@ -58,20 +65,12 @@
           </div>
 
           <div class="filter-group">
-            <div class="filter-label">防災{ぼうさい}行動{こうどう}のタイミング</div>
+            <div class="filter-label">いつの行動{こうどう}</div>
             <div class="filter-chips phase-chips">
               <button type="button" class="chip phase-chip active" data-phase="all">すべて</button>
-              <button type="button" class="chip phase-chip" data-phase="prior">事前{じぜん}</button>
-              <button type="button" class="chip phase-chip" data-phase="during">災害時{さいがいじ}</button>
-              <button type="button" class="chip phase-chip" data-phase="recovery">復旧時{ふっきゅうじ}</button>
-            </div>
-          </div>
-
-          <div class="filter-group">
-            <div class="filter-label">お気{き}に入{い}り（作品{さくひん}の鑑賞時{かんしょうじ}に登録{とうろく}できます）</div>
-            <div class="fav-buttons-row">
-              <button type="button" id="filter-heart-btn" class="fav-filter-btn">♡ 共感{きょうかん}した</button>
-              <button type="button" id="filter-action-btn" class="fav-filter-btn">✨ 実践{じっせん}したい</button>
+              <button type="button" class="chip phase-chip" data-phase="prior">災害{さいがい}の前{まえ}</button>
+              <button type="button" class="chip phase-chip" data-phase="during">災害{さいがい}のとき</button>
+              <button type="button" class="chip phase-chip" data-phase="recovery">災害{さいがい}のあと</button>
             </div>
           </div>
         </div>
@@ -123,11 +122,6 @@
             <span><input type="checkbox" id="haz-hightide"><label for="haz-hightide">高潮{たかしお}</label></span>
             <button type="button" class="haz-info" data-k="hightide">?</button>
           </div>
-          <div class="fopt-head">内水氾濫{ないすいはんらん}</div>
-          <a class="ext-link" href="https://wwwm.city.yokohama.lg.jp/yokohama/Map?mid=65&amp;mpx=139.62630111702703&amp;mpy=35.536158445033394&amp;mps=10000&amp;mtp=dm&amp;gprj=3" target="_blank" rel="noopener">
-            🔗 横浜市{よこはまし}の「わいわい防災{ぼうさい}マップ」を見{み}る
-            <small>下水道{げすいどう}や水路{すいろ}からあふれる内水氾濫{ないすいはんらん}の浸水{しんすい}想定{そうてい}を確認{かくにん}できます（外部{がいぶ}サイト）</small>
-          </a>
         </div>
       </div>
 
@@ -144,13 +138,9 @@
       <div id="group-jishin" class="hazard-group">
         <div class="hazard-group-header">地震{じしん}</div>
         <div class="hazard-group-content">
-          <div class="filter-option">
-            <span><input type="checkbox" id="haz-tsunami"><label for="haz-tsunami">津波{つなみ}</label></span>
-            <button type="button" class="haz-info" data-k="tsunami">?</button>
-          </div>
           <a class="ext-link" href="https://wwwm.city.yokohama.lg.jp/yokohama/Map?mid=6&amp;mpx=139.62630111702703&amp;mpy=35.536158445033394&amp;mps=10000&amp;mtp=dm&amp;gprj=3" target="_blank" rel="noopener">
             🔗 横浜市{よこはまし}の「わいわい防災{ぼうさい}マップ」を見{み}る
-            <small>震度{しんど}・液状化{えきじょうか}危険度{きけんど}・地震{じしん}火災{かさい}（焼失{しょうしつ}棟数{とうすう}）・津波{つなみ}を確認{かくにん}できます（外部{がいぶ}サイト）</small>
+            <small>震度{しんど}（地震{じしん}の揺{ゆ}れ）を確認{かくにん}できます（外部{がいぶ}サイト）</small>
           </a>
         </div>
       </div>
@@ -163,15 +153,16 @@
 
   <!-- ▼ Leaflet 本体（同梱） -->
   <script src="./leaflet.js"></script>
-  <script src="../common/config.js?v=yagami3"></script>
-  <script src="../common/ruby.js?v=yagami3"></script>
-  <script src="./script.js?v=yagami3"></script>
+  <script src="../common/config.js?v=yagami4"></script>
+  <script src="../common/places.js?v=yagami4"></script>
+  <script src="../common/ruby.js?v=yagami4"></script>
+  <script src="./script.js?v=yagami7"></script>
 
   <div id="tutorial-overlay" class="tutorial-overlay" style="display: none;">
     <div class="tutorial-card">
 
       <div class="tutorial-image-container">
-        <img id="tutorial-img" alt="説明画像" class="tutorial-img">
+        <img id="tutorial-img" alt="マップの使い方の写真" class="tutorial-img">
       </div>
 
       <div class="tutorial-content">
@@ -183,7 +174,6 @@
         <button type="button" id="skip-btn" class="tutorial-nav-btn secondary">とじる</button>
         <div class="tutorial-dots">
           <span class="dot active"></span>
-          <span class="dot"></span>
           <span class="dot"></span>
           <span class="dot"></span>
           <span class="dot"></span>
