@@ -2,15 +2,23 @@
 //
 // 使い方：
 //   1) node tools/serve.mjs 5500   と   手元の Worker（cd worker && npm.cmd run dev）を動かす
-//   2) node tools/make_guide_images.mjs [WorkerのURL] [ADMIN_KEY]
+//   2) node tools/make_guide_images.mjs <見本の作品の dataフォルダのURL> [WorkerのURL] [ADMIN_KEY]
+//      見本の作品の dataフォルダのURL：既存の防災行動マップ（大人版）を公開しているサイトの data フォルダ
+//      （artworks.geojson と images/ がある場所。末尾は「/data」）。このリポジトリには書かない。
 //
 // 既存の防災行動マップ（大人版）の作品3件を見本として手元の Worker に登録し、画面を撮って、最後に見本の作品を消す。
 // 撮るときに、説明したいところをオレンジの枠と番号で目立たせる。
 import { chromium } from "playwright";
 import path from "node:path";
 
-const WORKER = (process.argv[2] || "http://127.0.0.1:8787").replace(/\/+$/, "");
-const ADMIN_KEY = process.argv[3] || "local-admin-key-for-test";
+// 見本の作品を読む場所（大人版の data フォルダ）は、撮り直すときにコマンドで渡す（リポジトリには書かない）
+const ADULT = (process.argv[2] || "").replace(/\/+$/, "");
+if (!/^https:\/\/.+\/data$/.test(ADULT)) {
+  console.error("使い方: node tools/make_guide_images.mjs <見本の作品の dataフォルダのURL（末尾は /data）> [WorkerのURL] [ADMIN_KEY]");
+  process.exit(1);
+}
+const WORKER = (process.argv[3] || "http://127.0.0.1:8787").replace(/\/+$/, "");
+const ADMIN_KEY = process.argv[4] || "local-admin-key-for-test";
 const APP = "http://localhost:5500";
 const OUT = path.resolve("workshop/present");
 
@@ -21,7 +29,6 @@ const PLACES = [
 ];
 // 見本の作品：既存の防災行動マップ（大人版・10/18 の WS）の作品を、公開されている画像と文章からそのまま使う（読むだけ）
 // 作品73「子どもたちと防災！」を中心に、場所ごとに1作品ずつ
-const ADULT = "https://bo-sci-art.github.io/WSspportApp_2026/data";
 const SAMPLES = [
   { adultId: "73", place: "hiyoshi5", number: "4201", phase: "事前", hazards: "洪水（外水氾濫）, 高潮, 土砂災害（急傾斜地の崩壊）" },
   { adultId: "54", place: "kagami",   number: "4202", phase: "災害時", hazards: "洪水（外水氾濫）" },
