@@ -70,3 +70,4 @@ node tools/load_test_30.mjs http://127.0.0.1:8787 local-admin-key-for-test 28
 ```
 
 `tools/e2e_flow.mjs` は iPad の画面サイズ（横 1180×820・縦 820×1180）で S0→S9 を通しで動かし、全画面のスクリーンショットを `tools/out/screens/` に保存し、ルビのない漢字・横のはみ出し・JS エラーを調べます。テストで登録した作品は最後に DELETE で消します。
+
