@@ -36,7 +36,7 @@
     '<div class="left">' + (EDIT ? '<span class="ws-edit-badge">✏️ <ruby>修正中<rt>しゅうせいちゅう</rt></ruby></span>' : '') + (S.title || '') + '</div>' +
     '<div class="center">' + stepperHtml + '</div>' +
     '<div class="right">' +
-      (S.mapUrl ? '<button class="btn" id="mapBtn" type="button">🗺 ハザードマップ</button>' : '') +
+      (S.mapUrl ? '<button class="btn" id="mapBtn" type="button">ハザードマップ</button>' : '') +
       (S.prev ? '<button class="btn" id="backBtn" type="button">◀ もどる</button>' : '') +
       (S.next ? '<button class="btn accent" id="nextBtn" type="button">' + (S.nextLabel || 'つぎへ ▶') + '</button>' : '') +
     '</div>';

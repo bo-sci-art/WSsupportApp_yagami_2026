@@ -59,3 +59,8 @@ ruby rt { position: absolute; left: 50%; top: calc(50% - 2.05em); transform: tra
   .s8-main { grid-template-columns: 1fr; grid-template-rows: minmax(0, 0.85fr) auto; }
   .s8-list { overflow: hidden; }
 }
+
+/* 確認の一覧：「自分の担当の場所」「読み取ったハザードマップ」が入る幅 */
+.s8-row { grid-template-columns: 8.4em minmax(0, 1fr) auto; }
+.s8-row-label { line-height: 1.9; padding-top: 6px; }
+.s8-download-note.error { color: #b91c1c; }

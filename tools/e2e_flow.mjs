@@ -41,7 +41,7 @@ const CHECK = () => {
       const tag = el.tagName;
       if (tag === "RUBY" || tag === "SCRIPT" || tag === "STYLE" || tag === "TEXTAREA" || tag === "TITLE") { skip = true; break; }
       // 見えていないもの・出典・凡例のマーク・図の中の文字・作品データ（児童の書いた文章・地名）は対象外
-      if (el.classList && (el.classList.contains("leaflet-control-attribution") || el.hasAttribute("data-user-text") || el.classList.contains("summary-value") || el.classList.contains("art-message") || el.classList.contains("art-title") || el.classList.contains("res-source") || el.classList.contains("attr") || el.classList.contains("res-badge") || el.classList.contains("rb-seen") || tag === "svg" || tag === "text")) { skip = true; break; }
+      if (el.classList && (el.classList.contains("leaflet-control-attribution") || el.hasAttribute("data-user-text") || el.classList.contains("summary-value") || el.classList.contains("art-message") || el.classList.contains("art-title") || el.classList.contains("res-source") || el.classList.contains("attr") || el.classList.contains("res-badge") || el.classList.contains("rb-seen") || el.classList.contains("no-ruby") || el.classList.contains("ribbon-text") || tag === "svg" || tag === "text")) { skip = true; break; }
       el = el.parentElement;
     }
     if (skip) continue;
@@ -274,15 +274,23 @@ async function flow(label, viewport, placeId, number) {
   step(`作り直し（コラージュ）：確認画面にもどった・作品画像 ${art2 !== art1 ? "更新" : "そのまま"}・スタンプ ${stamps2} 個`);
 
   // 登録
-  await page.click("#btn-submit-artwork");
+  // 登録すると、作品がこの端末に自動で保存される（保存ボタンはない）
+  let downloads = 0;
+  page.on("download", () => { downloads++; });
+  const [dl] = await Promise.all([page.waitForEvent("download", { timeout: 20000 }), page.click("#btn-submit-artwork")]);
   await page.waitForSelector("#step-complete", { state: "visible", timeout: 20000 });
   const id = await page.evaluate(() => localStorage.getItem("lastSubmittedArtworkId"));
   run.submittedId = id;
-  await shot(page, run, "S8b_done");
-  step(`S8 登録：id=${id}`);
-  const [dl] = await Promise.all([page.waitForEvent("download", { timeout: 10000 }), page.click("#btn-download")]);
   run.download = dl.suggestedFilename();
-  step(`S8 iPadに保存：${run.download}`);
+  run.checks.saveButton = await page.locator("#btn-download").count();
+  await shot(page, run, "S8b_done");
+  step(`S8 登録：id=${id}、端末に自動で保存：${run.download}、保存ボタン ${run.checks.saveButton} 個`);
+  // 画面を開き直しても、もう一度は保存しない（二重に保存しない）
+  await page.reload();
+  await page.waitForSelector("#step-complete", { state: "visible", timeout: 10000 });
+  await page.waitForTimeout(1500);
+  run.checks.downloads = downloads;
+  step(`開き直したあとの保存の回数：${downloads} 回（1回なら二重に保存していない）`);
   const saved = await fetch(`${WORKER}/artworks`).then(r => r.json());
   const mine = saved.features.find(f => f.properties.id === id);
   run.checks.savedFields = mine && { place: mine.properties.place, number: mine.properties.field_25, phase: mine.properties.field_23, body: !!mine.properties.Body, lat: mine.geometry.coordinates[1] };
@@ -294,6 +302,7 @@ async function flow(label, viewport, placeId, number) {
   // はじめて開いたので、マップの使い方（写真つき4枚）が自動で出る
   await page.waitForSelector("#tutorial-overlay", { state: "visible", timeout: 10000 });
   run.checks.guide = [];
+  run.checks.guideButtons = await page.locator("#tutorial-overlay .tutorial-footer button").count();
   for (let g = 0; g < 4; g++) {
     await page.waitForTimeout(500);
     run.checks.guide.push(await page.evaluate(() => { const i = document.getElementById("tutorial-img"); return i.complete && i.naturalWidth > 0; }));
@@ -409,6 +418,8 @@ for (const r of report.runs) {
   const sf = c.savedFields || {};
   if (!sf.body || !/^42\d\d$/.test(sf.number || "") || !sf.place || sf.phase !== "災害時") problems.push(`[${r.label}] 保存された値がおかしい ${JSON.stringify(sf)}`);
   if (!c.guide || c.guide.filter(Boolean).length !== 4 || !c.guideClosed) problems.push(`[${r.label}] マップの使い方の写真が出ない／閉じない ${JSON.stringify(c.guide)}`);
+  if (c.saveButton !== 0 || !/^yagami_\d+_42\d\d\.jpg$/.test(r.download || "") || c.downloads !== 1) problems.push(`[${r.label}] 登録したときの自動保存がおかしい（保存ボタン ${c.saveButton}、ファイル ${r.download}、保存 ${c.downloads} 回）`);
+  if (c.guideButtons !== 1) problems.push(`[${r.label}] マップの使い方のボタンが ${c.guideButtons} 個（1つにする）`);
   if (!c.mapPlaceActive || c.placePins !== 3) problems.push(`[${r.label}] マップで自分の場所が開かない／ピンが3つでない`);
   if (!c.search.hasMine || !c.search.allMatch) problems.push(`[${r.label}] 番号で探す結果がおかしい ${JSON.stringify(c.search)}`);
   for (const p of r.pages) for (const f of p.frames) {

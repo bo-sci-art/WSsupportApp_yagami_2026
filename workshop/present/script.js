@@ -268,7 +268,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const p = f.properties, id = p.id;
       const q = placeOf(f);
       let icons = "";
-      const ribbon = viewed.includes(id) ? '<div class="ribbon-wrapper"><div class="ribbon-text">' + rb("鑑賞済{かんしょうず}み") + '</div></div>' : "";
+      const ribbon = viewed.includes(id) ? '<div class="ribbon-wrapper"><div class="ribbon-text">' + "鑑賞済み" + '</div></div>' : "";
       const imgUrl = (p.images && p.images[0]) ? DATA_BASE + "/" + p.images[0] : "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
       const card = document.createElement("div");
       card.className = "art-card";
@@ -441,7 +441,6 @@ document.addEventListener("DOMContentLoaded", () => {
     let seen = false; try { seen = !!localStorage.getItem("has_seen_map_tutorial_rev3"); } catch (e) {}
     if (!seen) { page = 0; update(); overlay.style.display = "flex"; }
     if (helpBtn) helpBtn.onclick = () => { page = 0; update(); overlay.style.display = "flex"; };
-    if (skipBtn) skipBtn.onclick = close;
     if (nextBtn) nextBtn.onclick = () => { if (page < steps.length-1){ page++; update(); } else close(); };
     // 写真を押すと、つぎのページへ
     if (imgEl) imgEl.onclick = () => { if (page < steps.length-1){ page++; update(); } };

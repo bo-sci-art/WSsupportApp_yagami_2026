@@ -443,7 +443,8 @@ const colorPreview = document.getElementById('colorPreview');
 
 // --- パレット（マーブリングと同じ） ---
 const PALETTES = {
-  Basic: ['#FFFFFF','#000000','#FF3B30','#FF9500','#FFCC00','#34C759','#007AFF','#5856D6','#FF2D55'],
+  // 矢上小版：マーブリングと同じ色・同じ並び（白・黒のあとに。水色を追加、薔薇色を赤のとなりに）
+  Basic: ['#FFFFFF','#000000','#FF3B30','#FF2D55','#FF9500','#FFCC00','#34C759','#5AC8FA','#007AFF','#5856D6'],
   Pastel: ['#FFD1DC','#B5EAD7','#C7CEEA','#FFDAC1','#E2F0CB','#B5B9FF','#FFB7B2','#FF9CEE','#B28DFF'],
   Warm:   ['#FF3B30','#FF9500','#FFCC00','#FFB7B2','#FFD1DC','#FF9CEE','#FFDAC1','#FF2D55','#FF5E3A'],
   Cool:   ['#007AFF','#34C759','#5856D6','#B5EAD7','#B5B9FF','#C7CEEA','#E2F0CB','#A0CED9','#5AC8FA']
@@ -451,9 +452,9 @@ const PALETTES = {
 
 const COLOR_NAMES = {
   '#FFFFFF':'白',
-  '#000000':'黒','#ffffff':'白','#FF3B30':'赤','#FF9500':'オレンジ','#FFCC00':'黄','#34C759':'緑','#007AFF':'青','#5856D6':'紫','#FF2D55':'ピンク',
+  '#000000':'黒','#ffffff':'白','#FF3B30':'赤','#FF9500':'オレンジ','#FFCC00':'黄','#34C759':'緑','#007AFF':'青','#5856D6':'紫','#FF2D55':'薔薇色',
   '#FFD1DC':'パステルピンク','#B5EAD7':'パステルグリーン','#C7CEEA':'パステルブルー','#FFDAC1':'パステルオレンジ','#E2F0CB':'パステルイエロー','#B5B9FF':'パステルパープル','#FFB7B2':'パステルレッド','#FF9CEE':'パステルライトピンク','#B28DFF':'パステルバイオレット',
-  '#FF5E3A':'ライトオレンジ','#A0CED9':'ライトブルー','#5AC8FA':'ライトシアン'
+  '#FF5E3A':'ライトオレンジ','#A0CED9':'ライトブルー','#5AC8FA':'水色'
 };
 
 const paletteSelect = document.getElementById('palette-select');

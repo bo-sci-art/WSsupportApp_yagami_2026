@@ -81,19 +81,12 @@ export const GUIDE = {
       title: "保存",
       steps: [
         {
-          id: "save",
-          type: "spotlight",
-          target: "#ctrl-save",
-          content: { title: "保存しよう", body: "作品を画像ファイルとして保存します。" },
-          advance: { mode: "event", name: "export:click" }
-        },
-        {
           id: "done",
           type: "modal",
           target: "#help-btn",
           content: {
             title: "完<ruby>了<rt>りょう</rt></ruby>！",
-            body: "では作品を制作しましょう。左上の「?」からいつでもチュートリアルを開けます。"
+            body: "では作品を制作しましょう。作品は「もどる」「つぎへ」を押すと自動で保存されます。"
           },
           cta: { primary: "閉じる" },
           advance: { mode: "click-cta" }

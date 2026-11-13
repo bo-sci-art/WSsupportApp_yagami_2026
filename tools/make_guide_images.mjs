@@ -32,7 +32,9 @@ const PLACES = [
 const SAMPLES = [
   { adultId: "73", place: "hiyoshi5", number: "4201", phase: "事前", hazards: "洪水（外水氾濫）, 高潮, 土砂災害（急傾斜地の崩壊）" },
   { adultId: "54", place: "kagami",   number: "4202", phase: "災害時", hazards: "洪水（外水氾濫）" },
-  { adultId: "67", place: "yagami",   number: "4203", phase: "災害時", hazards: "洪水（外水氾濫）, 高潮" }
+  { adultId: "67", place: "yagami",   number: "4203", phase: "災害時", hazards: "洪水（外水氾濫）, 高潮" },
+  // 作品ページの「次の作品」を写すため、日吉五丁目公園にもう1作品
+  { adultId: "69", place: "hiyoshi5", number: "4204", phase: "災害時", hazards: "洪水（外水氾濫）" }
 ];
 
 const browser = await chromium.launch();
@@ -124,8 +126,22 @@ await page.waitForTimeout(2000);
 await mark([".dv-info"], { pad: 2, dim: .15 });
 await page.screenshot({ path: path.join(OUT, "guide_04.jpg"), type: "jpeg", quality: 82 });
 
+// ---- 作品ページの使い方の写真（detail_guide_01〜03.jpg） ----
+// 1：作品（マーブリングとコラージュ）
+await mark([".dv-art-frame"], { pad: 4, dim: .3 });
+await page.screenshot({ path: path.join(OUT, "detail_guide_01.jpg"), type: "jpeg", quality: 82 });
+// 2：タイトル・伝えたいこと・作品の情報
+await mark([".dv-card-title", ".dv-card-body", ".dv-card-facts"], { pad: 3, dim: 0, all: true });
+await page.screenshot({ path: path.join(OUT, "detail_guide_02.jpg"), type: "jpeg", quality: 82 });
+// 3：「ハザードマップを重ねる」を押したところと、「次の作品」ボタン
+await page.evaluate(() => document.querySelectorAll(".guide-mark").forEach(e => e.remove()));
+await page.click("#hz-chips .dv-hz-chip");
+await page.waitForTimeout(2500);
+await mark(["#hz-chips .dv-hz-chip", "#next-btn"], { pad: 5, dim: 0, all: true });
+await page.screenshot({ path: path.join(OUT, "detail_guide_03.jpg"), type: "jpeg", quality: 82 });
+
 } finally {
 await browser.close();
 for (const id of ids) await fetch(`${WORKER}/artworks/${id}`, { method: "DELETE", headers: { Authorization: "Bearer " + ADMIN_KEY } });
 }
-console.log(`使い方の画像を作りました（guide_01〜04.jpg）。見本の作品 ${ids.length} 件は削除しました。`);
+console.log(`使い方の画像を作りました（guide_01〜04.jpg・detail_guide_01〜03.jpg）。見本の作品 ${ids.length} 件は削除しました。`);

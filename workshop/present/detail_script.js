@@ -155,21 +155,22 @@ document.addEventListener("DOMContentLoaded", function () {
     const dots = document.querySelectorAll(".dt-dot"), helpBtn = document.getElementById("detail-help-btn");
     if (!overlay) return;
     const steps = [
-      { title: "作品{さくひん}の見方{みかた}", desc: "左{ひだり}が作品{さくひん}です。<br>背景{はいけい}の<strong>マーブリング</strong>は、その場所{ばしょ}の<strong>災害{さいがい}リスク</strong>を、<br>上{うえ}に貼{は}った<strong>コラージュ</strong>は、<strong>防災{ぼうさい}行動{こうどう}</strong>を表{あらわ}しています。" },
-      { title: "作者{さくしゃ}のメッセージ", desc: "右{みぎ}には、作品{さくひん}のタイトルと<strong>この作品{さくひん}で伝{つた}えたいこと</strong>、<br><strong>作品{さくひん}の情報{じょうほう}</strong>（場所{ばしょ}・災害{さいがい}・いつの行動{こうどう}・作者{さくしゃ}）が出{で}ています。" },
-      { title: "この場所{ばしょ}の危険性{きけんせい}", desc: "「ハザードマップ（洪水{こうずい}）を重{かさ}ねる」などを押{お}すと、<br>作品{さくひん}の場所{ばしょ}にハザードマップが重{かさ}なります。<br>「次{つぎ}の作品{さくひん}」で、同{おな}じ場所{ばしょ}の作品{さくひん}を順番{じゅんばん}に見{み}られます。" }
+      { img: "detail_guide_01.jpg?v=1", title: "作品{さくひん}の見方{みかた}", desc: "背景{はいけい}の<strong>マーブリング</strong>は、その場所{ばしょ}の<strong>災害{さいがい}リスク</strong>を、<br>上{うえ}に貼{は}った<strong>コラージュ</strong>（スタンプ）は、<strong>防災行動{ぼうさいこうどう}</strong>を表{あらわ}しています。" },
+      { img: "detail_guide_02.jpg?v=1", title: "作者{さくしゃ}のメッセージ", desc: "作品{さくひん}のとなりには、タイトルと<strong>この作品{さくひん}で伝{つた}えたいこと</strong>、<br><strong>作品{さくひん}の情報{じょうほう}</strong>（場所{ばしょ}・災害{さいがい}・いつの行動{こうどう}・作者{さくしゃ}）が出{で}ています。" },
+      { img: "detail_guide_03.jpg?v=1", title: "この場所{ばしょ}の危険性{きけんせい}", desc: "「ハザードマップを重{かさ}ねる」を押{お}すと、作品{さくひん}がハザードマップに重{かさ}なります。<br>「次{つぎ}の作品{さくひん}」ボタンで、同{おな}じ場所{ばしょ}をテーマにした作品{さくひん}を順番{じゅんばん}に見{み}ることができます。" }
     ];
     let page = 0;
     function update() {
       const s = steps[page];
       titleEl.innerHTML = rb(s.title); descEl.innerHTML = rb(s.desc);
+      const im = document.getElementById("dt-img");
+      if (im) { im.style.visibility = "hidden"; im.onload = () => { im.style.visibility = "visible"; }; im.onerror = () => { im.style.visibility = "hidden"; }; im.src = s.img; im.onclick = () => { if (page < steps.length - 1) { page++; update(); } }; }
       dots.forEach((d, i) => d.classList.toggle("active", i === page));
       nextBtn.innerText = (page === steps.length - 1) ? "とじる" : "つぎへ ＞";
     }
     const close = () => { try { localStorage.setItem("has_seen_detail_tutorial_rev3", "true"); } catch (e) {} overlay.style.display = "none"; };
     if (!localStorage.getItem("has_seen_detail_tutorial_rev3")) { update(); overlay.style.display = "flex"; } else overlay.style.display = "none";
     if (helpBtn) helpBtn.addEventListener("click", () => { page = 0; update(); overlay.style.display = "flex"; });
-    skipBtn.onclick = close;
     nextBtn.onclick = () => { if (page < steps.length - 1) { page++; update(); } else close(); };
   }
 });

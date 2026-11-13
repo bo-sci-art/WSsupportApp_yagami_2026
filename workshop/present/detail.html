@@ -5,19 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>矢上小防災行動マップ</title>
   <link rel="stylesheet" href="./leaflet.css">
-  <link rel="stylesheet" href="detail_style.css?v=yagami9">
+  <link rel="stylesheet" href="detail_style.css?v=yagami11">
 </head>
 <body class="dv">
 
   <!-- 使い方（はじめて開いたとき・？ボタン） -->
   <div id="detail-tutorial-overlay" class="tutorial-overlay" style="display: none;">
     <div class="tutorial-card dv-tutorial">
+      <div class="tutorial-image-container dv-tutorial-img"><img id="dt-img" alt="作品ページの使い方の写真" class="tutorial-img"></div>
       <div class="tutorial-content">
         <h3 id="dt-title">タイトル</h3>
         <p id="dt-desc">説明文</p>
       </div>
       <div class="tutorial-footer">
-        <button type="button" id="dt-skip-btn" class="tutorial-nav-btn secondary">とじる</button>
+        <span class="tutorial-spacer" aria-hidden="true"></span>
         <div class="tutorial-dots">
           <span class="dt-dot active"></span>
           <span class="dt-dot"></span>
@@ -32,11 +33,11 @@
     <div class="header-left">
       <div class="header-logo-icon">🗺️</div>
       <div class="header-titles">
-        <h1 class="header-main-title">矢上小{やがみしょう}防災{ぼうさい}行動{こうどう}マップ</h1>
+        <h1 class="header-main-title">矢上小{やがみしょう}防災行動{ぼうさいこうどう}マップ</h1>
       </div>
     </div>
     <div class="header-right">
-      <div class="status-item">鑑賞済{かんしょうず}み <span id="view-count"></span></div>
+      <div class="status-item no-ruby">鑑賞済み <span id="view-count"></span></div>
       <button type="button" id="detail-help-btn">？</button>
       <button type="button" id="back-to-map-btn">＜ マップに戻{もど}る</button>
     </div>
@@ -86,6 +87,6 @@
   <script src="../common/config.js?v=yagami4"></script>
   <script src="../common/places.js?v=yagami4"></script>
   <script src="../common/ruby.js?v=yagami4"></script>
-  <script src="./detail_script.js?v=yagami10"></script>
+  <script src="./detail_script.js?v=yagami13"></script>
 </body>
 </html>
