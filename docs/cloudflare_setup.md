@@ -165,6 +165,27 @@ node tools/e2e_flow.mjs https://yagami-submit.kazuki131214.workers.dev <ADMIN_KE
 
 ---
 
+## 作品の管理画面（ふだんはこれを使う）
+
+テスト作品やいたずらの作品を、ボタンで消したり、マップから隠したりできます。PC の Chrome か Edge（横幅 1280px 以上）で使います。
+
+- 場所：防災行動マップのヘッダー右にある小さな歯車（⚙）を押す。または `https://bo-sci-art.github.io/WSsupportApp_yagami_2026/workshop/present/admin.html` を開く
+- 入り方：合言葉の欄に `ADMIN_KEY` を入れて「入る」を押す。ちがうときは「合言葉がちがいます」と出る
+  - 「このPCで覚える」にチェックをつけると、このブラウザに覚えて、次からは入力なしで一覧が開く
+  - チェックをつけないと、タブを閉じたら忘れる
+- 一覧：非公開の作品もふくめて全件を id の順に出す。非公開の作品はグレーで「非公開」と出る。場所・状態での絞り込みと、出席番号・タイトルでの検索ができる
+- 操作：作品のチェックボックス（行のどこを押してもよい）で選び、下の3つのボタンを押す。確認のパネルで選んだ作品を確かめてから「実行する」
+  - 削除する：D1 の行と R2 の画像の両方を消す（元に戻せない）
+  - 非公開にする：マップと作品ページに出なくなる。データは残る
+  - 公開に戻す：マップにもう一度出る
+  - 終わると「〇件成功・〇件失敗」が出て、一覧を読み直す
+- ログアウト：ヘッダーの「ログアウト（覚えた合言葉を消す）」を押すと、覚えた合言葉を消す。学校など自分のものでない PC で使ったあとは必ず押す
+- 合言葉はアプリのコードに書いていません。入れた値は、そのブラウザの中（localStorage か sessionStorage の `yagamiAdminKey`）にだけ入ります
+
+手元の Worker で試すときは `http://127.0.0.1:5500/workshop/present/admin.html?worker=http://127.0.0.1:8787` を開き、合言葉に `local-admin-key-for-test` を入れます。
+
+---
+
 ## 運用で使うコマンド
 
 ### 授業案 rev3 より前に D1 を作っていた場合
@@ -186,7 +207,7 @@ npx wrangler deploy
 curl.exe -H "Authorization: Bearer <ADMIN_KEY>" -o yagami_artworks.geojson https://yagami-submit.kazuki131214.workers.dev/export
 ```
 
-テスト作品などを1件消す（`<id>` はマップの作品ページの URL `detail.html?id=<id>` の数字）
+テスト作品などを1件消す（**予備の方法**。ふだんは上の管理画面で消す。`<id>` は管理画面の id、またはマップの作品ページの URL `detail.html?id=<id>` の数字）
 
 ※ Worker は、番号が 4201〜4228 でない作品、場所が3か所のどれでもない作品を受け付けません（`worker/src/index.js` の `NUMBER_RE`・`PLACES`）。クラスや人数が変わるときはここと `workshop/common/places.js` の `YAGAMI_NUMBER_RE` を直します。：
 
@@ -200,7 +221,7 @@ D1 の中身を直接見る：
 npx wrangler d1 execute yagami-artworks --remote --command "SELECT id, place, field_25, Message, status, created_at FROM artworks ORDER BY place, field_25"
 ```
 
-あとで「運営が確認してから公開」にしたいとき：`worker/src/index.js` の INSERT 文の `'approved'` を `'pending'` にしてデプロイし、公開するときに次を実行します（`GET /artworks` は `status='approved'` の作品だけを返すようにすでになっています）。
+あとで「運営が確認してから公開」にしたいとき：`worker/src/index.js` の INSERT 文の `'approved'` を `'pending'` にしてデプロイし、公開するときは管理画面の「公開に戻す」を押すか、次を実行します（`GET /artworks` は `status='approved'` の作品だけを返すようにすでになっています）。
 
 ```bash
 npx wrangler d1 execute yagami-artworks --remote --command "UPDATE artworks SET status='approved' WHERE id=<id>"
@@ -238,3 +259,4 @@ npm run dev
 - `SUBMIT_SECRET` はアプリのコードに書かれるため、ページのソースを見ればだれでも分かります（いたずら投稿は防げません）。今回はこの方式でよいことになっています。
 - CORS は `https://bo-sci-art.github.io` と localhost だけを許可しています（`wrangler.toml` の `ALLOWED_ORIGINS`）。
 - 画像は推測しにくいランダムなキーで R2 に保存し、`GET /images/<key>` で返します。作品を DELETE すると画像も消えます。
+- 公開・非公開の切り替えは `PATCH /artworks/<id>`（中身は `{"status":"approved"}` か `{"status":"hidden"}`、`Authorization: Bearer <ADMIN_KEY>` が必要）。管理画面はこれを使っています。

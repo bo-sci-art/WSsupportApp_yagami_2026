@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>作品の管理（矢上小 防災行動マップ）</title>
+  <link rel="stylesheet" href="./admin_style.css?v=admin2">
+</head>
+<body>
+  <header class="adm-header">
+    <h1>作品の管理 <span class="adm-sub">矢上小 防災行動マップ</span></h1>
+    <div class="adm-header-right">
+      <span id="workerInfo" class="adm-worker"></span>
+      <button type="button" id="logoutBtn" class="btn btn-ghost" hidden>ログアウト（覚えた合言葉を消す）</button>
+      <a href="./index.html" class="btn btn-ghost">← 防災行動マップに戻る</a>
+    </div>
+  </header>
+
+  <!-- 入口（合言葉の入力） -->
+  <main id="loginView" class="adm-login" hidden>
+    <form id="loginForm" class="login-card" autocomplete="off">
+      <h2>合言葉を入れてください</h2>
+      <p class="login-note">Cloudflare の Worker（yagami-submit）に登録した <code>ADMIN_KEY</code> です。</p>
+      <input type="password" id="keyInput" placeholder="合言葉" autocomplete="current-password" required>
+      <label class="login-remember"><input type="checkbox" id="rememberChk"> このPCで覚える</label>
+      <p id="loginError" class="login-error" hidden></p>
+      <button type="submit" id="loginBtn" class="btn btn-primary">入る</button>
+    </form>
+  </main>
+
+  <!-- 一覧 -->
+  <main id="listView" class="adm-main" hidden>
+    <div class="adm-toolbar">
+      <label>場所
+        <select id="placeFilter"><option value="">すべて</option></select>
+      </label>
+      <label>状態
+        <select id="statusFilter">
+          <option value="">すべて</option>
+          <option value="approved">公開中だけ</option>
+          <option value="hidden">非公開だけ</option>
+        </select>
+      </label>
+      <input type="search" id="searchInput" placeholder="出席番号・タイトルで検索">
+      <button type="button" id="reloadBtn" class="btn btn-ghost">読み直す</button>
+      <span id="countInfo" class="adm-count"></span>
+    </div>
+
+    <p id="resultMsg" class="adm-result" hidden></p>
+
+    <table class="adm-table">
+      <thead>
+        <tr>
+          <th class="c-chk"><input type="checkbox" id="checkAll" title="表示中の作品を全部選ぶ"></th>
+          <th class="c-img">画像</th>
+          <th class="c-id">id</th>
+          <th class="c-num">出席番号</th>
+          <th>タイトル</th>
+          <th class="c-place">場所</th>
+          <th class="c-phase">いつの行動</th>
+          <th class="c-date">登録日時</th>
+          <th class="c-status">状態</th>
+        </tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <p id="emptyMsg" class="adm-empty" hidden>作品がありません。</p>
+  </main>
+
+  <!-- 操作ボタン（下に固定） -->
+  <div id="actionBar" class="adm-actionbar" hidden>
+    <div class="sel-btns">
+      <button type="button" id="selectAllBtn" class="btn btn-ghost">全部選ぶ</button>
+      <button type="button" id="selectNoneBtn" class="btn btn-ghost">選ぶのをやめる</button>
+      <span id="selInfo" class="sel-info">0件を選んでいます</span>
+    </div>
+    <div class="act-btns">
+      <button type="button" class="btn btn-show" data-op="show" disabled>公開に戻す</button>
+      <button type="button" class="btn btn-hide" data-op="hide" disabled>非公開にする</button>
+      <button type="button" class="btn btn-delete" data-op="delete" disabled>削除する</button>
+    </div>
+  </div>
+
+  <!-- 確認パネル -->
+  <div id="confirmOverlay" class="adm-overlay" hidden>
+    <div class="confirm-panel" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+      <h2 id="confirmTitle"></h2>
+      <p id="confirmWarn" class="confirm-warn" hidden>削除した作品は元に戻せません（D1 の行と R2 の画像の両方を消します）。</p>
+      <ul id="confirmList" class="confirm-list"></ul>
+      <p id="confirmProgress" class="confirm-progress" hidden></p>
+      <div class="confirm-btns">
+        <button type="button" id="confirmCancel" class="btn btn-ghost">やめる</button>
+        <button type="button" id="confirmOk" class="btn btn-primary">実行する</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../common/config.js?v=yagami4"></script>
+  <script src="../common/places.js?v=yagami4"></script>
+  <script src="./admin_script.js?v=admin3"></script>
+</body>
+</html>

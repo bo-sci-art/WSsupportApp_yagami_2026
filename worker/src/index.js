@@ -8,6 +8,7 @@
 //   GET    /images/:key     R2 の画像
 //   GET    /export          全作品を GeoJSON でダウンロード（ADMIN_KEY が必要）
 //   DELETE /artworks/:id    作品を1件削除（画像も消す。ADMIN_KEY が必要）
+//   PATCH  /artworks/:id    作品の公開・非公開を切り替える（{ "status": "approved" | "hidden" }。ADMIN_KEY が必要）
 //
 // シークレット（wrangler secret put で登録）
 //   SUBMIT_SECRET  アプリが送る合言葉（アプリのコードに書かれるので、だれでも見られる）
@@ -39,6 +40,7 @@ export default {
       if (request.method === "GET" && path.startsWith("/images/")) return await getImage(path.slice(8), env, cors);
       if (request.method === "GET" && path === "/export") return await exportAll(request, env, cors, url);
       if (request.method === "DELETE" && path.startsWith("/artworks/")) return await deleteArtwork(request, path.slice(10), env, cors, url);
+      if (request.method === "PATCH" && path.startsWith("/artworks/")) return await setArtworkStatus(request, path.slice(10), env, cors);
       if (request.method === "GET" && path === "/") return json({ ok: true, name: "yagami-submit" }, 200, cors);
 
       return json({ ok: false, error: "not found" }, 404, cors);
@@ -202,6 +204,24 @@ async function deleteArtwork(request, idStr, env, cors, url) {
 }
 
 // ---------------------------------------------------------------------------
+// PATCH /artworks/:id（公開・非公開の切り替え。データは消さない）
+// ---------------------------------------------------------------------------
+const STATUSES = ["approved", "hidden"];
+async function setArtworkStatus(request, idStr, env, cors) {
+  if (!isAdmin(request, env)) return json({ ok: false, error: "unauthorized" }, 401, cors);
+  const id = Number(idStr);
+  if (!Number.isInteger(id) || id <= 0) return json({ ok: false, error: "bad id" }, 400, cors);
+  let body;
+  try { body = await request.json(); } catch (e) { return json({ ok: false, error: "invalid json" }, 400, cors); }
+  const status = body && typeof body === "object" ? body.status : undefined;
+  if (typeof status !== "string" || STATUSES.indexOf(status) < 0) return json({ ok: false, error: "invalid status" }, 400, cors);
+  const row = await env.DB.prepare(`SELECT id FROM artworks WHERE id = ?1`).bind(id).first();
+  if (!row) return json({ ok: false, error: "not found" }, 404, cors);
+  await env.DB.prepare(`UPDATE artworks SET status = ?1 WHERE id = ?2`).bind(status, id).run();
+  return json({ ok: true, id: String(id), status }, 200, cors);
+}
+
+// ---------------------------------------------------------------------------
 // 共通
 // ---------------------------------------------------------------------------
 function isAdmin(request, env) {
@@ -224,7 +244,7 @@ function corsHeaders(request, env) {
   const allowed = String(env.ALLOWED_ORIGINS || "").split(",").map(s => s.trim()).filter(Boolean);
   const isLocal = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
   const h = {
-    "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
+    "Access-Control-Allow-Methods": "GET, POST, PATCH, DELETE, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type, Authorization",
     "Access-Control-Max-Age": "86400",
     "Vary": "Origin"
