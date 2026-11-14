@@ -25,6 +25,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const HAZARD_LABELS = {
     "洪水（外水氾濫）": "洪水{こうずい}（外水氾濫{がいすいはんらん}）",
     "高潮": "高潮{たかしお}",
+    "内水氾濫": "水{みず}が街{まち}からあふれる（内水氾濫{ないすいはんらん}）",
     "土砂災害（急傾斜地の崩壊）": "土砂{どしゃ}災害{さいがい}（急傾斜地{きゅうけいしゃち}の崩壊{ほうかい}）",
     "地震の揺れ（震度）": "地震{じしん}の揺{ゆ}れ（震度{しんど}）"
   };
@@ -119,6 +120,15 @@ document.addEventListener("DOMContentLoaded", function () {
         b.innerHTML = label(on);
       };
       box.appendChild(b);
+    }
+    // 内水氾濫は国土地理院のタイルがないので、地図に重ねる代わりに、わいわい防災マップ（内水）へのリンクを出す
+    if (/内水/.test(P.field_24 || "")) {
+      const note = document.createElement("div");
+      note.className = "dv-hz-note";
+      note.innerHTML = rb("「水{みず}が街{まち}からあふれる（内水氾濫{ないすいはんらん}）」は、") +
+        '<a href="https://wwwm.city.yokohama.lg.jp/yokohama/Map?mid=65&mpx=139.65512&mpy=35.54543&mps=10000&mtp=dm&gprj=3" target="_blank" rel="noopener">' + rb("横浜市{よこはまし}の「わいわい防災{ぼうさい}マップ」") + "</a>" +
+        rb("で確{たし}かめられます（ほかのサイトがひらきます）。");
+      box.appendChild(note);
     }
     if (!box.children.length) box.innerHTML = '<span class="dv-hz-none">' + rb("この作品{さくひん}の災害{さいがい}は、ここでは重{かさ}ねられません") + "</span>";
     setTimeout(() => map.invalidateSize(), 200);

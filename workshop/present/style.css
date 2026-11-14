@@ -850,6 +850,7 @@ html, body {
 /* 地震グループの外部リンク */
 .ext-link{display:block;padding:10px 12px;background:#f4f1e9;border-radius:8px;color:#4f8b80;font-weight:bold;text-decoration:none;font-size:.9em;line-height:1.5;}
 .fopt-head{font-size:.9em;font-weight:bold;margin:10px 0 6px}
+.fopt-desc{font-size:.8em;color:#555;line-height:1.9;margin:0 0 6px}
 .ext-link small{display:block;color:#999;font-weight:normal;font-size:.8em;margin-top:3px;}
 
 /* ===== パネルを地図の上に確実に出す（Leaflet移行の重なり修正） ===== */
@@ -935,3 +936,4 @@ ruby rt { font-size: .5em; font-weight: 400; color: inherit; opacity: .72; }
   opacity: 0.7;
 }
 #header-admin-btn:hover { opacity: 1; color: #777; background: #f2f2f2; }
+.nowrap{white-space:nowrap}

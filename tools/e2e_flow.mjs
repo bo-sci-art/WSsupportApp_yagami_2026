@@ -77,7 +77,10 @@ async function shot(page, run, name) {
   run.shots.push(file);
 }
 
-async function flow(label, viewport, placeId, number) {
+// ふりがな（<rt>）をのぞいた文字（「水{みず}が街{まち}…」→「水が街…」）
+const PLAIN = (el) => { const c = el.cloneNode(true); c.querySelectorAll("rt").forEach(r => r.remove()); return c.textContent.replace(/\s+/g, ""); };
+
+async function flow(label, viewport, placeId, number, hazards) {
   const run = { label, viewport, n: 1, shots: [], pages: [], steps: [], errors: [], checks: {} };
   report.runs.push(run);
   const step = (s) => { run.steps.push(s); console.log(`[${label}] ${s}`); };
@@ -100,6 +103,20 @@ async function flow(label, viewport, placeId, number) {
   await mapFrame.locator("#chk-flood_l2").check();
   await mapFrame.locator("#chk-kyukei").check();
   run.checks.s1Places = await mapFrame.locator(".place-marker").count();
+  run.checks.naisuiLink = await mapFrame.locator(".hg-mizu .ext-link").evaluate((a) => {
+    const head = a.parentElement.querySelector(".fopt-head"), desc = a.parentElement.querySelector(".fopt-desc");
+    const PL = (el) => { const c = el.cloneNode(true); c.querySelectorAll("rt").forEach(r => r.remove()); return c.textContent.replace(/\s+/g, ""); };
+    return { href: a.href, target: a.target, head: head && PL(head), desc: !!desc && PL(desc).includes("内水氾濫"), rubies: a.parentElement.querySelectorAll(".fopt-head ruby, .fopt-desc ruby").length };
+  });
+  if (hazards.includes("内水氾濫")) {
+    // リンクを押す → 新しいタブで開く → アプリのタブに戻っても、S1 の ✓ が残っている
+    const [pop] = await Promise.all([ctx.waitForEvent("page", { timeout: 15000 }), mapFrame.locator(".hg-mizu .ext-link").click()]);
+    run.checks.naisuiPopup = pop.url();
+    await pop.close();
+    await page.bringToFront();
+    run.checks.naisuiKeepS1 = await mapFrame.locator("#chk-flood_l2").isChecked() && /map\/app/.test(page.url());
+    step(`S1 内水氾濫のリンク：新しいタブで ${run.checks.naisuiPopup.slice(0, 60)}… が開いた、もどっても ✓ が残る=${run.checks.naisuiKeepS1}`);
+  }
   await shot(page, run, "S1_hazardmap");
   step(`S1 ハザードマップ：洪水・土砂災害を表示、場所の目印 ${run.checks.s1Places} 個`);
   await page.click("#nextBtn");
@@ -109,11 +126,11 @@ async function flow(label, viewport, placeId, number) {
   run.checks.s2Buttons = await page.locator(".place-btn").count();
   run.checks.s2Hazards = await page.locator(".hazard-option").count();
   await page.click(`.place-btn[data-place="${placeId}"]`);
-  await page.locator(".hazard-option").nth(0).click();
-  await page.locator(".hazard-option").nth(3).click();
+  for (const h of hazards) await page.locator(`.hazard-option input[value="${h}"]`).check();
   await page.waitForTimeout(800);
   await shot(page, run, "S2_place");
-  step(`S2 場所：ボタン ${run.checks.s2Buttons} 個から ${placeId} を選択、災害の選択肢 ${run.checks.s2Hazards} 個`);
+  run.checks.s2Saved = await page.evaluate(() => (JSON.parse(localStorage.getItem("hazardMapLog") || "{}").hazards || []));
+  step(`S2 場所：ボタン ${run.checks.s2Buttons} 個から ${placeId} を選択、災害の選択肢 ${run.checks.s2Hazards} 個、選んだ災害 ${run.checks.s2Saved.join("・")}`);
   await page.click("#nextBtn");
 
   // 1コマ目はここまで
@@ -225,7 +242,9 @@ async function flow(label, viewport, placeId, number) {
     return { w: img.naturalWidth, h: img.naturalHeight, kb: Math.round(d.length * 0.75 / 1024) };
   });
   run.artworkImage = imgInfo;
+  run.checks.s8Hazards = await page.evaluate((src) => [...document.querySelectorAll(".s8-tag")].map(eval(src)), PLAIN.toString());
   await shot(page, run, "S8_confirm");
+  step(`S8 確認：災害 ${run.checks.s8Hazards.join("・")}`);
   step(`S8 確認：項目 ${run.checks.s8.rows}（未入力 ${run.checks.s8.empty}）、スクロール ${run.checks.s8.scroll}px、登録ボタンが見える=${run.checks.s8.submitVisible}、画像 ${imgInfo.w}×${imgInfo.h}`);
 
   // 「直す」→ S7（修正中）→「修正完了」で確認画面にもどる
@@ -322,6 +341,12 @@ async function flow(label, viewport, placeId, number) {
   run.checks.search = await page.evaluate(([id, num]) => { const cards = [...document.querySelectorAll(".art-card")]; return { count: cards.length, hasMine: cards.some(c => c.id === "card-" + id), allMatch: cards.every(c => (c.querySelector(".art-num") || {}).textContent === num) }; }, [id, number]);
   step(`番号で探す：「${number}」→ ${run.checks.search.count} 件（自分の作品あり=${run.checks.search.hasMine}、全部同じ番号=${run.checks.search.allMatch}）`);
   await page.fill("#art-search", "");
+  await page.evaluate(() => document.querySelector('.chip[data-cat="mizu"]').click());
+  await page.waitForTimeout(500);
+  run.checks.mizuFilter = await page.locator(`#card-${id}`).isVisible();
+  await page.evaluate(() => document.querySelector('.chip[data-cat="all"]').click());
+  await page.waitForTimeout(300);
+  step(`マップの「水害」で絞り込み：自分の作品が出る=${run.checks.mizuFilter}`);
   await page.click(`#card-${id}`);
   await page.waitForURL(/detail\.html/);
   await page.waitForTimeout(1500);
@@ -330,6 +355,13 @@ async function flow(label, viewport, placeId, number) {
   if (await skip.isVisible()) await skip.click();
   await page.waitForTimeout(800);
   run.checks.detail = { number: await page.locator("#art-number").innerText(), body: (await page.locator("#art-body").innerText()).length > 0 };
+  run.checks.detailHz = await page.evaluate((src) => {
+    const PL = eval(src);
+    const note = document.querySelector(".dv-hz-note"), a = note && note.querySelector("a");
+    return { tags: [...document.querySelectorAll("#art-hazards .dv-tag")].map(PL), note: !!note, href: a ? a.href : "", target: a ? a.target : "",
+             none: !!document.querySelector(".dv-hz-none"), overlayBtn: !!document.querySelector(".dv-hz-chip") };
+  }, PLAIN.toString());
+  step(`作品ページ：災害 ${run.checks.detailHz.tags.join("・")}、内水氾濫の注記=${run.checks.detailHz.note}、重ねるボタン=${run.checks.detailHz.overlayBtn}`);
   await shot(page, run, "S9c_detail");
   step(`作品ページ：番号 ${run.checks.detail.number}、伝えたいこと ${run.checks.detail.body ? "あり" : "なし"}`);
 
@@ -388,8 +420,8 @@ async function samePlaceTen() {
   console.log(`[同じ場所に10件] 登録 ${t.ids.length} 件、一覧に ${t.listed} 件、マップから開けた作品 ${t.opened} 件 → ${t.ok ? "OK" : "NG"}（テスト作品は削除）`);
 }
 
-await flow("landscape", { width: 1180, height: 820 }, "kagami", "4201");
-await flow("portrait", { width: 820, height: 1180 }, "yagami", "4228");
+await flow("landscape", { width: 1180, height: 820 }, "kagami", "4201", ["洪水（外水氾濫）", "内水氾濫"]);
+await flow("portrait", { width: 820, height: 1180 }, "yagami", "4228", ["洪水（外水氾濫）", "土砂災害（急傾斜地の崩壊）"]);
 await samePlaceTen();
 
 fs.writeFileSync(path.resolve("tools/out/report.json"), JSON.stringify(report, null, 2));
@@ -400,7 +432,21 @@ for (const r of report.runs) {
   if (r.errors.length) problems.push(`[${r.label}] JSエラー: ${r.errors.join(" / ")}`);
   if (!r.deleted) problems.push(`[${r.label}] 削除できていない`);
   if (c.s1Places !== 3) problems.push(`[${r.label}] S1 の場所の目印が3つでない`);
-  if (c.s2Buttons !== 3 || c.s2Hazards !== 4) problems.push(`[${r.label}] S2 のボタン・選択肢の数がおかしい`);
+  const NAISUI_LABEL = "水が街からあふれる（内水氾濫）";
+  const nl = c.naisuiLink || {};
+  if (!/mid=65/.test(nl.href || "") || !/mpx=139\.65512/.test(nl.href || "") || nl.target !== "_blank" || nl.head !== "水が街からあふれる" || !nl.desc || nl.rubies < 4) problems.push(`[${r.label}] S1 の内水氾濫の見出し・説明・リンクがおかしい ${JSON.stringify(nl)}`);
+  if (r.label === "landscape") {
+    if (!/wwwm\.city\.yokohama\.lg\.jp/.test(c.naisuiPopup || "") || !c.naisuiKeepS1) problems.push(`[${r.label}] 内水氾濫のリンクが新しいタブで開かない／もどると入力が消える`);
+    if (!(c.s2Saved || []).includes("内水氾濫")) problems.push(`[${r.label}] S2 で内水氾濫が保存されない ${JSON.stringify(c.s2Saved)}`);
+    if (!(c.s8Hazards || []).includes(NAISUI_LABEL)) problems.push(`[${r.label}] 確認画面に「${NAISUI_LABEL}」が出ない ${JSON.stringify(c.s8Hazards)}`);
+    const d = c.detailHz || {};
+    if (!d.tags.includes(NAISUI_LABEL) || !d.note || !/mid=65/.test(d.href) || d.target !== "_blank" || d.none) problems.push(`[${r.label}] 作品ページの内水氾濫の表示・注記がおかしい ${JSON.stringify(d)}`);
+  } else {
+    const d = c.detailHz || {};
+    if (d.note) problems.push(`[${r.label}] 内水氾濫を選んでいないのに注記が出る`);
+  }
+  if (!c.mizuFilter) problems.push(`[${r.label}] 「水害」で絞り込むと自分の作品が出ない`);
+  if (c.s2Buttons !== 3 || c.s2Hazards !== 5) problems.push(`[${r.label}] S2 のボタン・選択肢の数がおかしい`);
   if (!c.resumeOK) problems.push(`[${r.label}] つづきから再開できない`);
   if (r.restore.stampsAfter !== r.restore.stampsBefore) problems.push(`[${r.label}] スタンプが復元されない`);
   if (!c.alpha || !c.alpha.slider || c.alpha.after !== 1 || !(c.alpha.light < 0.4)) problems.push(`[${r.label}] 濃さのレバーが効かない ${JSON.stringify(c.alpha)}`);

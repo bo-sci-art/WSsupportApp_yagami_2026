@@ -30,6 +30,7 @@ body{display:flex;height:100%;overflow:hidden;background:var(--base-color);color
 .fopt input{accent-color:var(--main-color);width:16px;height:16px;flex:none;cursor:pointer}
 .fopt label{cursor:pointer;line-height:1.35}
 .fopt-head{font-size:.85em;font-weight:bold;padding:9px 2px 5px}
+.fopt-desc{font-size:.78em;color:#555;line-height:1.6;padding:0 2px 6px}
 .fopt.disabled{opacity:.55}.fopt.disabled input{cursor:not-allowed}
 .info-btn{margin-left:auto;width:18px;height:18px;border-radius:50%;border:1px solid var(--sub-color);
   background:#fff;color:var(--sub-color);font-size:.7em;font-weight:bold;cursor:pointer;flex:none;line-height:1}
@@ -96,6 +97,7 @@ ruby rt { position: absolute; left: 50%; top: calc(50% - 2.05em); transform: tra
 .fopt{font-size:1em;padding:8px 2px;line-height:2}
 .fopt input[type=checkbox]{width:26px;height:26px;flex:none}
 .fopt-head{font-size:.95em;line-height:2}
+.fopt-desc{font-size:.9em;line-height:2}
 .info-btn{width:32px;height:32px;font-size:.9em}
 .ext-link{font-size:.95em;line-height:1.9}
 .ext-link small{font-size:.85em}
@@ -117,3 +119,4 @@ ruby rt { position: absolute; left: 50%; top: calc(50% - 2.05em); transform: tra
 .place-marker{background:none;border:0}
 .place-marker .pm-dot{display:block;width:16px;height:16px;border-radius:50%;border:3px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.45);box-sizing:content-box;margin:-3px}
 .place-marker .pm-label{position:absolute;left:50%;bottom:100%;transform:translate(-50%,-6px);white-space:nowrap;background:rgba(255,255,255,.95);border-radius:8px;padding:0 8px;font-size:14px;font-weight:800;line-height:2.3;color:#1f2937;box-shadow:0 1px 3px rgba(0,0,0,.3);pointer-events:none}
+.nowrap{white-space:nowrap}
