@@ -434,7 +434,7 @@ for (const r of report.runs) {
   if (c.s1Places !== 3) problems.push(`[${r.label}] S1 の場所の目印が3つでない`);
   const NAISUI_LABEL = "水が街からあふれる（内水氾濫）";
   const nl = c.naisuiLink || {};
-  if (!/mid=65/.test(nl.href || "") || !/mpx=139\.65512/.test(nl.href || "") || nl.target !== "_blank" || nl.head !== "水が街からあふれる" || !nl.desc || nl.rubies < 4) problems.push(`[${r.label}] S1 の内水氾濫の見出し・説明・リンクがおかしい ${JSON.stringify(nl)}`);
+  if (!/mid=65/.test(nl.href || "") || !/mpx=139\.6491783441744/.test(nl.href || "") || nl.target !== "_blank" || nl.head !== "水が街からあふれる" || !nl.desc || nl.rubies < 4) problems.push(`[${r.label}] S1 の内水氾濫の見出し・説明・リンクがおかしい ${JSON.stringify(nl)}`);
   if (r.label === "landscape") {
     if (!/wwwm\.city\.yokohama\.lg\.jp/.test(c.naisuiPopup || "") || !c.naisuiKeepS1) problems.push(`[${r.label}] 内水氾濫のリンクが新しいタブで開かない／もどると入力が消える`);
     if (!(c.s2Saved || []).includes("内水氾濫")) problems.push(`[${r.label}] S2 で内水氾濫が保存されない ${JSON.stringify(c.s2Saved)}`);

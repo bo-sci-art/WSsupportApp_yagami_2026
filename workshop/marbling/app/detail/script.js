@@ -333,7 +333,7 @@ function setupDomControls() {
   // --- パレット（既存DOMを使う） ---
   const PALETTES = {
     // 矢上小版：コラージュと同じ色・同じ並び（水色を追加、薔薇色を赤のとなりに）
-    Basic: ['#FF3B30','#FF2D55','#FF9500','#FFCC00','#34C759','#5AC8FA','#007AFF','#5856D6'],
+    Basic: ['#FF2D55','#FF3B30','#FF9500','#FFCC00','#34C759','#5AC8FA','#007AFF','#5856D6'],
     Pastel: ['#FFD1DC','#B5EAD7','#C7CEEA','#FFDAC1','#E2F0CB','#B5B9FF','#FFB7B2','#FF9CEE','#B28DFF'],
     Warm:   ['#FF3B30','#FF9500','#FFCC00','#FFB7B2','#FFD1DC','#FF9CEE','#FFDAC1','#FF2D55','#FF5E3A'],
     Cool:   ['#007AFF','#34C759','#5856D6','#B5EAD7','#B5B9FF','#C7CEEA','#E2F0CB','#A0CED9','#5AC8FA']

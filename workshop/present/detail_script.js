@@ -126,7 +126,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const note = document.createElement("div");
       note.className = "dv-hz-note";
       note.innerHTML = rb("「水{みず}が街{まち}からあふれる（内水氾濫{ないすいはんらん}）」は、") +
-        '<a href="https://wwwm.city.yokohama.lg.jp/yokohama/Map?mid=65&mpx=139.65512&mpy=35.54543&mps=10000&mtp=dm&gprj=3" target="_blank" rel="noopener">' + rb("横浜市{よこはまし}の「わいわい防災{ぼうさい}マップ」") + "</a>" +
+        '<a href="https://wwwm.city.yokohama.lg.jp/yokohama/Map?mid=65&mpx=139.6491783441744&mpy=35.551392541497215&mps=10000&mtp=dm&gprj=3&mcl=570,770,770,770;570,780,780,780;570,790,790,790;570,800,800,800;570,810,810,810;570,820,820,820;2101,2101,2101,2101" target="_blank" rel="noopener">' + rb("横浜市{よこはまし}の「わいわい防災{ぼうさい}マップ」") + "</a>" +
         rb("で確{たし}かめられます（ほかのサイトがひらきます）。");
       box.appendChild(note);
     }

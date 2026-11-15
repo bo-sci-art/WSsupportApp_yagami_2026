@@ -19,7 +19,7 @@ if (!/^https:\/\/.+\/data$/.test(ADULT)) {
 }
 const WORKER = (process.argv[3] || "http://127.0.0.1:8787").replace(/\/+$/, "");
 const ADMIN_KEY = process.argv[4] || "local-admin-key-for-test";
-const APP = "http://localhost:5500";
+const APP = (process.env.APP || "http://localhost:5500").replace(/\/+$/, "");   // 5500 番が使えないときは APP=http://127.0.0.1:5501 のように渡す
 const OUT = path.resolve("workshop/present");
 
 const PLACES = [
