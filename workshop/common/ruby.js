@@ -71,6 +71,10 @@
   // 「漢字{かな}」→ <ruby>（innerHTML 用）
   window.rubyHTML = function (s) { return String(s == null ? '' : s).replace(RE, '<ruby>$1<rt>$2</rt></ruby>'); };
 
+  // rt の文字の幅（rt の箱は幅0にしてあるので、中の文字をはかる）
+  function textWidth(el) {
+    try { var rg = document.createRange(); rg.selectNodeContents(el); return rg.getBoundingClientRect().width; } catch (e) { return el.getBoundingClientRect().width; }
+  }
   // となりあう ruby のふりがながぶつかるときだけ、間をあける
   function spacePass() {
     var list = document.querySelectorAll('ruby');
@@ -81,8 +85,8 @@
       if (!ra || !rb) continue;
       var wa = a.getBoundingClientRect().width, wb = b.getBoundingClientRect().width;
       if (!wa || !wb) continue;   // 見えていないものは、見えたときにやり直す
-      var oa = Math.max(0, (ra.getBoundingClientRect().width - wa) / 2);
-      var ob = Math.max(0, (rb.getBoundingClientRect().width - wb) / 2);
+      var oa = Math.max(0, (textWidth(ra) - wa) / 2);
+      var ob = Math.max(0, (textWidth(rb) - wb) / 2);
       var need = oa + ob + 1;
       var cur = parseFloat(a.style.marginRight) || 0;
       if (need > 1.5 && Math.abs(need - cur) > 0.5) a.style.marginRight = need.toFixed(1) + 'px';

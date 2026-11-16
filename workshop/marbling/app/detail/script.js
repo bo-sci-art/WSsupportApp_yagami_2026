@@ -2050,24 +2050,42 @@ function openDB() {
   });
 }
 
+// Safari のプライベートモードは IndexedDB に Blob を保存できない（transaction が失敗する）。
+// そのときは data URL（文字）にして保存し直す。読むときは idbGet が Blob に戻す。
+function idbPutRaw(db, key, value) {
+  return new Promise((resolve, reject) => {
+    let tx;
+    try { tx = db.transaction(STORE_NAME, "readwrite"); tx.objectStore(STORE_NAME).put(value, key); }
+    catch (e) { reject(e); return; }
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error || new Error("idb put failed"));
+    tx.onabort = () => reject(tx.error || new Error("idb put aborted"));
+  });
+}
+function blobToDataURL_(blob) {
+  return new Promise((resolve, reject) => { const r = new FileReader(); r.onload = () => resolve(r.result); r.onerror = () => reject(r.error); r.readAsDataURL(blob); });
+}
 async function idbSet(key, value) {
   const db = await openDB();
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(STORE_NAME, "readwrite");
-    tx.objectStore(STORE_NAME).put(value, key);
-    tx.oncomplete = () => resolve();
-    tx.onerror = () => reject(tx.error);
-  });
+  try { await idbPutRaw(db, key, value); }
+  catch (e) {
+    if (!(value instanceof Blob)) throw e;
+    console.warn("[idb] Blob を保存できないので data URL で保存します", e);
+    await idbPutRaw(db, key, await blobToDataURL_(value));
+  }
 }
 
 async function idbGet(key) {
   const db = await openDB();
-  return new Promise((resolve, reject) => {
+  const v = await new Promise((resolve, reject) => {
     const tx = db.transaction(STORE_NAME, "readonly");
     const req = tx.objectStore(STORE_NAME).get(key);
     req.onsuccess = () => resolve(req.result ?? null);
     req.onerror = () => reject(req.error);
   });
+  // data URL で保存したもの（プライベートモード）は Blob に戻す
+  if (typeof v === "string" && v.startsWith("data:")) return await (await fetch(v)).blob();
+  return v;
 }
 
 async function idbDelete(key) {

@@ -1781,8 +1781,9 @@ html, body {
 }
 
 /* ふりがなが漢字より長くても、漢字の間をあけない（ふりがなを左右にはみ出させる） */
-ruby { display: inline-block; position: relative; text-indent: 0; }
-ruby rt { position: absolute; left: 50%; top: calc(50% - 2.05em); transform: translateX(-50%); font-size: .55em; line-height: 1; white-space: nowrap; letter-spacing: 0; text-align: center; pointer-events: none; }
+/* ふりがな：Safari は rt の position を無視するため、position を使わずに漢字の上にのせる（Safari・Chrome で同じ見え方） */
+ruby { display: inline-flex; flex-direction: column; align-items: center; line-height: 1; vertical-align: text-bottom; position: relative; top: -.21em; text-indent: 0; }
+ruby rt { order: -1; display: flex; justify-content: center; align-items: flex-end; width: 0; height: 0; font-size: .55em; line-height: 1; white-space: nowrap; letter-spacing: 0; text-align: center; transform: translateY(-.15em); pointer-events: none; }
 
 /* 防災行動マップ：ふりがなを軽く（文字が重く見えないように） */
 ruby rt { font-size: .5em; font-weight: 400; color: inherit; opacity: .72; }

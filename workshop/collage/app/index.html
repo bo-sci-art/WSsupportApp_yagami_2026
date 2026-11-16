@@ -15,21 +15,22 @@
     editNext: '../../message/lastconfirm/final_submit.html'
   };
 </script>
-<link rel="stylesheet" href="../../common/styles.css?v=yagami4" />
+<link rel="stylesheet" href="../../common/styles.css?v=yagami5" />
 </head>
 <body>
 <main class="stage">
   <div class="frame-wrap">
-    <iframe data-ws-work src="./detail/index.html?v=yagami6" allow="fullscreen" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    <iframe data-ws-work src="./detail/index.html?v=yagami7" allow="fullscreen" referrerpolicy="no-referrer-when-downgrade"></iframe>
   </div>
 </main>
 <script src="../../common/progress.js?v=yagami4"></script>
-<script src="../../common/nav.js?v=yagami5"></script>
+<script src="../../common/nav.js?v=yagami6"></script>
 <script>
   // マーブリングを作り直したあと（?compose=1）：新しいマーブリングにスタンプをのせて作品画像を作り直し、確認画面へもどる
   (function () {
     if (!/[?&]compose=1(&|$)/.test(location.search)) return;
-    var RETURN = '../../message/lastconfirm/final_submit.html';
+    // 完全なアドレスにしておく（Safari は iframe の保存のあとの相対アドレスを iframe 基準で読むため）
+    var RETURN = new URL('../../message/lastconfirm/final_submit.html', location.href).href;
     var ov = document.createElement('div');
     ov.className = 'ws-compose-overlay';
     ov.innerHTML = '<ruby>作品<rt>さくひん</rt></ruby>を<ruby>仕上<rt>しあ</rt></ruby>げています…<br><ruby>少<rt>すこ</rt></ruby>し<ruby>待<rt>ま</rt></ruby>ってください';

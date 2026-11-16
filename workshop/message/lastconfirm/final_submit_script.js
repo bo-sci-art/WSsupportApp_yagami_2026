@@ -98,7 +98,12 @@ function wsIdbGet(key) {
             req.onsuccess = function () {
                 try {
                     const g = req.result.transaction('images', 'readonly').objectStore('images').get(key);
-                    g.onsuccess = function () { resolve(g.result || null); };
+                    g.onsuccess = function () {
+                        var v = g.result || null;
+                        // プライベートモードでは data URL（文字）で保存しているので Blob に戻す
+                        if (typeof v === 'string' && v.indexOf('data:') === 0) { fetch(v).then(function (r) { return r.blob(); }).then(resolve, function () { resolve(null); }); return; }
+                        resolve(v);
+                    };
                     g.onerror = function () { resolve(null); };
                 } catch (e) { resolve(null); }
             };

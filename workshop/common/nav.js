@@ -12,6 +12,11 @@
 // ※大人版にあった「作品を保存しましたか？」の確認バナーは使わない（自動保存にしたため）
 (function () {
   var S = window.WS_STEP || {};
+  // 行き先は、このページ（外側）を基準にした完全なアドレスにしておく。
+  // Safari は、iframe の中の保存が終わったあとに location.href = '../../…' とすると、
+  // iframe の場所を基準に読んでしまい（…/marbling/collage/… になって 404）、行き先がずれるため。
+  function abs(u) { try { return u ? new URL(u, location.href).href : u; } catch (e) { return u; } }
+  S.prev = abs(S.prev); S.next = abs(S.next); S.editNext = abs(S.editNext);
   // 確認画面の「作り直す」から開いたとき：「修正完了」だけを出し、保存して確認画面へもどる
   var EDIT = /[?&]edit=1(&|$)/.test(location.search) && !!S.editNext;
   if (EDIT) { S.prev = null; S.next = S.editNext; S.nextLabel = '✓ <ruby>修正完了<rt>しゅうせいかんりょう</rt></ruby>'; }
