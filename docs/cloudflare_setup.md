@@ -209,7 +209,7 @@ curl.exe -H "Authorization: Bearer <ADMIN_KEY>" -o yagami_artworks.geojson https
 
 テスト作品などを1件消す（**予備の方法**。ふだんは上の管理画面で消す。`<id>` は管理画面の id、またはマップの作品ページの URL `detail.html?id=<id>` の数字）
 
-※ Worker は、番号が 4201〜4228 でない作品、場所が3か所のどれでもない作品を受け付けません（`worker/src/index.js` の `NUMBER_RE`・`PLACES`）。クラスや人数が変わるときはここと `workshop/common/places.js` の `YAGAMI_NUMBER_RE` を直します。：
+※ Worker は、番号が 4201〜4235 でない作品、場所が3か所のどれでもない作品を受け付けません（`worker/src/index.js` の `NUMBER_RE`・`PLACES`）。クラスや人数が変わるときはここと `workshop/common/places.js` の `YAGAMI_NUMBER_RE` を直します。：
 
 ```bash
 curl.exe -X DELETE -H "Authorization: Bearer <ADMIN_KEY>" https://yagami-submit.kazuki131214.workers.dev/artworks/<id>

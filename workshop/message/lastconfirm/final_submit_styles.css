@@ -9,9 +9,11 @@ body {
   color: #1f2937; background: #f7f6f2; overflow: hidden;
 }
 /* ふりがなが漢字より長くても、漢字の間をあけない */
-/* ふりがな：Safari は rt の position を無視するため、position を使わずに漢字の上にのせる（Safari・Chrome で同じ見え方） */
-ruby { display: inline-flex; flex-direction: column; align-items: center; line-height: 1; vertical-align: text-bottom; position: relative; top: -.21em; text-indent: 0; }
-ruby rt { order: -1; display: flex; justify-content: center; align-items: flex-end; width: 0; height: 0; font-size: .55em; line-height: 1; white-space: nowrap; letter-spacing: 0; text-align: center; transform: translateY(-.15em); pointer-events: none; }
+/* ふりがな：Safari は rt の position を無視するため、position を使わずに漢字の上にのせる。
+   漢字はベースラインでまわりの文字とそろえる（フォントに関係なく一直線にならぶ。Safari・Chrome で同じ見え方）。
+   rt は幅0・高さ0 で漢字のうしろに置き、margin-left:-50%（＝漢字の幅の半分）で漢字のまん中の上にもどす */
+ruby { display: inline-flex; flex-direction: row; align-items: baseline; line-height: 1; vertical-align: baseline; text-indent: 0; }
+ruby rt { align-self: flex-start; display: flex; justify-content: center; align-items: flex-end; width: 0; height: 0; margin-left: -50%; font-size: .55em; line-height: 1; white-space: nowrap; letter-spacing: 0; text-align: center; transform: translateY(-.15em); pointer-events: none; }
 
 .s8 { height: 100%; display: flex; flex-direction: column; padding: 10px clamp(12px, 2vw, 24px) 12px; gap: 10px; }
 .s8-head { flex: none; display: flex; align-items: center; gap: 14px; }
@@ -25,7 +27,7 @@ ruby rt { order: -1; display: flex; justify-content: center; align-items: flex-e
 .s8-art-empty { display: flex; align-items: center; justify-content: center; text-align: center; padding: 16px; font-size: 1.05rem; line-height: 2.1; color: #6b7280; }
 .s8-redo { flex: none; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 
-.s8-list { min-height: 0; overflow: hidden; display: flex; flex-direction: column; gap: 6px; background: #fff; border-radius: 18px; padding: 8px 12px; box-shadow: 0 2px 10px rgba(0,0,0,.05); }
+.s8-list { min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 6px; background: #fff; border-radius: 18px; padding: 8px 12px; box-shadow: 0 2px 10px rgba(0,0,0,.05); }
 .s8-row { display: grid; grid-template-columns: 6.2em minmax(0, 1fr) auto; align-items: center; gap: 10px; padding: 4px 4px; border-bottom: 1px solid #eef0f2; min-height: 54px; }
 .s8-row:last-child { border-bottom: 0; }
 .s8-row-label { font-weight: 800; font-size: 1rem; color: #4b5563; line-height: 2.1; }
@@ -58,10 +60,13 @@ ruby rt { order: -1; display: flex; justify-content: center; align-items: flex-e
 /* 縦向き：作品を上、一覧を下に */
 @media (orientation: portrait) {
   .s8-main { grid-template-columns: 1fr; grid-template-rows: minmax(0, 0.85fr) auto; }
-  .s8-list { overflow: hidden; }
+  .s8-list { overflow-y: auto; }
 }
 
 /* 確認の一覧：「自分の担当の場所」「読み取ったハザードマップ」が入る幅 */
 .s8-row { grid-template-columns: 8.4em minmax(0, 1fr) auto; }
 .s8-row-label { line-height: 1.9; padding-top: 6px; }
 .s8-download-note.error { color: #b91c1c; }
+
+/* いつの行動・読み取ったハザードマップ（タグがならぶ行）：3行で切らない（Safari で -webkit-box の中のタグが見えなくなることがあるため） */
+.s8-row-value.s8-row-tags { display: block; -webkit-line-clamp: unset; overflow: visible; }

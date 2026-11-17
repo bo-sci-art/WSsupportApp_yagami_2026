@@ -7,7 +7,7 @@
  * - Body     : この作品で伝えたいこと
  * - field_23 : いつの行動か（事前／災害時／復旧時）
  * - field_24 : 読み取ったハザードマップ（カンマ区切り）
- * - field_25 : 作者の番号（4201〜4228）
+ * - field_25 : 作者の番号（4201〜4235）
  * - place    : 場所（hiyoshi5 / kagami / yagami）、lat / lon はその場所の固定の座標
  * - Mabling・collage は使わない（空のまま）
  * 作品画像：localStorage.artworkImage（コラージュの自動保存で作られる）
@@ -55,7 +55,7 @@ function loadData() {
 function row(label, valueHTML, editKey, empty) {
     return '<div class="s8-row' + (empty ? ' empty' : '') + '">'
         + '<div class="s8-row-label">' + rb(label) + '</div>'
-        + '<div class="s8-row-value">' + valueHTML + '</div>'
+        + '<div class="s8-row-value' + (/class="s8-tag"/.test(valueHTML) ? ' s8-row-tags' : '') + '">' + valueHTML + '</div>'
         + '<button type="button" class="s8-edit" data-edit="' + editKey + '">✏️ ' + rb('直{なお}す') + '</button>'
         + '</div>';
 }

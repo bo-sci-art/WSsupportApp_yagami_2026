@@ -36,8 +36,8 @@
     for (var i = 0; i < window.YAGAMI_PHASES.length; i++) if (window.YAGAMI_PHASES[i].value === v) return window.YAGAMI_PHASES[i].label;
     return v || '';
   };
-  // 作者の番号：クラス＋出席番号の4桁（4年2組 → 4201〜4228）
-  window.YAGAMI_NUMBER_RE = /^42(0[1-9]|1[0-9]|2[0-8])$/;
+  // 作者の番号：クラス＋出席番号の4桁（4年2組 → 4201〜4235。28人だが、余裕をもたせて35番まで受けつける）
+  window.YAGAMI_NUMBER_RE = /^42(0[1-9]|[12][0-9]|3[0-5])$/;
   // 地図に3か所が全部入る範囲
   window.yagamiPlacesBounds = function () {
     return window.YAGAMI_PLACES.map(function (p) { return [p.lat, p.lon]; });

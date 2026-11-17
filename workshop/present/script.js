@@ -353,12 +353,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // 絞り込みの開閉
-  const fHeader = document.querySelector(".filter-main-header");
-  if (fHeader) fHeader.onclick = () => {
-    document.querySelector(".filter-content").classList.toggle("closed");
-    document.querySelector(".toggle-icon").classList.toggle("closed");
-  };
+  // 絞り込みは、いつも出しておく（開閉のボタンはなくした）
 
   // 災害種チップに色ドットを付与
   function addCategoryDots(){

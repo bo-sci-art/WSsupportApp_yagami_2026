@@ -2,7 +2,7 @@
  * S7 タイトル・伝えたいこと・いつの行動か・番号（矢上小版・授業案 rev3）
  * 保存先：localStorage.artworkSubmit = { title, body, phase, number, creationDate }
  *   phase  : 事前／災害時／復旧時（保存する値は変えない。画面は「災害の前／とき／あと」）
- *   number : クラス＋出席番号の4桁（4201〜4228）
+ *   number : クラス＋出席番号の4桁（4201〜4235）
  */
 const CONFIG = {
     backUrl: '../../collage/app/index.html',

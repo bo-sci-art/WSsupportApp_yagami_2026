@@ -441,7 +441,7 @@ async function samePlaceTen() {
 }
 
 await flow("landscape", { width: 1180, height: 820 }, "kagami", "4201", ["洪水（外水氾濫）", "内水氾濫"]);
-await flow("portrait", { width: 820, height: 1180 }, "yagami", "4228", ["洪水（外水氾濫）", "土砂災害（急傾斜地の崩壊）"]);
+await flow("portrait", { width: 820, height: 1180 }, "yagami", "4235", ["洪水（外水氾濫）", "土砂災害（急傾斜地の崩壊）"]);
 await samePlaceTen();
 
 fs.writeFileSync(path.resolve("tools/out/report.json"), JSON.stringify(report, null, 2));

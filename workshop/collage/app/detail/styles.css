@@ -444,9 +444,11 @@ main { overflow: hidden; }
 /* ===== 矢上小版（子ども向け）調整 ===== */
 body { font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", sans-serif; }
 /* ふりがなが漢字より長くても、漢字の間をあけない（ふりがなを左右にはみ出させる） */
-/* ふりがな：Safari は rt の position を無視するため、position を使わずに漢字の上にのせる（Safari・Chrome で同じ見え方） */
-ruby { display: inline-flex; flex-direction: column; align-items: center; line-height: 1; vertical-align: text-bottom; position: relative; top: -.21em; text-indent: 0; }
-ruby rt { order: -1; display: flex; justify-content: center; align-items: flex-end; width: 0; height: 0; font-size: .55em; line-height: 1; white-space: nowrap; letter-spacing: 0; text-align: center; transform: translateY(-.15em); pointer-events: none; }
+/* ふりがな：Safari は rt の position を無視するため、position を使わずに漢字の上にのせる。
+   漢字はベースラインでまわりの文字とそろえる（フォントに関係なく一直線にならぶ。Safari・Chrome で同じ見え方）。
+   rt は幅0・高さ0 で漢字のうしろに置き、margin-left:-50%（＝漢字の幅の半分）で漢字のまん中の上にもどす */
+ruby { display: inline-flex; flex-direction: row; align-items: baseline; line-height: 1; vertical-align: baseline; text-indent: 0; }
+ruby rt { align-self: flex-start; display: flex; justify-content: center; align-items: flex-end; width: 0; height: 0; margin-left: -50%; font-size: .55em; line-height: 1; white-space: nowrap; letter-spacing: 0; text-align: center; transform: translateY(-.15em); pointer-events: none; }
 .kid-label { font-size: 17px !important; font-weight: 700; color: #1f2937 !important; margin-bottom: 10px !important; line-height: 1.9; }
 .thumbs { --cell: 72px; height: calc(3 * var(--cell) + 2 * var(--gap) + 16px); }
 .kid-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }

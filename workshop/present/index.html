@@ -7,7 +7,7 @@
 
   <!-- ▼ Leaflet（同梱・外部依存なし） -->
   <link rel="stylesheet" href="./leaflet.css">
-  <link rel="stylesheet" href="./style.css?v=yagami11">
+  <link rel="stylesheet" href="./style.css?v=yagami12">
 </head>
 <body>
 
@@ -45,12 +45,12 @@
 
       <div id="sidebar-filter">
 
-        <div class="filter-main-header">
+        <!-- 絞り込みは、トグルに入れず、いつも出しておく（11/16） -->
+        <div class="filter-main-header filter-main-header--static">
           <span>⚙️ 絞{しぼ}り込{こ}み</span>
-          <span class="toggle-icon closed">﹀</span>
         </div>
 
-        <div class="filter-content closed">
+        <div class="filter-content">
           <div class="filter-group">
             <div class="filter-label">災害{さいがい}の種類{しゅるい}</div>
             <div class="filter-chips">
@@ -161,9 +161,9 @@
   <!-- ▼ Leaflet 本体（同梱） -->
   <script src="./leaflet.js"></script>
   <script src="../common/config.js?v=yagami4"></script>
-  <script src="../common/places.js?v=yagami4"></script>
+  <script src="../common/places.js?v=yagami5"></script>
   <script src="../common/ruby.js?v=yagami5"></script>
-  <script src="./script.js?v=yagami10"></script>
+  <script src="./script.js?v=yagami11"></script>
 
   <div id="tutorial-overlay" class="tutorial-overlay" style="display: none;">
     <div class="tutorial-card">

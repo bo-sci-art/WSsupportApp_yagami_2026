@@ -19,8 +19,8 @@
 
 const MAX_IMAGE_BYTES = 3 * 1024 * 1024;          // 画像の上限（1000px JPEG なら 0.3MB 前後）
 const MAX_TEXT = { field_23: 100, field_24: 500, field_25: 60, Message: 300, Body: 1000, place: 20, collage: 3000, Mabling: 3000, hazard: 500, target: 200, creationDate: 20 };
-// 矢上小版（授業案 rev3）：作者は「クラス＋出席番号」の4桁（4201〜4228）、場所は3か所のどれか
-const NUMBER_RE = /^42(0[1-9]|1[0-9]|2[0-8])$/;
+// 矢上小版（授業案 rev3）：作者は「クラス＋出席番号」の4桁（4201〜4235。28人だが余裕をもたせて35番まで）、場所は3か所のどれか
+const NUMBER_RE = /^42(0[1-9]|[12][0-9]|3[0-5])$/;
 const PLACES = ["hiyoshi5", "kagami", "yagami"];
 const TEXT_FIELDS = Object.keys(MAX_TEXT);
 const IMAGE_TYPES = { jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png", webp: "image/webp" };

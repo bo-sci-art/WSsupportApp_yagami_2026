@@ -15,9 +15,11 @@
     display: grid; place-items: center; padding: 16px;
   }
   /* ふりがなが漢字より長くても、漢字の間をあけない（ふりがなを左右にはみ出させる） */
-  /* ふりがな：Safari は rt の position を無視するため、position を使わずに漢字の上にのせる（Safari・Chrome で同じ見え方） */
-ruby { display: inline-flex; flex-direction: column; align-items: center; line-height: 1; vertical-align: text-bottom; position: relative; top: -.21em; text-indent: 0; }
-  ruby rt { order: -1; display: flex; justify-content: center; align-items: flex-end; width: 0; height: 0; font-size: .55em; line-height: 1; white-space: nowrap; letter-spacing: 0; text-align: center; transform: translateY(-.15em); pointer-events: none; }
+  /* ふりがな：Safari は rt の position を無視するため、position を使わずに漢字の上にのせる。
+   漢字はベースラインでまわりの文字とそろえる（フォントに関係なく一直線にならぶ。Safari・Chrome で同じ見え方）。
+   rt は幅0・高さ0 で漢字のうしろに置き、margin-left:-50%（＝漢字の幅の半分）で漢字のまん中の上にもどす */
+ruby { display: inline-flex; flex-direction: row; align-items: baseline; line-height: 1; vertical-align: baseline; text-indent: 0; }
+  ruby rt { align-self: flex-start; display: flex; justify-content: center; align-items: flex-end; width: 0; height: 0; margin-left: -50%; font-size: .55em; line-height: 1; white-space: nowrap; letter-spacing: 0; text-align: center; transform: translateY(-.15em); pointer-events: none; }
   .card {
     width: min(760px, 100%); background: #fff; border-radius: 28px;
     padding: 40px 32px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,.08);

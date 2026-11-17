@@ -19,7 +19,7 @@ if (!base0 || !adminKey) {
   process.exit(1);
 }
 const BASE = base0.replace(/\/+$/, "");
-const N = Math.min(28, Number(n0 || 28));   // 番号は 4201〜4228 なので最大28件
+const N = Math.min(35, Number(n0 || 28));   // 番号は 4201〜4235 なので最大35件（ふつうは4年2組の人数の28件）
 // 授業案 rev3：場所は3か所（座標は固定）。28件を 10・9・9 に分ける
 const PLACES = [
   { id: "hiyoshi5", lat: 35.55112, lon: 139.65574 },
