@@ -42,6 +42,12 @@
           <option value="hidden">非公開だけ</option>
         </select>
       </label>
+      <label>並び順
+        <select id="sortOrder">
+          <option value="id">登録した順（id）</option>
+          <option value="number">出席番号の順</option>
+        </select>
+      </label>
       <input type="search" id="searchInput" placeholder="出席番号・タイトルで検索">
       <button type="button" id="reloadBtn" class="btn btn-ghost">読み直す</button>
       <span id="countInfo" class="adm-count"></span>
@@ -166,6 +172,6 @@
   <script src="../common/config.js?v=yagami4"></script>
   <script src="../common/places.js?v=yagami5"></script>
   <script src="../common/ruby.js?v=yagami5"></script>
-  <script src="./admin_script.js?v=admin4"></script>
+  <script src="./admin_script.js?v=admin5"></script>
 </body>
 </html>

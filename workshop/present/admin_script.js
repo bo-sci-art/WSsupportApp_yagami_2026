@@ -115,6 +115,7 @@
     var place = $("placeFilter").value;
     var status = $("statusFilter").value;
     var q = $("searchInput").value.trim().toLowerCase();
+    var byNumber = $("sortOrder").value === "number";
     return items.filter(function (p) {
       if (place) {
         var pl = window.yagamiPlaceOf ? window.yagamiPlaceOf(p.place, Number(p.lat), Number(p.lon)) : null;
@@ -127,6 +128,13 @@
         if (hay.indexOf(q) < 0) return false;
       }
       return true;
+    }).sort(function (a, b) {
+      // 並び順：出席番号の順（番号のない作品は最後、同じ番号は id の順）／登録した順（id）
+      if (byNumber) {
+        var na = Number(a.field_25) || Infinity, nb = Number(b.field_25) || Infinity;
+        if (na !== nb) return na < nb ? -1 : 1;
+      }
+      return Number(a.id) - Number(b.id);
     });
   }
 
@@ -573,6 +581,7 @@
   });
   $("placeFilter").addEventListener("change", render);
   $("statusFilter").addEventListener("change", render);
+  $("sortOrder").addEventListener("change", render);
   $("searchInput").addEventListener("input", render);
   $("reloadBtn").addEventListener("click", function () { $("resultMsg").hidden = true; reload(); });
   $("checkAll").addEventListener("click", function () { selectVisible($("checkAll").checked); });
