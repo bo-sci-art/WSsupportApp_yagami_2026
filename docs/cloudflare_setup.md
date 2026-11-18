@@ -186,6 +186,76 @@ node tools/e2e_flow.mjs https://yagami-submit.kazuki131214.workers.dev <ADMIN_KE
 
 ---
 
+## 作品の修正機能を足すとき（Worker が先、画面があと）
+
+管理画面の「確認・修正」は、Worker の新しい窓口 `PUT /artworks/<id>` を使います。
+**かならず Worker を先に新しくして、管理画面（GitHub Pages）をあとにします。**
+
+- 理由：画面だけが先に新しくなると、先生が「保存する」を押しても、古い Worker には PUT の窓口がないので「保存できませんでした」になります（古い Worker は PUT を知らないため、404 か CORS のエラーになる）。
+  Worker が先に新しくなっていれば、古い画面のままでも今までの操作（一覧・削除・非公開・公開に戻す）はそのまま使えるので、困ることはありません。
+- 注意：このリポジトリは Cloudflare の Workers Builds につながっているので、**main に push すると Worker も自動でデプロイ**されます。
+  画面と Worker を同じ push に入れると、どちらが先に新しくなるか決まらないので、**push を2回に分けます**（下の 2・3）。
+
+### 0. 本番の D1 に extra 列があるか確かめる
+
+直した日時は `extra` 列に入れます。Cloudflare のダッシュボードの **D1 → yagami-artworks → Console** で次を実行し、エラーにならなければ OK です。
+
+```sql
+SELECT id, extra FROM artworks LIMIT 1;
+```
+
+「no such column: extra」と出たときだけ、次を1回実行します（今までのデータは消えません）。
+
+```sql
+ALTER TABLE artworks ADD COLUMN extra TEXT;
+```
+
+### 1. 本番データをバックアップする
+
+管理画面（今の本番）に入り、念のため全作品を書き出しておきます。PowerShell で次を実行すると `yagami_artworks.geojson` に保存されます（`<ADMIN_KEY>` は自分で入れる。ファイルやメモに残さない）。
+
+```bash
+curl.exe -H "Authorization: Bearer <ADMIN_KEY>" -o yagami_artworks_before_edit.geojson https://yagami-submit.kazuki131214.workers.dev/export
+```
+
+画像は R2 に残ったままで、修正では変わりません。
+
+### 2. Worker を先にデプロイする
+
+次のどれか1つで行います。
+
+- **A（おすすめ）：Worker の変更だけを先に push する。** Worker の commit（`worker/src/index.js` などを直した commit）だけを先に push し、
+  Cloudflare の **Workers & Pages → yagami-submit → Deployments** で、その commit の Build が「Success」になるのを待ちます。
+  ※ このとき管理画面の commit はまだ push しない（`git push origin <Worker の commit の id>:main` で、その commit までを送れる）
+- B：手元から `cd worker` → `npx.cmd wrangler deploy`
+- C：ダッシュボードの **yagami-submit → Edit code** で `worker/src/index.js` の中身を全部貼りかえて「Deploy」
+
+デプロイできたら、PUT の窓口があるかを確かめます（作品は変わりません。合言葉なしなので 401 が返れば OK）。
+
+```bash
+curl.exe -i -X PUT https://yagami-submit.kazuki131214.workers.dev/artworks/1
+```
+
+`401` と `{"ok":false,"error":"unauthorized"}` が出れば、新しい Worker です（古い Worker のままだと `404` の `not found`）。
+
+### 3. 管理画面を push する
+
+残りの commit（`workshop/present/admin.html` などの画面の変更）を push します。
+GitHub の **Actions** で「pages build and deployment」が緑になったら反映済みです。
+ブラウザに古い画面が残っていたら、再読み込みします（`admin.html` の `?v=` を上げてあるので、ふつうは新しくなります）。
+
+### 4. 本番で1件だけ直して確かめる
+
+1. 管理画面に入り、直してよい作品を1つ選んで「確認・修正」を押す
+2. 1か所だけ直して（例：タイトルの読点を1つ足す）「保存する」→ 変更前 → 変更後 を確かめて「保存する」
+3. 「保存しました」が出て、一覧の「最終修正」に「修正済み」と日時が出ることを確かめる
+4. 防災行動マップでその作品を開き、直した内容になっていることを確かめる
+5. 必要なら、同じ手順で元にもどす
+
+うまくいかないとき：「保存できませんでした」と出るなら Worker が古いままの可能性が高いので、2 の確かめ方で 401 が出るかを見ます。
+
+---
+
 ## 運用で使うコマンド
 
 ### 授業案 rev3 より前に D1 を作っていた場合
@@ -259,4 +329,5 @@ npm run dev
 - `SUBMIT_SECRET` はアプリのコードに書かれるため、ページのソースを見ればだれでも分かります（いたずら投稿は防げません）。今回はこの方式でよいことになっています。
 - CORS は `https://bo-sci-art.github.io` と localhost だけを許可しています（`wrangler.toml` の `ALLOWED_ORIGINS`）。
 - 画像は推測しにくいランダムなキーで R2 に保存し、`GET /images/<key>` で返します。作品を DELETE すると画像も消えます。
+- 作品の情報の修正は `PUT /artworks/<id>`（中身は直す項目だけ：`field_25`・`Message`・`Body`・`place`・`field_23`・`field_24`。登録と同じ基準で確かめ、場所を変えると座標もその場所に移す。直した日時は `extra.updated_at`）。
 - 公開・非公開の切り替えは `PATCH /artworks/<id>`（中身は `{"status":"approved"}` か `{"status":"hidden"}`、`Authorization: Bearer <ADMIN_KEY>` が必要）。管理画面はこれを使っています。

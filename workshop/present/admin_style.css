@@ -109,3 +109,66 @@ code { background: #eef0f3; padding: 1px 5px; border-radius: 4px; }
 .confirm-list { margin: 0 0 14px; padding: 10px 14px 10px 30px; background: #f9fafb; border-radius: 8px; max-height: 300px; overflow: auto; line-height: 1.8; }
 .confirm-progress { margin: 0 0 12px; font-weight: 600; color: #2378a2; }
 .confirm-btns { display: flex; justify-content: flex-end; gap: 10px; }
+
+/* ふりがな（漢字{かな} を ruby.js が <ruby> にする。子ども用の画面と同じ見え方） */
+ruby { display: inline-flex; flex-direction: row; align-items: baseline; line-height: 1; vertical-align: baseline; text-indent: 0; }
+ruby rt { align-self: flex-start; display: flex; justify-content: center; align-items: flex-end; width: 0; height: 0; margin-left: -50%; font-size: .55em; line-height: 1; white-space: nowrap; letter-spacing: 0; text-align: center; transform: translateY(-.15em); pointer-events: none; color: #6b7280; }
+
+/* 一覧：最終修正の列・確認・修正ボタン */
+.c-upd { width: 110px; font-size: 12px; }
+.c-edit { width: 104px; text-align: right !important; }
+.badge-edited { background: #fef3c7; color: #92400e; }
+.upd-date { color: #6b7280; margin-top: 2px; white-space: nowrap; }
+.btn-edit { background: #fff; border-color: #2378a2; color: #2378a2; padding: 6px 10px; }
+.btn-edit:hover { background: #e0f2fe; }
+.adm-table tbody tr.is-edited td.c-id { box-shadow: inset 3px 0 0 #f59e0b; }
+
+/* 確認・修正パネル（iPad の縦 768px でも使えるように、パネルの中をスクロールする） */
+.edit-overlay { place-items: start center; display: grid; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 24px 12px; }
+.edit-panel { width: 720px; max-width: 100%; background: #fff; border-radius: 14px; padding: 20px 22px 24px; box-shadow: 0 20px 60px rgba(0,0,0,.25); margin: 0 auto; }
+.edit-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.edit-head h2 { margin: 0; font-size: 19px; }
+.edit-top { display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap; background: #f9fafb; border-radius: 10px; padding: 12px; }
+.edit-img { width: 220px; max-width: 100%; max-height: 220px; object-fit: contain; background: #e5e7eb; border-radius: 8px; }
+.edit-meta { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; margin: 0; font-size: 14px; }
+.edit-meta dt { color: #6b7280; font-weight: 600; }
+.edit-meta dd { margin: 0; }
+.edit-note { color: #4b5563; font-size: 14px; line-height: 1.8; margin: 12px 0 4px; }
+.edit-form { display: flex; flex-direction: column; gap: 6px; }
+.ef { border: 1px solid #e5e7eb; border-radius: 10px; padding: 10px 12px; transition: background .15s, border-color .15s; }
+.ef.changed { background: #fef9c3; border-color: #f59e0b; }
+.ef.changed .ef-label::after { content: "　直しました"; color: #b45309; font-size: 12px; font-weight: 700; }
+.ef-label { display: block; font-weight: 700; margin-bottom: 6px; font-size: 15px; }
+.ef-hint { font-weight: 400; color: #6b7280; font-size: 13px; }
+.ef input[type=text], .ef textarea { width: 100%; font: inherit; font-size: 16px; padding: 9px 11px; border: 1px solid #d1d5db; border-radius: 8px; background: #fff; }
+.ef textarea { resize: vertical; line-height: 1.7; }
+#efNumber { width: 9em; letter-spacing: .1em; font-weight: 700; }
+.ef-choices { display: flex; flex-wrap: wrap; gap: 8px; }
+.ef-choice { display: inline-flex; align-items: center; gap: 8px; border: 1px solid #d1d5db; border-radius: 10px; padding: 14px 12px 8px; cursor: pointer; background: #fff; line-height: 1.9; font-size: 15px; }
+.ef-choice input { width: 20px; height: 20px; margin: 0; flex: none; }
+.ef-choice small { color: #6b7280; font-size: 12px; }
+.ef-choice:has(input:checked) { border-color: #2378a2; background: #e0f2fe; }
+.ef-dot { width: 12px; height: 12px; border-radius: 50%; flex: none; }
+.ef-place-note { margin: 8px 0 0; color: #b45309; font-weight: 700; line-height: 2; }
+.edit-error { margin: 6px 0 0; padding: 10px 12px; border-radius: 8px; background: #fee2e2; color: #991b1b; font-weight: 700; line-height: 1.7; }
+.edit-btns { display: flex; justify-content: flex-end; gap: 10px; margin-top: 12px; }
+.edit-btns .btn { padding: 10px 20px; font-size: 15px; }
+
+/* ページの中の確認（保存してよいか） */
+.dlg-overlay { z-index: 60; }
+.dlg-body { margin-bottom: 14px; line-height: 1.8; }
+.dlg-body p { margin: 0 0 8px; }
+.dlg-diff { width: 100%; border-collapse: collapse; font-size: 14px; }
+.dlg-diff th, .dlg-diff td { padding: 6px 8px; border-bottom: 1px solid #eef0f3; text-align: left; vertical-align: top; word-break: break-word; }
+.dlg-diff thead th { color: #6b7280; font-weight: 600; font-size: 12px; }
+.dlg-before { color: #6b7280; text-decoration: line-through; }
+.dlg-after { color: #166534; font-weight: 700; }
+.dlg-arrow { color: #9ca3af; width: 1em; }
+.dlg-none { color: #9ca3af; text-decoration: none; }
+.dlg-note { color: #b45309; font-weight: 700; }
+
+@media (max-width: 800px) {
+  .edit-panel { padding: 16px; }
+  .edit-img { width: 160px; }
+  .ef-choice { width: 100%; }
+}

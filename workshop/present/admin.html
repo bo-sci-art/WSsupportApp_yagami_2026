@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow">
   <title>作品の管理（矢上小 防災行動マップ）</title>
-  <link rel="stylesheet" href="./admin_style.css?v=admin2">
+  <link rel="stylesheet" href="./admin_style.css?v=admin3">
 </head>
 <body>
   <header class="adm-header">
@@ -61,6 +61,8 @@
           <th class="c-phase">いつの行動</th>
           <th class="c-date">登録日時</th>
           <th class="c-status">状態</th>
+          <th class="c-upd">最終修正</th>
+          <th class="c-edit"></th>
         </tr>
       </thead>
       <tbody id="rows"></tbody>
@@ -96,8 +98,74 @@
     </div>
   </div>
 
+  <!-- 確認・修正パネル -->
+  <div id="editOverlay" class="adm-overlay edit-overlay" hidden>
+    <div class="edit-panel" role="dialog" aria-modal="true" aria-labelledby="editTitle">
+      <div class="edit-head">
+        <h2 id="editTitle">作品の確認・修正</h2>
+        <button type="button" id="editClose" class="btn btn-ghost">やめる</button>
+      </div>
+      <div class="edit-top">
+        <img id="editImg" class="edit-img" alt="作品の画像">
+        <dl class="edit-meta">
+          <dt>id</dt><dd id="editId"></dd>
+          <dt>状態</dt><dd id="editStatus"></dd>
+          <dt>登録日時</dt><dd id="editCreated"></dd>
+          <dt>最終修正</dt><dd id="editUpdated"></dd>
+        </dl>
+      </div>
+      <p class="edit-note">直したいところを書きかえて、いちばん下の「保存する」を押してください。直したところは黄色になります。</p>
+
+      <form id="editForm" class="edit-form" autocomplete="off" novalidate>
+        <div class="ef" data-field="Message">
+          <label class="ef-label" for="efTitle">タイトル</label>
+          <input type="text" id="efTitle" maxlength="300">
+        </div>
+        <div class="ef" data-field="Body">
+          <label class="ef-label" for="efBody">伝えたいこと</label>
+          <textarea id="efBody" rows="4" maxlength="1000"></textarea>
+        </div>
+        <div class="ef" data-field="place">
+          <div class="ef-label">場所</div>
+          <div id="efPlaces" class="ef-choices ef-places"></div>
+          <p id="efPlaceNote" class="ef-place-note" hidden></p>
+        </div>
+        <div class="ef" data-field="field_24">
+          <div class="ef-label">見たハザードマップ <span class="ef-hint">（いくつでも）</span></div>
+          <div id="efHazards" class="ef-choices"></div>
+        </div>
+        <div class="ef" data-field="field_23">
+          <div class="ef-label">いつの行動か <span class="ef-hint">（いくつでも）</span></div>
+          <div id="efPhases" class="ef-choices"></div>
+        </div>
+        <div class="ef" data-field="field_25">
+          <label class="ef-label" for="efNumber">出席番号 <span class="ef-hint">（4201〜4235）</span></label>
+          <input type="text" id="efNumber" inputmode="numeric" maxlength="4" pattern="[0-9]*">
+        </div>
+        <p id="editError" class="edit-error" hidden></p>
+        <div class="edit-btns">
+          <button type="button" id="editCancel" class="btn btn-ghost">やめる</button>
+          <button type="submit" id="editSave" class="btn btn-primary">保存する</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ページの中の確認（保存してよいか・保存せずに閉じるか） -->
+  <div id="dlgOverlay" class="adm-overlay dlg-overlay" hidden>
+    <div class="confirm-panel" role="alertdialog" aria-modal="true" aria-labelledby="dlgTitle">
+      <h2 id="dlgTitle"></h2>
+      <div id="dlgBody" class="dlg-body"></div>
+      <div class="confirm-btns">
+        <button type="button" id="dlgCancel" class="btn btn-ghost">もどる</button>
+        <button type="button" id="dlgOk" class="btn btn-primary">OK</button>
+      </div>
+    </div>
+  </div>
+
   <script src="../common/config.js?v=yagami4"></script>
   <script src="../common/places.js?v=yagami5"></script>
-  <script src="./admin_script.js?v=admin3"></script>
+  <script src="../common/ruby.js?v=yagami5"></script>
+  <script src="./admin_script.js?v=admin4"></script>
 </body>
 </html>
