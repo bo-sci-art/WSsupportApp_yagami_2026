@@ -5,6 +5,7 @@
 //   name  : 画面に出す名前（ふりがなは 漢字{かな} の書き方。ruby.js が <ruby> にする）
 //   plain : ふりがななしの名前
 (function () {
+  // ※座標を変えるときは、worker/src/index.js の PLACE_COORDS も同じ値にすること（管理画面で場所を直したとき、Worker がこの座標にピンを移す）
   window.YAGAMI_PLACES = [
     { id: 'hiyoshi5', name: '日吉{ひよし}五丁目{ごちょうめ}公園{こうえん}', plain: '日吉五丁目公園', short: '日吉{ひよし}五丁目{ごちょうめ}公園{こうえん}', lat: 35.55112, lon: 139.65574, color: '#2f80ed' },
     { id: 'kagami',   name: '日吉{ひよし}六丁目{ろくちょうめ}鏡ヶ淵{かがみがふち}公園{こうえん}', plain: '日吉六丁目鏡ヶ淵公園', short: '鏡ヶ淵{かがみがふち}公園{こうえん}', lat: 35.54543, lon: 139.65512, color: '#16a34a' },

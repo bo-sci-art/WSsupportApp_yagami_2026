@@ -9,6 +9,8 @@
 //   GET    /export          全作品を GeoJSON でダウンロード（ADMIN_KEY が必要）
 //   DELETE /artworks/:id    作品を1件削除（画像も消す。ADMIN_KEY が必要）
 //   PATCH  /artworks/:id    作品の公開・非公開を切り替える（{ "status": "approved" | "hidden" }。ADMIN_KEY が必要）
+//   PUT    /artworks/:id    作品の情報を直す（番号・タイトル・伝えたいこと・場所・いつの行動か・見たハザードマップ。ADMIN_KEY が必要）
+//                           送られてきた項目だけを直す。画像・status・created_at は変えない。extra.updated_at に直した日時を残す
 //
 // シークレット（wrangler secret put で登録）
 //   SUBMIT_SECRET  アプリが送る合言葉（アプリのコードに書かれるので、だれでも見られる）
@@ -22,6 +24,15 @@ const MAX_TEXT = { field_23: 100, field_24: 500, field_25: 60, Message: 300, Bod
 // 矢上小版（授業案 rev3）：作者は「クラス＋出席番号」の4桁（4201〜4235。28人だが余裕をもたせて35番まで）、場所は3か所のどれか
 const NUMBER_RE = /^42(0[1-9]|[12][0-9]|3[0-5])$/;
 const PLACES = ["hiyoshi5", "kagami", "yagami"];
+// 場所の座標（workshop/common/places.js の YAGAMI_PLACES と同じ値にすること）。作品の場所を直したとき、ピンをここに移す
+const PLACE_COORDS = {
+  hiyoshi5: { lat: 35.55112, lon: 139.65574 },
+  kagami:   { lat: 35.54543, lon: 139.65512 },
+  yagami:   { lat: 35.55400, lon: 139.65763 }
+};
+// いつの行動か（保存する値）と、見たハザードマップ（保存する正式名）。作品を直すときに確かめる
+const PHASES = ["事前", "災害時", "復旧時"];
+const HAZARDS = ["洪水（外水氾濫）", "高潮", "内水氾濫", "土砂災害（急傾斜地の崩壊）", "地震の揺れ（震度）"];
 const TEXT_FIELDS = Object.keys(MAX_TEXT);
 const IMAGE_TYPES = { jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png", webp: "image/webp" };
 
@@ -41,6 +52,7 @@ export default {
       if (request.method === "GET" && path === "/export") return await exportAll(request, env, cors, url);
       if (request.method === "DELETE" && path.startsWith("/artworks/")) return await deleteArtwork(request, path.slice(10), env, cors, url);
       if (request.method === "PATCH" && path.startsWith("/artworks/")) return await setArtworkStatus(request, path.slice(10), env, cors);
+      if (request.method === "PUT" && path.startsWith("/artworks/")) return await updateArtwork(request, path.slice(10), env, cors);
       if (request.method === "GET" && path === "/") return json({ ok: true, name: "yagami-submit" }, 200, cors);
 
       return json({ ok: false, error: "not found" }, 404, cors);
@@ -168,7 +180,11 @@ function toGeoJSON(rows, includeAdmin) {
       };
       if (r.hazard != null) properties.hazard = r.hazard;
       if (r.target != null) properties.target = r.target;
-      if (includeAdmin) properties.created_at = r.created_at;
+      if (includeAdmin) {
+        properties.created_at = r.created_at;
+        const ex = parseExtra(r.extra);
+        if (ex.updated_at) properties.updated_at = ex.updated_at;
+      }
       return { type: "Feature", geometry: { type: "Point", coordinates: [r.lon, r.lat] }, properties };
     })
   };
@@ -222,6 +238,72 @@ async function setArtworkStatus(request, idStr, env, cors) {
 }
 
 // ---------------------------------------------------------------------------
+// PUT /artworks/:id（作品の情報を直す。先生が管理画面から使う）
+// ---------------------------------------------------------------------------
+const EDITABLE = ["field_23", "field_24", "field_25", "Message", "Body", "place"];
+function listOf(v) {
+  if (v === null || v === undefined) return [];
+  const arr = Array.isArray(v) ? v : String(v).split(/[,、]\s*/);
+  return arr.map(x => String(x).trim()).filter(Boolean);
+}
+function parseExtra(t) {
+  if (!t) return {};
+  try { const o = JSON.parse(t); return o && typeof o === "object" && !Array.isArray(o) ? o : {}; } catch (e) { return {}; }
+}
+async function updateArtwork(request, idStr, env, cors) {
+  if (!isAdmin(request, env)) return json({ ok: false, error: "unauthorized" }, 401, cors);
+  const id = Number(idStr);
+  if (!Number.isInteger(id) || id <= 0) return json({ ok: false, error: "bad id" }, 400, cors);
+  let body;
+  try { body = await request.json(); } catch (e) { return json({ ok: false, error: "invalid json" }, 400, cors); }
+  if (!body || typeof body !== "object" || Array.isArray(body)) return json({ ok: false, error: "invalid json" }, 400, cors);
+
+  const set = {};
+  for (const k of EDITABLE) {
+    if (!(k in body)) continue;
+    const v = body[k];
+    if (k === "field_23" || k === "field_24") {
+      const list = listOf(v), allowed = k === "field_23" ? PHASES : HAZARDS;
+      const bad = list.filter(x => allowed.indexOf(x) < 0);
+      if (bad.length) return json({ ok: false, error: k === "field_23" ? "invalid phase" : "invalid hazard", field: k, values: bad }, 400, cors);
+      const joined = Array.from(new Set(list)).join(", ");
+      if (joined.length > MAX_TEXT[k]) return json({ ok: false, error: "too long", field: k, max: MAX_TEXT[k] }, 400, cors);
+      set[k] = joined || null;
+      continue;
+    }
+    if (v !== null && typeof v !== "string" && typeof v !== "number") return json({ ok: false, error: "invalid value", field: k }, 400, cors);
+    const str = v === null ? null : String(v).trim();
+    if (k === "field_25") {
+      if (!str || !NUMBER_RE.test(str)) return json({ ok: false, error: "invalid number", field: k }, 400, cors);
+    } else if (k === "place") {
+      if (!str || PLACES.indexOf(str) < 0) return json({ ok: false, error: "invalid place", field: k }, 400, cors);
+    }
+    if (str !== null && str.length > MAX_TEXT[k]) return json({ ok: false, error: "too long", field: k, max: MAX_TEXT[k] }, 400, cors);
+    set[k] = str === "" ? null : str;
+  }
+  if (!Object.keys(set).length) return json({ ok: false, error: "nothing to update" }, 400, cors);
+
+  const row = await env.DB.prepare(`SELECT * FROM artworks WHERE id = ?1`).bind(id).first();
+  if (!row) return json({ ok: false, error: "not found" }, 404, cors);
+
+  // 場所が変わったら、ピンの座標もその場所に移す
+  if (set.place && PLACE_COORDS[set.place]) { set.lat = PLACE_COORDS[set.place].lat; set.lon = PLACE_COORDS[set.place].lon; }
+  // 直した日時を extra に残す（extra にほかの項目が入っていたら、そのまま残す）
+  const extra = parseExtra(row.extra);
+  extra.updated_at = new Date().toISOString();
+  set.extra = JSON.stringify(extra);
+
+  // 列名は EDITABLE と lat/lon/extra だけ（利用者の文字は bind で渡す）
+  const cols = Object.keys(set);
+  const sql = `UPDATE artworks SET ${cols.map((c, i) => c + " = ?" + (i + 1)).join(", ")} WHERE id = ?${cols.length + 1}`;
+  await env.DB.prepare(sql).bind(...cols.map(c => set[c]), id).run();
+
+  const after = await env.DB.prepare(`SELECT * FROM artworks WHERE id = ?1`).bind(id).first();
+  const feature = toGeoJSON([after], true).features[0];
+  return json({ ok: true, id: String(id), feature, properties: feature.properties }, 200, cors);
+}
+
+// ---------------------------------------------------------------------------
 // 共通
 // ---------------------------------------------------------------------------
 function isAdmin(request, env) {
@@ -244,7 +326,7 @@ function corsHeaders(request, env) {
   const allowed = String(env.ALLOWED_ORIGINS || "").split(",").map(s => s.trim()).filter(Boolean);
   const isLocal = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
   const h = {
-    "Access-Control-Allow-Methods": "GET, POST, PATCH, DELETE, OPTIONS",
+    "Access-Control-Allow-Methods": "GET, POST, PUT, PATCH, DELETE, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type, Authorization",
     "Access-Control-Max-Age": "86400",
     "Vary": "Origin"
