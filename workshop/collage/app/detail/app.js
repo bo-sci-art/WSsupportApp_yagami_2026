@@ -18,8 +18,41 @@ function resizeCanvasToCSS() {
 }
 
 resizeCanvasToCSS();
-window.addEventListener('resize', () => { resizeCanvasToCSS(); computeContain(); render(); });
-window.addEventListener('orientationchange', () => { resizeCanvasToCSS(); computeContain(); render(); });
+
+// キャンバスの見た目の大きさが変わったら、内部の大きさ（座標の計算）を合わせ直す。
+// window の resize だけでは、iframe の中のレイアウトだけが変わったとき・Safari のツールバーの出入り・
+// 戻るボタン（bfcache）で戻ったときなどに気づけず、タップした所とスタンプの位置がずれていた。
+// 合わせ直すときは、置いてあるスタンプも「絵の中の割合」で新しい大きさに移す（向きを変えてもスタンプが絵の同じ所に残る）。
+function syncCanvasSize() {
+  const r = canvas.getBoundingClientRect();
+  if (!r.width || !r.height) return;   // 見えていないとき（地図パネルの裏など）は何もしない
+  const d = Math.max(1, window.devicePixelRatio || 1);
+  if (Math.abs(r.width - cssW) < 0.5 && Math.abs(r.height - cssH) < 0.5 && d === dpr) return;
+  const oldFit = { ...fit };
+  resizeCanvasToCSS();
+  computeContain();
+  remapStamps(oldFit, fit);
+  render();
+}
+function remapStamps(of, nf) {
+  if (!of || !of.w || !of.h || (of.x === nf.x && of.y === nf.y && of.w === nf.w && of.h === nf.h)) return;
+  const k = nf.w / of.w;
+  const move = (s) => {
+    s.x = nf.x + (s.x - of.x) / of.w * nf.w;
+    s.y = nf.y + (s.y - of.y) / of.h * nf.h;
+    if (typeof s.scale === 'number') s.scale *= k;
+    if (typeof s.baseScale === 'number') s.baseScale *= k;
+  };
+  stamps.forEach(move);
+  history.stack.forEach(snap => snap.forEach(move));   // 「ひとつもどす」で前の位置にもどっても、ずれないように
+}
+window.addEventListener('resize', syncCanvasSize);
+window.addEventListener('orientationchange', () => { syncCanvasSize(); setTimeout(syncCanvasSize, 300); });   // iPad は向きが変わった直後の大きさがまだ古いことがある
+window.addEventListener('pageshow', syncCanvasSize);
+if (window.visualViewport) window.visualViewport.addEventListener('resize', syncCanvasSize);
+// ResizeObserver の中で大きさを変えると Safari が「ResizeObserver loop」のエラーを出すので、次の描画のときに合わせ直す
+let __syncRaf = 0;
+if (window.ResizeObserver) new ResizeObserver(() => { cancelAnimationFrame(__syncRaf); __syncRaf = requestAnimationFrame(syncCanvasSize); }).observe(canvas);
 
 // ステージ上のスクロール/ズーム/ダブルタップズームを止める
 if (stageWrap) {
