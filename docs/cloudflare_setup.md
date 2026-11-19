@@ -299,6 +299,21 @@ npx wrangler d1 execute yagami-artworks --remote --command "UPDATE artworks SET 
 
 ---
 
+## 作品の受け付けを止める・再開する（v3）
+
+矢上小の授業が終わったので、今は新しい作品の登録を止めています（防災行動マップと管理画面はそのまま使えます）。
+
+- Worker：`worker/wrangler.toml` の `[vars]` に `REGISTRATION_OPEN = "false"`。止めているときの `POST /submit` は `403` と `{"ok":false,"error":"registration closed"}` を返す
+- 画面：`workshop/common/config.js` の `var REGISTRATION_OPEN = false;`
+- 再開するとき：両方を `true`（`"true"`）にして、main に push する（Workers Builds が Worker をデプロイし、GitHub Pages も新しくなる）
+- ダッシュボードの「Variables and Secrets」だけで値を変えると、次に push したときに `wrangler.toml` の値で上書きされるので、`wrangler.toml` で変える
+
+本番に出したあとの確かめ方（作品は登録されません。403 が返れば止まっています）：
+
+```bash
+curl.exe -i -X POST -H "Content-Type: application/json" -d "{}" https://yagami-submit.kazuki131214.workers.dev/submit
+```
+
 ## 手元（ローカル）で試すとき
 
 Cloudflare にログインしなくても、手元の PC だけで Worker を動かせます。`worker/.dev.vars` に次の2行を書きます（このファイルは git に入りません）。
@@ -319,6 +334,8 @@ npm run db:init:local
 ```bash
 npm run dev
 ```
+
+（v3 から `wrangler.toml` は受け付けを止めた設定なので、作品を登録して試すときは `npx.cmd wrangler dev --local --port 8787 --var REGISTRATION_OPEN:true` で動かします）
 
 アプリは別のターミナルで `node tools/serve.mjs 5500` を動かし、
 `http://127.0.0.1:5500/workshop/start/index.html?worker=http://127.0.0.1:8787` を開くと手元の Worker に送られます

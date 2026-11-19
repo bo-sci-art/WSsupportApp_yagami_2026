@@ -105,6 +105,9 @@ async function flow(label, viewport, placeId, number, hazards) {
     browser = ENGINE === "webkit" ? await webkit.launch() : await chromium.launch({ args: ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"] });
     ctx = await browser.newContext(opts);
   }
+  // v3：config.js は受け付けを止めた状態（REGISTRATION_OPEN = false）。このテストは登録までの流れを確かめるので、テストの中だけ true にする
+  //     （手元の Worker も受け付ける状態で動かす：npx.cmd wrangler dev --local --var REGISTRATION_OPEN:true）
+  await ctx.route(/\/workshop\/common\/config\.js/, async (route) => { const res = await route.fetch(); await route.fulfill({ response: res, body: (await res.text()).replace(/var REGISTRATION_OPEN = (true|false);/, "var REGISTRATION_OPEN = true;") }); });
   let page = await ctx.newPage();
   const watch = (p) => { p.on("pageerror", e => run.errors.push(`${p.url().replace(APP, "")}: ${e.message}`)); p.on("dialog", d => d.accept()); };
   watch(page);

@@ -17,7 +17,9 @@
 //   ADMIN_KEY      管理用の合言葉（アプリには書かない）。Authorization: Bearer <ADMIN_KEY> で送る
 //
 // 環境変数（wrangler.toml の [vars]）
-//   ALLOWED_ORIGINS  CORS を許可するオリジン（カンマ区切り）。localhost / 127.0.0.1 は常に許可
+//   ALLOWED_ORIGINS    CORS を許可するオリジン（カンマ区切り）。localhost / 127.0.0.1 は常に許可
+//   REGISTRATION_OPEN  "false" にすると POST /submit を止める（403 registration closed）。ないときは受け付ける。
+//                      一覧・画像・管理（/export・PUT・PATCH・DELETE）は、止めているときも使える
 
 const MAX_IMAGE_BYTES = 3 * 1024 * 1024;          // 画像の上限（1000px JPEG なら 0.3MB 前後）
 const MAX_TEXT = { field_23: 100, field_24: 500, field_25: 60, Message: 300, Body: 1000, place: 20, collage: 3000, Mabling: 3000, hazard: 500, target: 200, creationDate: 20 };
@@ -67,6 +69,11 @@ export default {
 // POST /submit
 // ---------------------------------------------------------------------------
 async function submit(request, env, cors) {
+  // 作品の受け付けを止めているとき（授業が終わったあと）。wrangler.toml の [vars] REGISTRATION_OPEN = "false"
+  // 値がないときは受け付ける（ほかの学校版に移すときに、そのまま使えるように）
+  if (!registrationOpen(env)) {
+    return json({ ok: false, error: "registration closed", message: "作品の登録の受け付けは終わりました" }, 403, cors);
+  }
   let body;
   try { body = await request.json(); } catch (e) { return json({ ok: false, error: "invalid json" }, 400, cors); }
 
@@ -306,6 +313,10 @@ async function updateArtwork(request, idStr, env, cors) {
 // ---------------------------------------------------------------------------
 // 共通
 // ---------------------------------------------------------------------------
+function registrationOpen(env) {
+  return String(env.REGISTRATION_OPEN == null ? "true" : env.REGISTRATION_OPEN).trim().toLowerCase() !== "false";
+}
+
 function isAdmin(request, env) {
   if (!env.ADMIN_KEY) return false;
   const h = request.headers.get("Authorization") || "";

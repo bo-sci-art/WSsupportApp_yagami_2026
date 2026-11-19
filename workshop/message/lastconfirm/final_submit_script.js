@@ -191,8 +191,18 @@ function buildSubmitPayload(imageDataURL) {
         imageExt: localStorage.getItem('artworkImageExt') || 'jpg'
     };
 }
+// 作品の受け付けが終わっているか（config.js の REGISTRATION_OPEN）
+function registrationClosed() { return !!(window.YAGAMI_CONFIG && window.YAGAMI_CONFIG.REGISTRATION_OPEN === false); }
+const CLOSED_MSG = '作品{さくひん}の登録{とうろく}の受{う}け付{つ}けは終{お}わりました。防災行動{ぼうさいこうどう}マップで、みんなの作品{さくひん}を見{み}てね。';
+function showClosed() {
+    const btn = document.getElementById('btn-submit-artwork');
+    btn.disabled = true;
+    btn.innerHTML = rb('登録{とうろく}の受{う}け付{つ}けは終{お}わりました');
+    setStatus('info', CLOSED_MSG);
+}
 async function submitArtwork() {
     if (isSubmitting) return;
+    if (registrationClosed()) { showClosed(); return; }   // URL を直接開かれても送信しない
     loadData();
     const miss = missingItems();
     if (miss.length) { setStatus('error', 'まだ入{はい}っていない項目{こうもく}があります：' + miss.join('・')); return; }
@@ -215,6 +225,10 @@ async function sendSubmitPayload(payload) {
             setButton('success');
             setStatus(null);
             showCompletion();
+        } else if (res.status === 403 && json && json.error === 'registration closed') {
+            // Worker 側で受け付けを止めているとき
+            setButton('error');
+            showClosed();
         } else {
             setButton('error');
             setStatus('error', '送信{そうしん}できませんでした。先生{せんせい}を呼{よ}んでください（' + ((json && json.error) ? json.error : 'status ' + res.status) + '）');
@@ -268,7 +282,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderSummary();
     document.getElementById('btn-back').addEventListener('click', () => { location.href = CONFIG.PAGES.artwork; });
     document.getElementById('btn-submit-artwork').addEventListener('click', submitArtwork);
-    checkPendingSubmission();
+    if (registrationClosed()) showClosed();
+    else checkPendingSubmission();
     // 登録が終わったあとにこの画面を開き直したときは、二重に登録しないように完了画面を出す
     if (localStorage.getItem('lastSubmittedArtworkId')) { setButton('success'); showCompletion(); }
     await ensureArtworkImage();

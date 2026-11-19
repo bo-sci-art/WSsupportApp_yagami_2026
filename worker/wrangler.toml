@@ -5,6 +5,9 @@ compatibility_date = "2026-10-01"
 [vars]
 # CORS を許可するオリジン（カンマ区切り）。localhost / 127.0.0.1 は常に許可
 ALLOWED_ORIGINS = "https://bo-sci-art.github.io"
+# 作品の登録（POST /submit）を受け付けるか。"false" で止める（v3：矢上小の授業が終わったので止めている）。
+# 受け付けを再開するときは "true" にしてデプロイし、workshop/common/config.js の REGISTRATION_OPEN も true にする
+REGISTRATION_OPEN = "false"
 
 [[d1_databases]]
 binding = "DB"

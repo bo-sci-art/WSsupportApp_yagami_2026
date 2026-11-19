@@ -41,6 +41,10 @@
 
 ## 設定を変える場所
 
+- **作品の受け付け（v3）**：今は**止めている**（矢上小の授業が終わったため。閲覧専用）。再開するときは次の2か所を `true` にする
+  - 画面：`workshop/common/config.js` の `var REGISTRATION_OPEN = false;`（false のとき、スタート画面は「防災行動マップを見る」だけ、確認画面の「登録する」は押せない）
+  - Worker：`worker/wrangler.toml` の `[vars]` の `REGISTRATION_OPEN = "false"`（false のとき `POST /submit` は 403 `registration closed`）。main に push すると Workers Builds でデプロイされる
+  - どちらのときも、防災行動マップと管理画面（一覧・削除・非公開・確認と修正・並び順）は使える
 - Worker の URL：`workshop/common/config.js`（`DEFAULT_WORKER`）と `workshop/message/lastconfirm/final_submit_script.js`（`WORKER_URL`）
 - 送信用の合言葉：`final_submit_script.js` の `SUBMIT_SECRET`（Worker 側の `SUBMIT_SECRET` と同じ値）
 - 地図の初期位置（矢上小学校の周辺 35.5523, 139.6569）：`map/app/detail/script.js`、`map/Log/log_hazard_map_script.js`、`present/script.js` の `YAGAMI_CENTER` / `defaultCenter`
@@ -86,6 +90,32 @@ node tools/test_admin_edit.mjs http://127.0.0.1:8787 local-admin-key-for-test --
 `test_edit_api.mjs` は窓口（合言葉・入力チェック・場所と座標・画像と status が変わらない・updated_at・今までの操作）を、`test_admin_edit.mjs` は画面（PC 幅と iPad 縦の幅）を確かめ、スクリーンショットを `tools/out/admin_edit/` に保存します。どちらもテストで登録した作品は最後に消します。
 
 ## テスト
+
+※ v3 から、`worker/wrangler.toml` は作品の受け付けを止めた設定（`REGISTRATION_OPEN = "false"`）です。作品を登録するテスト（e2e・28件同時送信・修正のテスト・使い方の写真づくり）は、手元の Worker を**受け付ける状態**で動かします。
+
+```bash
+npx.cmd wrangler dev --local --port 8787 --var REGISTRATION_OPEN:true
+```
+
+（`worker` フォルダで実行。`tools/e2e_flow.mjs` は、画面の `config.js` もテストの中だけ `true` にして動かします）
+
+v3 で足したテスト（アプリを配ってから）：
+
+```bash
+node tools/test_collage_tap.mjs --app http://127.0.0.1:5500
+```
+
+```bash
+node tools/test_marbling_redo.mjs --app http://127.0.0.1:5500
+```
+
+```bash
+node tools/test_registration_switch.mjs http://127.0.0.1:8787 local-admin-key-for-test --worker open --app http://127.0.0.1:5500
+```
+
+- `test_collage_tap.mjs`：コラージュでタップした所にスタンプが置かれるか（iPad の横・縦、レイアウトの変化・向きの変更・戻るボタンのあと）。ふつうは WebKit で動かす（`--browser chromium` も使える）
+- `test_marbling_redo.mjs`：コラージュ →「マーブリングを直す」→ コラージュを2往復しても、絵とスタンプが残るか（WebKit。Chromium のテスト環境では最初のマーブリングを保存できないことがある）
+- `test_registration_switch.mjs`：作品の受け付けを止めたとき・再開したときの画面と Worker。Worker を止めた状態（`wrangler.toml` のまま `npx.cmd wrangler dev --local --port 8787`）では `--worker closed` で動かす。画面の設定は、テストの中で false と true の両方を確かめる
 
 ```bash
 npm install

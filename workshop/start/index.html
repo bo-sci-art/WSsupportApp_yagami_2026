@@ -45,6 +45,12 @@ ruby { display: inline-flex; flex-direction: row; align-items: baseline; line-he
   <main class="card">
     <h1><ruby>防災<rt>ぼうさい</rt></ruby>アートをつくろう</h1>
 
+    <!-- 作品の受け付けが終わったあと（config.js の REGISTRATION_OPEN が false） -->
+    <div id="viewClosed" hidden>
+      <p class="lead"><ruby>矢上小学校<rt>やがみしょうがっこう</rt></ruby>の<ruby>授業<rt>じゅぎょう</rt></ruby>は<ruby>終<rt>お</rt></ruby>わりました。<br>みんなの<ruby>作品<rt>さくひん</rt></ruby>は、<ruby>防災行動<rt>ぼうさいこうどう</rt></ruby>マップで<ruby>見<rt>み</rt></ruby>られます。</p>
+      <div class="btns"><button class="start" id="closedMapBtn" type="button"><ruby>防災行動<rt>ぼうさいこうどう</rt></ruby>マップを<ruby>見<rt>み</rt></ruby>る ▶</button></div>
+    </div>
+
     <!-- 途中のデータがないとき -->
     <div id="viewNew" hidden>
       <p class="lead">「はじめる」をおしてね。</p>
@@ -71,7 +77,7 @@ ruby { display: inline-flex; flex-direction: row; align-items: baseline; line-he
     </div>
   </main>
 
-<script src="../common/config.js?v=yagami4"></script>
+<script src="../common/config.js?v=yagami5"></script>
 <script>
   // 「さいしょから」を押したときだけ、前の人の作品データを消す（共有のiPadでも真っさらから始められるように）
   // ※ページを開いただけでは消さない。1コマ目と2コマ目のあいだはデータを残し、「つづきから」で再開する
@@ -121,7 +127,9 @@ ruby { display: inline-flex; flex-direction: row; align-items: baseline; line-he
   var resume = lsGet("wsResumePage");
   var hasData = !!(resume || lsGet("hazardMapLog") || lsGet("artworkSubmit") || lsGet("artworkImage"));
   var done = !!lsGet("lastSubmittedArtworkId");
-  if (done) document.getElementById("viewDone").hidden = false;
+  var OPEN = !(window.YAGAMI_CONFIG && window.YAGAMI_CONFIG.REGISTRATION_OPEN === false);
+  if (!OPEN) document.getElementById("viewClosed").hidden = false;   // 受け付けが終わったら、マップを見るだけ
+  else if (done) document.getElementById("viewDone").hidden = false;
   else if (hasData) document.getElementById("viewResume").hidden = false;
   else document.getElementById("viewNew").hidden = false;
 
@@ -142,6 +150,7 @@ ruby { display: inline-flex; flex-direction: row; align-items: baseline; line-he
     if (confirm("登録した作品のデータをこのiPadから消して、さいしょから始めますか？\n（マップに登録した作品は消えません）")) startFresh(this);
   });
   document.getElementById("mapBtn").addEventListener("click", function () { location.href = "../present/index.html"; });
+  document.getElementById("closedMapBtn").addEventListener("click", function () { location.href = "../present/index.html"; });
 </script>
 </body>
 </html>
