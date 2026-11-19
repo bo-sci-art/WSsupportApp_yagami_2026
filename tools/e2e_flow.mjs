@@ -313,23 +313,24 @@ async function flow(label, viewport, placeId, number, hazards) {
   step(`作り直し（コラージュ）：確認画面にもどった・作品画像 ${art2 !== art1 ? "更新" : "そのまま"}・スタンプ ${stamps2} 個`);
 
   // 登録
-  // 登録すると、作品がこの端末に自動で保存される（保存ボタンはない）
+  // v3：登録しても、作品をこの端末にダウンロードしない（保存ボタンも、保存のメッセージも出ない）
   let downloads = 0;
   page.on("download", () => { downloads++; });
-  const [dl] = await Promise.all([page.waitForEvent("download", { timeout: 20000 }), page.click("#btn-submit-artwork")]);
+  await page.click("#btn-submit-artwork");
   await page.waitForSelector("#step-complete", { state: "visible", timeout: 20000 });
+  await page.waitForTimeout(2000);
   const id = await page.evaluate(() => localStorage.getItem("lastSubmittedArtworkId"));
   run.submittedId = id;
-  run.download = dl.suggestedFilename();
   run.checks.saveButton = await page.locator("#btn-download").count();
+  run.checks.saveNote = await page.locator("#download-note").count() + await page.getByText("端末に保存").count();
   await shot(page, run, "S8b_done");
-  step(`S8 登録：id=${id}、端末に自動で保存：${run.download}、保存ボタン ${run.checks.saveButton} 個`);
-  // 画面を開き直しても、もう一度は保存しない（二重に保存しない）
+  step(`S8 登録：id=${id}、ダウンロード ${downloads} 回、保存ボタン ${run.checks.saveButton} 個、保存のメッセージ ${run.checks.saveNote} 個`);
+  // 画面を開き直しても、ダウンロードしない
   await page.reload();
   await page.waitForSelector("#step-complete", { state: "visible", timeout: 10000 });
   await page.waitForTimeout(1500);
   run.checks.downloads = downloads;
-  step(`開き直したあとの保存の回数：${downloads} 回（1回なら二重に保存していない）`);
+  step(`開き直したあとのダウンロードの回数：${downloads} 回（0回ならよい）`);
   const saved = await fetch(`${WORKER}/artworks`).then(r => r.json());
   const mine = saved.features.find(f => f.properties.id === id);
   run.checks.savedFields = mine && { place: mine.properties.place, number: mine.properties.field_25, phase: mine.properties.field_23, body: !!mine.properties.Body, lat: mine.geometry.coordinates[1] };
@@ -484,7 +485,7 @@ for (const r of report.runs) {
   const sf = c.savedFields || {};
   if (!sf.body || !/^42\d\d$/.test(sf.number || "") || !sf.place || sf.phase !== "災害時") problems.push(`[${r.label}] 保存された値がおかしい ${JSON.stringify(sf)}`);
   if (!c.guide || c.guide.filter(Boolean).length !== 4 || !c.guideClosed) problems.push(`[${r.label}] マップの使い方の写真が出ない／閉じない ${JSON.stringify(c.guide)}`);
-  if (c.saveButton !== 0 || !/^yagami_\d+_42\d\d\.jpg$/.test(r.download || "") || c.downloads !== 1) problems.push(`[${r.label}] 登録したときの自動保存がおかしい（保存ボタン ${c.saveButton}、ファイル ${r.download}、保存 ${c.downloads} 回）`);
+  if (c.saveButton !== 0 || c.saveNote !== 0 || c.downloads !== 0) problems.push(`[${r.label}] 登録したときに端末に保存している（保存ボタン ${c.saveButton}、保存のメッセージ ${c.saveNote}、ダウンロード ${c.downloads} 回）`);
   if (c.guideButtons !== 1) problems.push(`[${r.label}] マップの使い方のボタンが ${c.guideButtons} 個（1つにする）`);
   if (!c.mapPlaceActive || c.placePins !== 3) problems.push(`[${r.label}] マップで自分の場所が開かない／ピンが3つでない`);
   if (!c.search.hasMine || !c.search.allMatch) problems.push(`[${r.label}] 番号で探す結果がおかしい ${JSON.stringify(c.search)}`);
