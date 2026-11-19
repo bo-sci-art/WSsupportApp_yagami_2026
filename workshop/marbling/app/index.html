@@ -13,10 +13,16 @@
     mapUrl: '../../map/app/detail/index.html',
     frameSave: 'WS_saveMarbling',
     // 修正完了：コラージュを裏で開いてスタンプをのせ直してから確認画面へ
-    editNext: '../../collage/app/index.html?compose=1'
+    editNext: '../../collage/app/index.html?compose=1',
+    // v3：コラージュの「マーブリングを直す」でもどってきたときの案内
+    returnNotice: {
+      param: 'from=collage',
+      badge: '✏️ <ruby>直<rt>なお</rt></ruby>しています',
+      html: 'スタンプは<ruby>消<rt>き</rt></ruby>えないよ。<ruby>直<rt>なお</rt></ruby>したら「つぎへ」でコラージュにもどれるよ'
+    }
   };
 </script>
-<link rel="stylesheet" href="../../common/styles.css?v=yagami6" />
+<link rel="stylesheet" href="../../common/styles.css?v=yagami7" />
 </head>
 <body>
 <main class="stage">
@@ -25,6 +31,6 @@
   </div>
 </main>
 <script src="../../common/progress.js?v=yagami4"></script>
-<script src="../../common/nav.js?v=yagami6"></script>
+<script src="../../common/nav.js?v=yagami7"></script>
 </body>
 </html>

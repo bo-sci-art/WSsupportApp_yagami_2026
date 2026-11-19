@@ -8,14 +8,15 @@
   window.WS_STEP = {
     title: '<ruby>防災行動<rt>ぼうさいこうどう</rt></ruby>をコラージュで<ruby>表<rt>あらわ</rt></ruby>そう',
     flow: { current: 3 },
-    prev: '../../marbling/app/index.html',
+    prev: '../../marbling/app/index.html?from=collage',   // v3：コラージュの途中でマーブリングを直せる（スタンプは残る）
+    prevLabel: '◀ マーブリングを<ruby>直<rt>なお</rt></ruby>す',
     next: '../../message/artwork/artwork_submit.html',   // 授業案 rev3：コラージュの記録（S6）はなくした
     mapUrl: '../../map/app/detail/index.html',
     frameSave: 'WS_flushSave',
     editNext: '../../message/lastconfirm/final_submit.html'
   };
 </script>
-<link rel="stylesheet" href="../../common/styles.css?v=yagami6" />
+<link rel="stylesheet" href="../../common/styles.css?v=yagami7" />
 </head>
 <body>
 <main class="stage">
@@ -24,7 +25,7 @@
   </div>
 </main>
 <script src="../../common/progress.js?v=yagami4"></script>
-<script src="../../common/nav.js?v=yagami6"></script>
+<script src="../../common/nav.js?v=yagami7"></script>
 <script>
   // マーブリングを作り直したあと（?compose=1）：新しいマーブリングにスタンプをのせて作品画像を作り直し、確認画面へもどる
   (function () {

@@ -2152,5 +2152,6 @@ function showSavedToast () {
 }
 
 window.addEventListener("load", () => {
-  setTimeout(() => { restoreMarblingToDye().catch(e => console.warn("前の絵を復元できませんでした", e)); }, 300);
+  // 復元が終わったら WS_marblingRestored = true（テストで、前の絵が出てから確かめるため）
+  setTimeout(() => { restoreMarblingToDye().catch(e => console.warn("前の絵を復元できませんでした", e)).finally(() => { window.WS_marblingRestored = true; }); }, 300);
 });

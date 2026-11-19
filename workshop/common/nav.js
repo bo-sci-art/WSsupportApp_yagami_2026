@@ -9,6 +9,9 @@
 //   frameSave : iframe 内の保存関数名（例 'WS_flushSave'）。「つぎへ」「もどる」の前に呼んで、保存が終わってから移動する
 //   beforeNext: async function（任意）。false を返すと移動しない
 //   editNext  : 確認画面から「作り直す」で開いたとき（URL に ?edit=1）の「修正完了」の行き先
+//   prevLabel : 「◀ もどる」の代わりの文字（任意。例：コラージュでは「◀ マーブリングを直す」）
+//   returnNotice: { param, badge, html }（任意）。URL に param（例 'from=collage'）がついて開いたときだけ、
+//               ヘッダーに badge（「✏️ 修正中」と同じ見た目）、ヘッダーの下に html の案内を出す
 // ※大人版にあった「作品を保存しましたか？」の確認バナーは使わない（自動保存にしたため）
 (function () {
   var S = window.WS_STEP || {};
@@ -37,15 +40,32 @@
     }).join('') + '</div>';
   }
 
+  // 別の画面から「直す」ためにもどってきたとき（例：コラージュ →「マーブリングを直す」）
+  var RN = S.returnNotice;
+  var RETURNED = !EDIT && RN && RN.param && new RegExp('[?&]' + RN.param.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(&|$)').test(location.search);
+
   header.innerHTML =
-    '<div class="left">' + (EDIT ? '<span class="ws-edit-badge">✏️ <ruby>修正中<rt>しゅうせいちゅう</rt></ruby></span>' : '') + (S.title || '') + '</div>' +
+    '<div class="left">' + (EDIT ? '<span class="ws-edit-badge">✏️ <ruby>修正中<rt>しゅうせいちゅう</rt></ruby></span>' : '') +
+      (RETURNED && RN.badge ? '<span class="ws-edit-badge">' + RN.badge + '</span>' : '') + (S.title || '') + '</div>' +
     '<div class="center">' + stepperHtml + '</div>' +
     '<div class="right">' +
       (S.mapUrl ? '<button class="btn" id="mapBtn" type="button">ハザードマップ</button>' : '') +
-      (S.prev ? '<button class="btn" id="backBtn" type="button">◀ もどる</button>' : '') +
+      (S.prev ? '<button class="btn" id="backBtn" type="button">' + (S.prevLabel || '◀ もどる') + '</button>' : '') +
       (S.next ? '<button class="btn accent" id="nextBtn" type="button">' + (S.nextLabel || 'つぎへ ▶') + '</button>' : '') +
     '</div>';
   document.body.prepend(header);
+
+  if (RETURNED && RN.html) {
+    var note = document.createElement('div');
+    note.className = 'ws-return-notice';
+    note.setAttribute('role', 'status');
+    note.innerHTML = RN.html;
+    header.insertAdjacentElement('afterend', note);
+    // ヘッダーのすぐ下に重ねる（絵をかく場所の大きさは変えない。タップは下の絵に通す）
+    var place = function () { note.style.top = (header.getBoundingClientRect().bottom + 8) + 'px'; };
+    place();
+    window.addEventListener('resize', place);
+  }
 
   // --- ハザードマップのパネル（マーブリング・コラージュ中に見返す用） ---
   if (S.mapUrl) {
